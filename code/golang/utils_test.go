@@ -36,7 +36,7 @@ func Test_userInputToCmd(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		got := userInputToCmd(tc.input)
+		got, _ := userInputToCmd(tc.input)
 		if got != tc.want {
 			t.Errorf("got=[%s], want=[%s]", got, tc.want)
 		}

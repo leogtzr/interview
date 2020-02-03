@@ -23,7 +23,7 @@ func main() {
 		if len(text) == 0 {
 			continue
 		}
-		cmd := userInputToCmd(text)
+		cmd, _ := userInputToCmd(text)
 
 		switch cmd {
 		case exitCmd:

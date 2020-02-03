@@ -13,22 +13,22 @@ func sanitizeUserInput(input string) string {
 }
 
 // Transforms user's input to a Command
-func userInputToCmd(input string) Command {
+func userInputToCmd(input string) (Command, []string) {
 	fullCommand := words(input)
 	input = fullCommand[0]
 	input = sanitizeUserInput(input)
 	input = strings.ToLower(input)
 	switch input {
 	case "exit", "quit", ":q", "/q", "q":
-		return exitCmd
+		return exitCmd, []string{}
 	case "topics", "tps", "t", "/t", ":t":
-		return topicsCmd
+		return topicsCmd, []string{}
 	case "help", ":h", "/h", "--h", "-h":
-		return helpCmd
+		return helpCmd, []string{}
 	case "use", "u", "/u", ":u", "-u", "--u", "set":
-		return useCmd
+		return useCmd, []string{}
 	}
-	return noCmd
+	return noCmd, []string{}
 }
 
 func dirExists(dirPath string) bool {
