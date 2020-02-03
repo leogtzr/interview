@@ -25,7 +25,7 @@ func userInputToCmd(input string) Command {
 		return topicsCmd
 	case "help", ":h", "/h", "--h", "-h":
 		return helpCmd
-	case "use", "u", "/u", ":u":
+	case "use", "u", "/u", ":u", "-u", "--u", "set":
 		return useCmd
 	}
 	return noCmd
