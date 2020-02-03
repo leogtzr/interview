@@ -3,27 +3,30 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
-)
-
-// Command ...
-type Command int
-
-const (
-	exitCmd   Command = iota
-	topicsCmd Command = iota
-	noCmd     Command = iota
 )
 
 func main() {
 
 	userInput := bufio.NewReader(os.Stdin)
+	interviewTopicsDir := os.Getenv("INTERVIEW_DIR")
+	if interviewTopicsDir == "" {
+		log.Fatal("INTERVIEW_DIR environment variable not defined.")
+	}
 
 	for {
 		fmt.Print("$ ")
 		text, _ := userInput.ReadString('\n')
 		cmd := userInputToCmd(text)
-		fmt.Println(cmd)
+
+		switch cmd {
+		case exitCmd:
+			fmt.Println("\tBye ... ")
+			os.Exit(0)
+		case topicsCmd:
+		}
+
 	}
 
 }
