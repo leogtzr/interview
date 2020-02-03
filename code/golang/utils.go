@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -27,6 +28,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return helpCmd, []string{}
 	case "use", "u", "/u", ":u", "-u", "--u", "set":
 		return useCmd, []string{}
+	case "cls", "clear":
+		return clearScreenCommand, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -81,4 +84,10 @@ commands:
 
 func words(input string) []string {
 	return strings.Fields(input)
+}
+
+func clearScreen() {
+	cmd := exec.Command("clear")
+	cmd.Stdout = os.Stdout
+	cmd.Run()
 }

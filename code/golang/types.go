@@ -4,9 +4,10 @@ package main
 type Command int
 
 const (
-	exitCmd   Command = iota
-	topicsCmd Command = iota
-	helpCmd   Command = iota
-	useCmd    Command = iota
-	noCmd     Command = iota
+	exitCmd            Command = iota
+	topicsCmd          Command = iota
+	helpCmd            Command = iota
+	useCmd             Command = iota
+	clearScreenCommand Command = iota
+	noCmd              Command = iota
 )

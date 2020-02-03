@@ -33,6 +33,8 @@ func main() {
 			listTopics(interviewTopicsDir)
 		case helpCmd:
 			printHelp()
+		case clearScreenCommand:
+			clearScreen()
 		}
 
 	}
