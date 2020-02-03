@@ -10,12 +10,14 @@ func _() {
 	var x [1]struct{}
 	_ = x[exitCmd-0]
 	_ = x[topicsCmd-1]
-	_ = x[noCmd-2]
+	_ = x[helpCmd-2]
+	_ = x[useCmd-3]
+	_ = x[noCmd-4]
 }
 
-const _Command_name = "exitCmdtopicsCmdnoCmd"
+const _Command_name = "exitCmdtopicsCmdhelpCmduseCmdnoCmd"
 
-var _Command_index = [...]uint8{0, 7, 16, 21}
+var _Command_index = [...]uint8{0, 7, 16, 23, 29, 34}
 
 func (i Command) String() string {
 	if i < 0 || i >= Command(len(_Command_index)-1) {

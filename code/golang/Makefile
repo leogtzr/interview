@@ -4,6 +4,7 @@
 BIN_FILE=interview
 
 install:
+	stringer -type=Command
 	go build -o "${BIN_FILE}"
 
 clean:

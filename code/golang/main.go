@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -18,6 +19,10 @@ func main() {
 	for {
 		fmt.Print("$ ")
 		text, _ := userInput.ReadString('\n')
+		text = strings.TrimSpace(text)
+		if len(text) == 0 {
+			continue
+		}
 		cmd := userInputToCmd(text)
 
 		switch cmd {
@@ -25,6 +30,9 @@ func main() {
 			fmt.Println("\tBye ... ")
 			os.Exit(0)
 		case topicsCmd:
+			listTopics(interviewTopicsDir)
+		case helpCmd:
+			printHelp()
 		}
 
 	}

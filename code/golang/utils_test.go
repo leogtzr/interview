@@ -32,6 +32,7 @@ func Test_userInputToCmd(t *testing.T) {
 		{input: ":_", want: noCmd},
 		{input: ":q", want: exitCmd},
 		{input: "exit", want: exitCmd},
+		{input: "use golang", want: useCmd},
 	}
 
 	for _, tc := range tests {
