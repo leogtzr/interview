@@ -96,9 +96,29 @@ func clearScreen() {
 	cmd.Run()
 }
 
+func topicExist(topic string, topics *[]string) bool {
+	r := false
+
+	for _, t := range *topics {
+		if t == topic {
+			r = true
+			break
+		}
+	}
+
+	return r
+}
+
 func setTopic(options []string) {
+	topics := retrieveTopics(interviewTopicsDir)
 	topicName := options[0]
-	selectedTopic = topicName
+	topicName = strings.ToLower(topicName)
+
+	if topicExist(topicName, &topics) {
+		selectedTopic = topicName
+	} else {
+		fmt.Println(termenv.String(fmt.Sprintf("topic '%s' not found.", topicName)).Foreground(colorProfile.Color("#E88388")))
+	}
 }
 
 func ps1String(ps1, selectedTopic string) string {

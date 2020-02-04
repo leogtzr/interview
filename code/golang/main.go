@@ -6,17 +6,21 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/muesli/termenv"
 )
 
 var (
-	selectedTopic = ""
-	ps1           = "$ "
+	selectedTopic      = ""
+	ps1                = "$ "
+	interviewTopicsDir = ""
+	colorProfile       = termenv.ColorProfile()
 )
 
 func main() {
 
 	userInput := bufio.NewReader(os.Stdin)
-	interviewTopicsDir := os.Getenv("INTERVIEW_DIR")
+	interviewTopicsDir = os.Getenv("INTERVIEW_DIR")
 	if interviewTopicsDir == "" {
 		log.Fatal("INTERVIEW_DIR environment variable not defined.")
 	}
