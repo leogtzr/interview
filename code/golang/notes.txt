@@ -1,5 +1,6 @@
 stats
 time()
 next ... for next
-pwd - to print where I am ...
-use would change program's PS1 ... ;)
+y -> answer valid
+n -> wrong answer
+redo/r -> redo

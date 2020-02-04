@@ -48,6 +48,13 @@ func dirExists(dirPath string) bool {
 	return true
 }
 
+func exists(name string) bool {
+	if _, err := os.Stat(name); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
 func retrieveTopics(interviewsDir string) []string {
 	topicsDir := filepath.Join(interviewsDir, "topics")
 	topicsInDir := []string{}
@@ -116,10 +123,11 @@ func setTopic(options []string) {
 	topicName := options[0]
 	topicName = strings.ToLower(topicName)
 
-	if topicExist(topicName, &topics) {
+	if topicExist(topicName, &topics) &&
+		exists(filepath.Join(interviewTopicsDir, "topics", topicName, "questions")) {
 		selectedTopic = topicName
 	} else {
-		fmt.Println(termenv.String(fmt.Sprintf("topic '%s' not found.", topicName)).Foreground(colorProfile.Color("#E88388")))
+		fmt.Println(termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color("#E88388")))
 	}
 }
 
