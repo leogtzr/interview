@@ -44,6 +44,8 @@ func main() {
 			printHelp()
 		case clearScreenCommand:
 			clearScreen()
+		case pwdCommand:
+			printWorkingDirectory()
 		case useCmd:
 			setTopic(options)
 		}

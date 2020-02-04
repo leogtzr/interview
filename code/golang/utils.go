@@ -32,6 +32,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return useCmd, fullCommand[1:]
 	case "cls", "clear":
 		return clearScreenCommand, []string{}
+	case "pwd":
+		return pwdCommand, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -126,4 +128,8 @@ func ps1String(ps1, selectedTopic string) string {
 		return "$ "
 	}
 	return fmt.Sprintf("/%s $ ", termenv.String(selectedTopic).Faint())
+}
+
+func printWorkingDirectory() {
+	fmt.Println(termenv.String(selectedTopic).Bold())
 }
