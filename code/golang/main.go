@@ -8,6 +8,11 @@ import (
 	"strings"
 )
 
+var (
+	selectedTopic = ""
+	ps1           = "$ "
+)
+
 func main() {
 
 	userInput := bufio.NewReader(os.Stdin)
@@ -17,13 +22,13 @@ func main() {
 	}
 
 	for {
-		fmt.Print("$ ")
+		fmt.Print(ps1String(ps1, selectedTopic))
 		text, _ := userInput.ReadString('\n')
 		text = strings.TrimSpace(text)
 		if len(text) == 0 {
 			continue
 		}
-		cmd, _ := userInputToCmd(text)
+		cmd, options := userInputToCmd(text)
 
 		switch cmd {
 		case exitCmd:
@@ -35,8 +40,9 @@ func main() {
 			printHelp()
 		case clearScreenCommand:
 			clearScreen()
+		case useCmd:
+			setTopic(options)
 		}
-
 	}
 
 }

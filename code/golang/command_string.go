@@ -13,12 +13,13 @@ func _() {
 	_ = x[helpCmd-2]
 	_ = x[useCmd-3]
 	_ = x[clearScreenCommand-4]
-	_ = x[noCmd-5]
+	_ = x[pwdCommand-5]
+	_ = x[noCmd-6]
 }
 
-const _Command_name = "exitCmdtopicsCmdhelpCmduseCmdclearScreenCommandnoCmd"
+const _Command_name = "exitCmdtopicsCmdhelpCmduseCmdclearScreenCommandpwdCommandnoCmd"
 
-var _Command_index = [...]uint8{0, 7, 16, 23, 29, 47, 52}
+var _Command_index = [...]uint8{0, 7, 16, 23, 29, 47, 57, 62}
 
 func (i Command) String() string {
 	if i < 0 || i >= Command(len(_Command_index)-1) {

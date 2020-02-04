@@ -9,5 +9,6 @@ const (
 	helpCmd            Command = iota
 	useCmd             Command = iota
 	clearScreenCommand Command = iota
+	pwdCommand         Command = iota
 	noCmd              Command = iota
 )

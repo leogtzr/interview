@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/muesli/termenv"
 )
 
 func sanitizeUserInput(input string) string {
@@ -27,7 +29,7 @@ func userInputToCmd(input string) (Command, []string) {
 	case "help", ":h", "/h", "--h", "-h":
 		return helpCmd, []string{}
 	case "use", "u", "/u", ":u", "-u", "--u", "set":
-		return useCmd, []string{}
+		return useCmd, fullCommand[1:]
 	case "cls", "clear":
 		return clearScreenCommand, []string{}
 	}
@@ -44,9 +46,8 @@ func dirExists(dirPath string) bool {
 	return true
 }
 
-func listTopics(interviewsDir string) {
+func retrieveTopics(interviewsDir string) []string {
 	topicsDir := filepath.Join(interviewsDir, "topics")
-
 	topicsInDir := []string{}
 
 	if !dirExists(topicsDir) {
@@ -64,11 +65,14 @@ func listTopics(interviewsDir string) {
 	if err != nil {
 		panic(err)
 	}
+	return topicsInDir
+}
 
-	for _, topic := range topicsInDir {
-		fmt.Println(topic)
+func listTopics(interviewsDir string) {
+	topics := retrieveTopics(interviewsDir)
+	for _, topic := range topics {
+		fmt.Println(termenv.String(topic).Underline().Bold())
 	}
-
 }
 
 // TODO: ...
@@ -90,4 +94,16 @@ func clearScreen() {
 	cmd := exec.Command("clear")
 	cmd.Stdout = os.Stdout
 	cmd.Run()
+}
+
+func setTopic(options []string) {
+	topicName := options[0]
+	selectedTopic = topicName
+}
+
+func ps1String(ps1, selectedTopic string) string {
+	if selectedTopic == "" {
+		return "$ "
+	}
+	return fmt.Sprintf("/%s $ ", termenv.String(selectedTopic).Faint())
 }
