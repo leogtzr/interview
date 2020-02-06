@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/muesli/termenv"
@@ -15,6 +16,8 @@ var (
 	ps1                = "$ "
 	interviewTopicsDir = ""
 	colorProfile       = termenv.ColorProfile()
+	rgxQuestions       = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
+	questionsPerTopic  []Question
 )
 
 func main() {

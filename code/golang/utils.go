@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/muesli/termenv"
@@ -84,7 +87,7 @@ func listTopics(interviewsDir string) {
 	}
 }
 
-// TODO: ...
+// TODO: complete help message.
 func printHelp() {
 	usage := `
 commands:
@@ -118,6 +121,42 @@ func topicExist(topic string, topics *[]string) bool {
 	return r
 }
 
+func toQuestion(question string) Question {
+	questionFields := strings.Split(question, "@")
+	id, _ := strconv.ParseInt(questionFields[0], 10, 64)
+	q := questionFields[1]
+	nextID, _ := strconv.ParseInt(questionFields[2], 10, 64)
+	if nextID == 0 {
+		nextID = -1
+	}
+	return Question{ID: int(id), Q: q, NextQuestionID: int(nextID)}
+}
+
+func loadTopics(topic, interviewsDir string, questions *[]Question) {
+	// Clear previous questions ...
+	questionsPerTopic = nil
+
+	questionFilePath := filepath.Join(interviewsDir, "topics", topic, "questions")
+
+	file, err := os.Open(questionFilePath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		questionText := scanner.Text()
+		if isQuestionFormatValid(questionText, rgxQuestions) {
+			question := toQuestion(questionText)
+			questionsPerTopic = append(questionsPerTopic, question)
+		}
+	}
+
+	fmt.Printf("Loaded -> '%d' questions.\n", len(questionsPerTopic))
+
+}
+
 func setTopic(options []string) {
 	topics := retrieveTopics(interviewTopicsDir)
 	topicName := options[0]
@@ -126,6 +165,8 @@ func setTopic(options []string) {
 	if topicExist(topicName, &topics) &&
 		exists(filepath.Join(interviewTopicsDir, "topics", topicName, "questions")) {
 		selectedTopic = topicName
+		// TODO: load questions ...
+		loadTopics(selectedTopic, interviewTopicsDir, &questionsPerTopic)
 	} else {
 		fmt.Println(termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color("#E88388")))
 	}
@@ -140,4 +181,12 @@ func ps1String(ps1, selectedTopic string) string {
 
 func printWorkingDirectory() {
 	fmt.Println(termenv.String(selectedTopic).Bold())
+}
+
+func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
+	return rgx.MatchString(question)
+}
+
+func (q Question) String() string {
+	return fmt.Sprintf("Q{%d, '%s', next->%d}", q.ID, q.Q, q.NextQuestionID)
 }

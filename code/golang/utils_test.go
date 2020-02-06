@@ -59,9 +59,34 @@ func Test_questionHasValidFormat(t *testing.T) {
 		{input: "1@@2", match: false},
 	}
 	for _, tc := range tests {
-		match := rgx.MatchString(tc.input)
+		match := isQuestionFormatValid(tc.input, rgx)
 		if match != tc.match {
 			t.Errorf("got=[%t], want=[%t]", match, tc.match)
+		}
+	}
+}
+
+func Test_toQuestion(t *testing.T) {
+	type test struct {
+		input    string
+		question Question
+	}
+
+	tests := []test{
+		{
+			input:    "1@Cómo puedes sortear un archivo?@2",
+			question: Question{ID: 1, Q: "Cómo puedes sortear un archivo?", NextQuestionID: 2},
+		},
+		{
+			input:    "2@Cómo puedes obtener las ultimas 3 líneas de un archivo?@",
+			question: Question{ID: 2, Q: "Cómo puedes obtener las ultimas 3 líneas de un archivo?", NextQuestionID: -1},
+		},
+	}
+
+	for _, tc := range tests {
+		got := toQuestion(tc.input)
+		if got != tc.question {
+			t.Errorf("got=[%s], want=[%s]", got, tc.question)
 		}
 	}
 }
