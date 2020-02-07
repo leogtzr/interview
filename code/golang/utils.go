@@ -32,11 +32,22 @@ func userInputToCmd(input string) (Command, []string) {
 	case "help", ":h", "/h", "--h", "-h":
 		return helpCmd, []string{}
 	case "use", "u", "/u", ":u", "-u", "--u", "set":
+		if len(fullCommand) <= 1 {
+			return noCmd, []string{}
+		}
 		return useCmd, fullCommand[1:]
 	case "cls", "clear":
 		return clearScreenCommand, []string{}
 	case "pwd":
 		return pwdCommand, []string{}
+	case "start", "begin":
+		return startCmd, []string{}
+	case "p", "print", "print()", "p()":
+		return printCmd, []string{}
+	case "next", "nxt", ">":
+		return nextQuestionCmd, []string{}
+	case "previous", "prev", "<":
+		return previousQuestionCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -129,7 +140,7 @@ func toQuestion(question string) Question {
 	if nextID == 0 {
 		nextID = -1
 	}
-	return Question{ID: int(id), Q: q, NextQuestionID: int(nextID)}
+	return Question{ID: int(id), Q: q, NextQuestionID: int(nextID), Answer: NotAnsweredYet}
 }
 
 func loadTopics(topic, interviewsDir string, questions *[]Question) {
@@ -165,7 +176,6 @@ func setTopic(options []string) {
 	if topicExist(topicName, &topics) &&
 		exists(filepath.Join(interviewTopicsDir, "topics", topicName, "questions")) {
 		selectedTopic = topicName
-		// TODO: load questions ...
 		loadTopics(selectedTopic, interviewTopicsDir, &questionsPerTopic)
 	} else {
 		fmt.Println(termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color("#E88388")))
@@ -189,4 +199,22 @@ func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
 
 func (q Question) String() string {
 	return fmt.Sprintf("Q{%d, '%s', next->%d}", q.ID, q.Q, q.NextQuestionID)
+}
+
+func printQuestion(questionIndex int) {
+	fmt.Println(questionsPerTopic[questionIndex])
+}
+
+func gotoNextQuestion() {
+	if (questionIndex + 1) < len(questionsPerTopic) {
+		questionIndex++
+	} else {
+		fmt.Println(termenv.String("No questions left ... ").Foreground(colorProfile.Color("#DBAB79")))
+	}
+}
+
+func gotoPreviousQuestion() {
+	if (questionIndex - 1) >= 0 {
+		questionIndex--
+	}
 }

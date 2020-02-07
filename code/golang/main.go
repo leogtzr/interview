@@ -18,6 +18,8 @@ var (
 	colorProfile       = termenv.ColorProfile()
 	rgxQuestions       = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
 	questionsPerTopic  []Question
+	hasStarted         bool
+	questionIndex      = 0
 )
 
 func main() {
@@ -51,6 +53,19 @@ func main() {
 			printWorkingDirectory()
 		case useCmd:
 			setTopic(options)
+		case startCmd:
+			hasStarted = true
+			// TODO: More code here ... ?
+			questionIndex = 0
+			printQuestion(questionIndex)
+		case printCmd:
+			printQuestion(questionIndex)
+		case nextQuestionCmd:
+			gotoNextQuestion()
+			printQuestion(questionIndex)
+		case previousQuestionCmd:
+			gotoPreviousQuestion()
+			printQuestion(questionIndex)
 		}
 	}
 

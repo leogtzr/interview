@@ -27,11 +27,15 @@ const (
 )
 
 const (
-	exitCmd            Command = iota
-	topicsCmd          Command = iota
-	helpCmd            Command = iota
-	useCmd             Command = iota
-	clearScreenCommand Command = iota
-	pwdCommand         Command = iota
-	noCmd              Command = iota
+	exitCmd             Command = iota
+	topicsCmd           Command = iota
+	helpCmd             Command = iota
+	useCmd              Command = iota
+	clearScreenCommand  Command = iota
+	pwdCommand          Command = iota
+	noCmd               Command = iota
+	startCmd            Command = iota
+	printCmd            Command = iota
+	nextQuestionCmd     Command = iota
+	previousQuestionCmd Command = iota
 )
