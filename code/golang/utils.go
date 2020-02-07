@@ -50,6 +50,12 @@ func userInputToCmd(input string) (Command, []string) {
 		return previousQuestionCmd, []string{}
 	case "view", "v":
 		return viewCmd, []string{}
+	case "y", "right", "ok", "yes", "si":
+		return rightAnswerCmd, []string{}
+	case "n", "no", "mal", "wrong", "nop", "bad", "nel":
+		return wrongAnswerCmd, []string{}
+	case "hmm", "meh", "?":
+		return mehAnswerCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -233,6 +239,9 @@ func gotoPreviousQuestion() {
 }
 
 func viewStats() {
+	if len(questionsPerTopic) < 1 {
+		return
+	}
 	for _, q := range questionsPerTopic {
 		fmt.Printf("[%s] -> [%s]\n", q, q.Answer)
 	}
@@ -246,4 +255,8 @@ func readIntervieweeName() (string, bool) {
 		return "", false
 	}
 	return strings.TrimSpace(text), true
+}
+
+func markAnswerAs(ans Answer) {
+	questionsPerTopic[questionIndex].Answer = ans
 }

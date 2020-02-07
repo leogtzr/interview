@@ -20,11 +20,14 @@ func _() {
 	_ = x[nextQuestionCmd-9]
 	_ = x[previousQuestionCmd-10]
 	_ = x[viewCmd-11]
+	_ = x[rightAnswerCmd-12]
+	_ = x[wrongAnswerCmd-13]
+	_ = x[mehAnswerCmd-14]
 }
 
-const _Command_name = "exitCmdtopicsCmdhelpCmduseCmdclearScreenCommandpwdCommandnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmd"
+const _Command_name = "exitCmdtopicsCmdhelpCmduseCmdclearScreenCommandpwdCommandnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmd"
 
-var _Command_index = [...]uint8{0, 7, 16, 23, 29, 47, 57, 62, 70, 78, 93, 112, 119}
+var _Command_index = [...]uint8{0, 7, 16, 23, 29, 47, 57, 62, 70, 78, 93, 112, 119, 133, 147, 159}
 
 func (i Command) String() string {
 	if i < 0 || i >= Command(len(_Command_index)-1) {

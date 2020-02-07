@@ -55,11 +55,11 @@ func main() {
 		case useCmd:
 			setTopic(options)
 		case startCmd:
-			name, ok := readIntervieweeName()
-			if !ok {
+			if name, ok := readIntervieweeName(); !ok {
 				break
+			} else {
+				intervieweeName = name
 			}
-			intervieweeName = name
 			hasStarted = true
 			questionIndex = 0
 			printQuestion(questionIndex)
@@ -73,6 +73,12 @@ func main() {
 			printQuestion(questionIndex)
 		case viewCmd:
 			viewStats()
+		case rightAnswerCmd:
+			markAnswerAs(OK)
+		case wrongAnswerCmd:
+			markAnswerAs(Wrong)
+		case mehAnswerCmd:
+			markAnswerAs(Neutral)
 		}
 	}
 

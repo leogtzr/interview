@@ -38,4 +38,7 @@ const (
 	nextQuestionCmd     Command = iota
 	previousQuestionCmd Command = iota
 	viewCmd             Command = iota
+	rightAnswerCmd      Command = iota
+	wrongAnswerCmd      Command = iota
+	mehAnswerCmd        Command = iota
 )
