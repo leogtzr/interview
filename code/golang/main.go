@@ -55,7 +55,6 @@ func main() {
 			setTopic(options)
 		case startCmd:
 			hasStarted = true
-			// TODO: More code here ... ?
 			questionIndex = 0
 			printQuestion(questionIndex)
 		case printCmd:

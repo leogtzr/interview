@@ -198,11 +198,13 @@ func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
 }
 
 func (q Question) String() string {
-	return fmt.Sprintf("Q{%d, '%s', next->%d}", q.ID, q.Q, q.NextQuestionID)
+	return fmt.Sprintf("Q%d: %s (next: %d)", q.ID, q.Q, q.NextQuestionID)
 }
 
 func printQuestion(questionIndex int) {
-	fmt.Println(questionsPerTopic[questionIndex])
+	if hasStarted && (len(questionsPerTopic) > 0) {
+		fmt.Println(questionsPerTopic[questionIndex])
+	}
 }
 
 func gotoNextQuestion() {

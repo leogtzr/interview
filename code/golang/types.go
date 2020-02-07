@@ -4,7 +4,6 @@ package main
 type Command int
 
 // Question ...
-// TODO: complete Question type ...
 type Question struct {
 	ID             int
 	Q              string
