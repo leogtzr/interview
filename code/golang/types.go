@@ -37,4 +37,5 @@ const (
 	printCmd            Command = iota
 	nextQuestionCmd     Command = iota
 	previousQuestionCmd Command = iota
+	viewCmd             Command = iota
 )

@@ -19,7 +19,8 @@ var (
 	rgxQuestions       = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
 	questionsPerTopic  []Question
 	hasStarted         bool
-	questionIndex      = 0
+	questionIndex             = 0
+	intervieweeName    string = ""
 )
 
 func main() {
@@ -54,6 +55,11 @@ func main() {
 		case useCmd:
 			setTopic(options)
 		case startCmd:
+			name, ok := readIntervieweeName()
+			if !ok {
+				break
+			}
+			intervieweeName = name
 			hasStarted = true
 			questionIndex = 0
 			printQuestion(questionIndex)
@@ -65,6 +71,8 @@ func main() {
 		case previousQuestionCmd:
 			gotoPreviousQuestion()
 			printQuestion(questionIndex)
+		case viewCmd:
+			viewStats()
 		}
 	}
 

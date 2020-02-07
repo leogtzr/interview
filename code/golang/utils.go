@@ -48,6 +48,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return nextQuestionCmd, []string{}
 	case "previous", "prev", "<":
 		return previousQuestionCmd, []string{}
+	case "view", "v":
+		return viewCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -228,4 +230,20 @@ func gotoPreviousQuestion() {
 	if (questionIndex - 1) >= 0 {
 		questionIndex--
 	}
+}
+
+func viewStats() {
+	for _, q := range questionsPerTopic {
+		fmt.Printf("[%s] -> [%s]\n", q, q.Answer)
+	}
+}
+
+func readIntervieweeName() (string, bool) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("Interviewee name: ")
+	text, err := reader.ReadString('\n')
+	if err != nil || (len(strings.TrimSpace(text)) == 0) {
+		return "", false
+	}
+	return strings.TrimSpace(text), true
 }

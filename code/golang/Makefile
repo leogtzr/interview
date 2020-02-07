@@ -5,6 +5,7 @@ BIN_FILE=interview
 
 install:
 	stringer -type=Command
+	stringer -type=Answer
 	go test
 	go build -o "${BIN_FILE}"
 
