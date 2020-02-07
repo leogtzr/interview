@@ -16,13 +16,13 @@ type Answer int
 
 const (
 	// NotAnsweredYet ...
-	NotAnsweredYet = 0
+	NotAnsweredYet Answer = 1
 	// OK ...
-	OK Answer = 1
+	OK Answer = 2
 	// Wrong ...
-	Wrong Answer = 2
+	Wrong Answer = 3
 	// Neutral ...
-	Neutral Answer = 3
+	Neutral Answer = 4
 )
 
 const (

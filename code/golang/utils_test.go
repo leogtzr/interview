@@ -75,11 +75,11 @@ func Test_toQuestion(t *testing.T) {
 	tests := []test{
 		{
 			input:    "1@Cómo puedes sortear un archivo?@2",
-			question: Question{ID: 1, Q: "Cómo puedes sortear un archivo?", NextQuestionID: 2},
+			question: Question{ID: 1, Q: "Cómo puedes sortear un archivo?", NextQuestionID: 2, Answer: NotAnsweredYet},
 		},
 		{
 			input:    "2@Cómo puedes obtener las ultimas 3 líneas de un archivo?@",
-			question: Question{ID: 2, Q: "Cómo puedes obtener las ultimas 3 líneas de un archivo?", NextQuestionID: -1},
+			question: Question{ID: 2, Q: "Cómo puedes obtener las ultimas 3 líneas de un archivo?", NextQuestionID: -1, Answer: NotAnsweredYet},
 		},
 	}
 

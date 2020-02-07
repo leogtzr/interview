@@ -18,9 +18,16 @@ var (
 	colorProfile       = termenv.ColorProfile()
 	rgxQuestions       = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
 	questionsPerTopic  []Question
-	hasStarted         bool
+	hasStarted         bool   = false
 	questionIndex             = 0
 	intervieweeName    string = ""
+	red                       = "#E88388"
+	green                     = "#A8CC8C"
+	yellow                    = "#DBAB79"
+	blue                      = "#71BEF2"
+	magenta                   = "#D290E4"
+	cyan                      = "#66C2CD"
+	gray                      = "#B9BFCA"
 )
 
 func main() {
@@ -74,11 +81,11 @@ func main() {
 		case viewCmd:
 			viewStats()
 		case rightAnswerCmd:
-			markAnswerAs(OK)
+			markAnswerAsOK()
 		case wrongAnswerCmd:
-			markAnswerAs(Wrong)
+			markAnswerAsWrong()
 		case mehAnswerCmd:
-			markAnswerAs(Neutral)
+			markAnswerAsNeutral()
 		}
 	}
 

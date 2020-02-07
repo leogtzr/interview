@@ -259,4 +259,24 @@ func readIntervieweeName() (string, bool) {
 
 func markAnswerAs(ans Answer) {
 	questionsPerTopic[questionIndex].Answer = ans
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", ans), green)
+}
+
+func printWithColorln(msg, colorCode string) {
+	fmt.Println(termenv.String(msg).Foreground(colorProfile.Color(colorCode)))
+}
+
+func markAnswerAsOK() {
+	questionsPerTopic[questionIndex].Answer = OK
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green)
+}
+
+func markAnswerAsWrong() {
+	questionsPerTopic[questionIndex].Answer = Wrong
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red)
+}
+
+func markAnswerAsNeutral() {
+	questionsPerTopic[questionIndex].Answer = Neutral
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
 }
