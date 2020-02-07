@@ -186,15 +186,26 @@ func setTopic(options []string) {
 		selectedTopic = topicName
 		loadTopics(selectedTopic, interviewTopicsDir, &questionsPerTopic)
 	} else {
-		fmt.Println(termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color("#E88388")))
+		fmt.Println(
+			termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color(red)))
 	}
+}
+
+func shortIntervieweeName() string {
+	if len(intervieweeName) == 0 {
+		return ""
+	}
+	if len(intervieweeName) < minNumberOfCharsInIntervieweeName {
+		return fmt.Sprintf("(%s)", intervieweeName)
+	}
+	return fmt.Sprintf("(%s...)", intervieweeName[0:minNumberOfCharsInIntervieweeName])
 }
 
 func ps1String(ps1, selectedTopic string) string {
 	if selectedTopic == "" {
 		return "$ "
 	}
-	return fmt.Sprintf("/%s $ ", termenv.String(selectedTopic).Faint())
+	return fmt.Sprintf("/%s %s $ ", termenv.String(selectedTopic).Faint(), shortIntervieweeName())
 }
 
 func printWorkingDirectory() {
@@ -206,6 +217,9 @@ func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
 }
 
 func (q Question) String() string {
+	if q.NextQuestionID == -1 {
+		return fmt.Sprintf("Q%d: %s", q.ID, q.Q)
+	}
 	return fmt.Sprintf("Q%d: %s (next: %d)", q.ID, q.Q, q.NextQuestionID)
 }
 
@@ -228,7 +242,7 @@ func gotoNextQuestion() {
 	if (questionIndex + 1) < len(questionsPerTopic) {
 		questionIndex++
 	} else {
-		fmt.Println(termenv.String("No questions left ... ").Foreground(colorProfile.Color("#DBAB79")))
+		fmt.Println(termenv.String("No questions left ... ").Foreground(colorProfile.Color(yellow)))
 	}
 }
 
