@@ -63,6 +63,10 @@ func main() {
 		case useCmd:
 			setTopic(options)
 		case startCmd:
+			if hasStarted {
+				printWithColorln("Interview has already started.", yellow)
+				break
+			}
 			if name, ok := readIntervieweeName(); !ok {
 				break
 			} else {
@@ -82,10 +86,22 @@ func main() {
 		case viewCmd:
 			viewStats()
 		case rightAnswerCmd:
+			if !hasStarted {
+				printWithColorln("Interview has not yet started.")
+				break
+			}
 			markAnswerAsOK()
 		case wrongAnswerCmd:
+			if !hasStarted {
+				printWithColorln("Interview has not yet started.")
+				break
+			}
 			markAnswerAsWrong()
 		case mehAnswerCmd:
+			if !hasStarted {
+				printWithColorln("Interview has not yet started.")
+				break
+			}
 			markAnswerAsNeutral()
 		}
 	}

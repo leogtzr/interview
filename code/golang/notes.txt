@@ -7,4 +7,6 @@ meh -> neutral
 redo/r -> redo
 v -> view
 
+finish/done -> finish interview ...
+
 save name of the interviewee
