@@ -208,6 +208,15 @@ func printQuestion(questionIndex int) {
 }
 
 func gotoNextQuestion() {
+	if len(selectedTopic) == 0 {
+		fmt.Println("Load a topic first.")
+		return
+	}
+
+	if !hasStarted {
+		fmt.Println("run the start() command first.")
+	}
+
 	if (questionIndex + 1) < len(questionsPerTopic) {
 		questionIndex++
 	} else {

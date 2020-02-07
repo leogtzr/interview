@@ -3,4 +3,7 @@ time()
 next ... for next
 y -> answer valid
 n -> wrong answer
+meh -> neutral
 redo/r -> redo
+
+save name of the interviewee
