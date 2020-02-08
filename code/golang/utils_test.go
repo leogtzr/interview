@@ -152,3 +152,22 @@ func Test_shortIntervieweeName(t *testing.T) {
 		}
 	}
 }
+
+func TestQuestion_String(t *testing.T) {
+	type test struct {
+		q    Question
+		want string
+	}
+
+	tests := []test{
+		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet, NextQuestionID: -1}, want: "Q1: hola"},
+		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet, NextQuestionID: 2}, want: "Q1: hola (next: 2)"},
+		{q: Question{ID: 1, Q: "hola", Answer: Neutral, NextQuestionID: 2}, want: "Q1: hola (next: 2)"},
+	}
+
+	for _, tt := range tests {
+		if tt.q.String() != tt.want {
+			t.Errorf("got=[%s], want=[%s]", tt.q.String(), tt.want)
+		}
+	}
+}
