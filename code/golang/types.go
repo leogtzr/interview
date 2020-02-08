@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 // Command ...
 type Command int
 
@@ -13,6 +15,22 @@ type Question struct {
 
 // Answer ...
 type Answer int
+
+// Questions ...
+type Questions []Question
+
+// Interview ...
+type Interview struct {
+	Interviewee string
+	Date        time.Time
+	Topics      map[string]Questions
+}
+
+// Topic ...
+type Topic struct {
+	Name      string
+	Questions Questions
+}
 
 const (
 	// NotAnsweredYet ...
@@ -41,4 +59,5 @@ const (
 	rightAnswerCmd      Command = iota
 	wrongAnswerCmd      Command = iota
 	mehAnswerCmd        Command = iota
+	finishCmd           Command = iota
 )

@@ -12,23 +12,26 @@ import (
 )
 
 var (
-	selectedTopic                     = ""
-	ps1                               = "$ "
-	interviewTopicsDir                = ""
-	colorProfile                      = termenv.ColorProfile()
-	rgxQuestions                      = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
-	questionsPerTopic                 []Question
-	hasStarted                        bool   = false
-	questionIndex                            = 0
-	intervieweeName                   string = ""
-	red                                      = "#E88388"
-	green                                    = "#A8CC8C"
-	yellow                                   = "#DBAB79"
-	blue                                     = "#71BEF2"
-	magenta                                  = "#D290E4"
-	cyan                                     = "#66C2CD"
-	gray                                     = "#B9BFCA"
-	minNumberOfCharsInIntervieweeName        = 10
+	selectedTopic      = ""
+	ps1                = "$ "
+	interviewTopicsDir = ""
+	questionsPerTopic  []Question
+	hasStarted         bool   = false
+	questionIndex             = 0
+	intervieweeName    string = ""
+	colorProfile              = termenv.ColorProfile()
+	rgxQuestions              = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
+)
+
+const (
+	red                               = "#E88388"
+	green                             = "#A8CC8C"
+	yellow                            = "#DBAB79"
+	blue                              = "#71BEF2"
+	magenta                           = "#D290E4"
+	cyan                              = "#66C2CD"
+	gray                              = "#B9BFCA"
+	minNumberOfCharsInIntervieweeName = 10
 )
 
 func main() {
@@ -59,7 +62,7 @@ func main() {
 		case clearScreenCommand:
 			clearScreen()
 		case pwdCommand:
-			printWorkingDirectory()
+			fmt.Println(termenv.String(selectedTopic).Bold())
 		case useCmd:
 			setTopic(options)
 		case startCmd:
@@ -87,22 +90,25 @@ func main() {
 			viewStats()
 		case rightAnswerCmd:
 			if !hasStarted {
-				printWithColorln("Interview has not yet started.")
+				printWithColorln("Interview has not yet started.", yellow)
 				break
 			}
 			markAnswerAsOK()
 		case wrongAnswerCmd:
 			if !hasStarted {
-				printWithColorln("Interview has not yet started.")
+				printWithColorln("Interview has not yet started.", yellow)
 				break
 			}
 			markAnswerAsWrong()
 		case mehAnswerCmd:
 			if !hasStarted {
-				printWithColorln("Interview has not yet started.")
+				printWithColorln("Interview has not yet started.", yellow)
 				break
 			}
 			markAnswerAsNeutral()
+		case finishCmd:
+			//TODO: pending ...
+			break
 		}
 	}
 

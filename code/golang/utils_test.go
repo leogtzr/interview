@@ -1,8 +1,12 @@
 package main
 
 import (
+	"math/rand"
+	"os"
+	"path/filepath"
 	"regexp"
 	"testing"
+	"time"
 )
 
 func Test_sanitizeUserInput(t *testing.T) {
@@ -87,6 +91,64 @@ func Test_toQuestion(t *testing.T) {
 		got := toQuestion(tc.input)
 		if got != tc.question {
 			t.Errorf("got=[%s], want=[%s]", got, tc.question)
+		}
+	}
+}
+
+func Test_retrieveTopics(t *testing.T) {
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	randDirName := stringWithCharset(5, charset, seededRand)
+	tmpPath := filepath.Join("/tmp", randDirName, "topics", "linux")
+
+	err := os.MkdirAll(tmpPath, os.ModePerm)
+	if err != nil {
+		t.Errorf("Error creating directory (%s)", err)
+	}
+
+	topics := retrieveTopics(filepath.Join("/tmp", randDirName))
+	if topics == nil || len(topics) != 1 {
+		t.Errorf("Not able to get topics ... ")
+	}
+
+	topicExpectedName := "linux"
+	if topics[0] != topicExpectedName {
+		t.Errorf("got=[%s], want=[%s]", topics[0], topicExpectedName)
+	}
+
+	err = os.RemoveAll(tmpPath)
+	if err != nil {
+		t.Errorf("unexpedted error: [%s]", err)
+	}
+}
+
+func Test_topicExist(t *testing.T) {
+	topics := []string{"linux", "sql", "java", "go", "c", "c++"}
+	if !topicExist("linux", &topics) {
+		t.Errorf("Should be in the list of topics ... ")
+	}
+
+	if !topicExist("java", &topics) {
+		t.Errorf("Should be in the list of topics ... ")
+	}
+
+	if topicExist("ashkdh", &topics) {
+		t.Errorf("Should NOT be in the list of topics ... ")
+	}
+}
+
+func Test_shortIntervieweeName(t *testing.T) {
+	tests := []struct {
+		name string
+		want string
+	}{
+		{"Leonardo Gutierrez", "(Leonardo G...)"},
+		{"Leonardo", "(Leonardo)"},
+		{"Leo", "(Leo)"},
+	}
+	for _, tt := range tests {
+		got := shortIntervieweeName(tt.name, minNumberOfCharsInIntervieweeName)
+		if got != tt.want {
+			t.Errorf("got=[%s], want=[%s]", got, tt.want)
 		}
 	}
 }

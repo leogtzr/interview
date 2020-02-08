@@ -56,6 +56,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return wrongAnswerCmd, []string{}
 	case "hmm", "meh", "?":
 		return mehAnswerCmd, []string{}
+	case "finish", "done", "bye":
+		return finishCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -191,26 +193,26 @@ func setTopic(options []string) {
 	}
 }
 
-func shortIntervieweeName() string {
-	if len(intervieweeName) == 0 {
+func shortIntervieweeName(name string, min int) string {
+	if len(name) == 0 {
 		return ""
 	}
-	if len(intervieweeName) < minNumberOfCharsInIntervieweeName {
-		return fmt.Sprintf("(%s)", intervieweeName)
+	if len(name) < min {
+		return fmt.Sprintf("(%s)", name)
 	}
-	return fmt.Sprintf("(%s...)", intervieweeName[0:minNumberOfCharsInIntervieweeName])
+	return fmt.Sprintf("(%s...)", name[0:min])
 }
 
 func ps1String(ps1, selectedTopic string) string {
 	if selectedTopic == "" {
 		return "$ "
 	}
-	return fmt.Sprintf("/%s %s $ ", termenv.String(selectedTopic).Faint(), shortIntervieweeName())
+	return fmt.Sprintf("/%s %s $ ", termenv.String(selectedTopic).Faint(), shortIntervieweeName(intervieweeName, minNumberOfCharsInIntervieweeName))
 }
 
-func printWorkingDirectory() {
-	fmt.Println(termenv.String(selectedTopic).Bold())
-}
+// func printWorkingDirectory() {
+// 	fmt.Println(termenv.String(selectedTopic).Bold())
+// }
 
 func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
 	return rgx.MatchString(question)
@@ -293,4 +295,8 @@ func markAnswerAsWrong() {
 func markAnswerAsNeutral() {
 	questionsPerTopic[questionIndex].Answer = Neutral
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
+}
+
+func saveInterview() {
+
 }
