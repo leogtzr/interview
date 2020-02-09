@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -210,10 +211,6 @@ func ps1String(ps1, selectedTopic string) string {
 	return fmt.Sprintf("/%s %s $ ", termenv.String(selectedTopic).Faint(), shortIntervieweeName(intervieweeName, minNumberOfCharsInIntervieweeName))
 }
 
-// func printWorkingDirectory() {
-// 	fmt.Println(termenv.String(selectedTopic).Bold())
-// }
-
 func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
 	return rgx.MatchString(question)
 }
@@ -263,11 +260,12 @@ func viewStats() {
 	}
 }
 
-func readIntervieweeName() (string, bool) {
-	reader := bufio.NewReader(os.Stdin)
+func readIntervieweeName(stdin io.Reader) (string, bool) {
+	reader := bufio.NewScanner(stdin)
 	fmt.Printf("Interviewee name: ")
-	text, err := reader.ReadString('\n')
-	if err != nil || (len(strings.TrimSpace(text)) == 0) {
+	reader.Scan()
+	text := reader.Text()
+	if len(strings.TrimSpace(text)) == 0 {
 		return "", false
 	}
 	return strings.TrimSpace(text), true

@@ -70,7 +70,7 @@ func main() {
 				printWithColorln("Interview has already started.", yellow)
 				break
 			}
-			if name, ok := readIntervieweeName(); !ok {
+			if name, ok := readIntervieweeName(os.Stdin); !ok {
 				break
 			} else {
 				intervieweeName = name

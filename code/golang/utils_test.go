@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"testing"
 	"time"
 )
@@ -169,5 +171,40 @@ func TestQuestion_String(t *testing.T) {
 		if tt.q.String() != tt.want {
 			t.Errorf("got=[%s], want=[%s]", tt.q.String(), tt.want)
 		}
+	}
+}
+
+func Test_readIntervieweeName(t *testing.T) {
+	name := "Leonardo"
+	reader := strings.NewReader(name)
+
+	got, ok := readIntervieweeName(reader)
+	if !ok {
+		t.Errorf("got=[%s], want=[%s]", got, name)
+	}
+}
+
+func Test_ps1String(t *testing.T) {
+	type args struct {
+		ps1           string
+		selectedTopic string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "asd",
+			args: args{ps1: "abc", selectedTopic: "linux"},
+			want: "2f1b5b326d6c696e75781b5b306d20202420",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := fmt.Sprintf("%x", ps1String(tt.args.ps1, tt.args.selectedTopic)); got != tt.want {
+				t.Errorf("ps1String() = [%x], want [%x]", got, tt.want)
+			}
+		})
 	}
 }
