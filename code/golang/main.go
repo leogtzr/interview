@@ -7,20 +7,20 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/muesli/termenv"
 )
 
 var (
-	selectedTopic      = ""
-	ps1                = "$ "
-	interviewTopicsDir = ""
-	questionsPerTopic  []Question
-	hasStarted         bool   = false
-	questionIndex             = 0
-	intervieweeName    string = ""
-	colorProfile              = termenv.ColorProfile()
-	rgxQuestions              = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
+	selectedTopic           = ""
+	ps1                     = "$ "
+	interviewTopicsDir      = ""
+	hasStarted         bool = false
+	questionIndex           = 0
+	colorProfile            = termenv.ColorProfile()
+	rgxQuestions            = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
+	interview               = Interview{Topics: make(map[string]Questions)}
 )
 
 const (
@@ -43,7 +43,7 @@ func main() {
 	}
 
 	for {
-		fmt.Print(ps1String(ps1, selectedTopic))
+		fmt.Print(ps1String(ps1, selectedTopic, interview.Interviewee))
 		text, _ := userInput.ReadString('\n')
 		text = strings.TrimSpace(text)
 		if len(text) == 0 {
@@ -70,10 +70,12 @@ func main() {
 				printWithColorln("Interview has already started.", yellow)
 				break
 			}
+			fmt.Printf("Interviewee name: ")
 			if name, ok := readIntervieweeName(os.Stdin); !ok {
 				break
 			} else {
-				intervieweeName = name
+				interview.Interviewee = name
+				interview.Date = time.Now()
 			}
 			hasStarted = true
 			questionIndex = 0
@@ -93,19 +95,26 @@ func main() {
 				printWithColorln("Interview has not yet started.", yellow)
 				break
 			}
-			markAnswerAsOK()
+			interview.Topics[selectedTopic][questionIndex].Answer = OK
+			printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green)
+
 		case wrongAnswerCmd:
 			if !hasStarted {
 				printWithColorln("Interview has not yet started.", yellow)
 				break
 			}
-			markAnswerAsWrong()
+
+			interview.Topics[selectedTopic][questionIndex].Answer = Wrong
+			printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red)
+
 		case mehAnswerCmd:
 			if !hasStarted {
 				printWithColorln("Interview has not yet started.", yellow)
 				break
 			}
-			markAnswerAsNeutral()
+			interview.Topics[selectedTopic][questionIndex].Answer = Neutral
+			printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
+
 		case finishCmd:
 			//TODO: pending ...
 			break

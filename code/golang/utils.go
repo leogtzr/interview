@@ -154,9 +154,31 @@ func toQuestion(question string) Question {
 	return Question{ID: int(id), Q: q, NextQuestionID: int(nextID), Answer: NotAnsweredYet}
 }
 
-func loadTopics(topic, interviewsDir string, questions *[]Question) {
+func extractTopicName(options []string) string {
+	topicName := options[0]
+	topicName = strings.ToLower(topicName)
+	return topicName
+}
+
+func setTopic(options []string) {
+	topicName := extractTopicName(options)
+	topics := retrieveTopics(interviewTopicsDir)
+
+	if topicExist(topicName, &topics) &&
+		exists(filepath.Join(interviewTopicsDir, "topics", topicName, "questions")) {
+		selectedTopic = topicName
+		questionsPerTopic := loadQuestionsFromTopic(selectedTopic, interviewTopicsDir)
+		interview.Topics[selectedTopic] = questionsPerTopic
+	} else {
+		fmt.Println(
+			termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color(red)))
+	}
+}
+
+func loadQuestionsFromTopic(topic, interviewsDir string) []Question {
 	// Clear previous questions ...
-	questionsPerTopic = nil
+	// questionsPerTopic = nil
+	questionsPerTopic := make([]Question, 0)
 
 	questionFilePath := filepath.Join(interviewsDir, "topics", topic, "questions")
 
@@ -177,21 +199,7 @@ func loadTopics(topic, interviewsDir string, questions *[]Question) {
 
 	fmt.Printf("Loaded -> '%d' questions.\n", len(questionsPerTopic))
 
-}
-
-func setTopic(options []string) {
-	topics := retrieveTopics(interviewTopicsDir)
-	topicName := options[0]
-	topicName = strings.ToLower(topicName)
-
-	if topicExist(topicName, &topics) &&
-		exists(filepath.Join(interviewTopicsDir, "topics", topicName, "questions")) {
-		selectedTopic = topicName
-		loadTopics(selectedTopic, interviewTopicsDir, &questionsPerTopic)
-	} else {
-		fmt.Println(
-			termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color(red)))
-	}
+	return questionsPerTopic
 }
 
 func shortIntervieweeName(name string, min int) string {
@@ -204,7 +212,7 @@ func shortIntervieweeName(name string, min int) string {
 	return fmt.Sprintf("(%s...)", name[0:min])
 }
 
-func ps1String(ps1, selectedTopic string) string {
+func ps1String(ps1, selectedTopic, intervieweeName string) string {
 	if selectedTopic == "" {
 		return "$ "
 	}
@@ -223,8 +231,8 @@ func (q Question) String() string {
 }
 
 func printQuestion(questionIndex int) {
-	if hasStarted && (len(questionsPerTopic) > 0) {
-		fmt.Println(questionsPerTopic[questionIndex])
+	if hasStarted && (len(interview.Topics[selectedTopic]) > 0) {
+		fmt.Println(interview.Topics[selectedTopic])
 	}
 }
 
@@ -238,7 +246,7 @@ func gotoNextQuestion() {
 		fmt.Println("run the start() command first.")
 	}
 
-	if (questionIndex + 1) < len(questionsPerTopic) {
+	if (questionIndex + 1) < len(interview.Topics[selectedTopic]) {
 		questionIndex++
 	} else {
 		fmt.Println(termenv.String("No questions left ... ").Foreground(colorProfile.Color(yellow)))
@@ -252,17 +260,16 @@ func gotoPreviousQuestion() {
 }
 
 func viewStats() {
-	if len(questionsPerTopic) < 1 {
+	if len(interview.Topics[selectedTopic]) < 1 {
 		return
 	}
-	for _, q := range questionsPerTopic {
+	for _, q := range interview.Topics[selectedTopic] {
 		fmt.Printf("[%s] -> [%s]\n", q, q.Answer)
 	}
 }
 
 func readIntervieweeName(stdin io.Reader) (string, bool) {
 	reader := bufio.NewScanner(stdin)
-	fmt.Printf("Interviewee name: ")
 	reader.Scan()
 	text := reader.Text()
 	if len(strings.TrimSpace(text)) == 0 {
@@ -271,28 +278,8 @@ func readIntervieweeName(stdin io.Reader) (string, bool) {
 	return strings.TrimSpace(text), true
 }
 
-func markAnswerAs(ans Answer) {
-	questionsPerTopic[questionIndex].Answer = ans
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", ans), green)
-}
-
 func printWithColorln(msg, colorCode string) {
 	fmt.Println(termenv.String(msg).Foreground(colorProfile.Color(colorCode)))
-}
-
-func markAnswerAsOK() {
-	questionsPerTopic[questionIndex].Answer = OK
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green)
-}
-
-func markAnswerAsWrong() {
-	questionsPerTopic[questionIndex].Answer = Wrong
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red)
-}
-
-func markAnswerAsNeutral() {
-	questionsPerTopic[questionIndex].Answer = Neutral
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
 }
 
 func saveInterview() {

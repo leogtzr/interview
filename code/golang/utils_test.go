@@ -186,8 +186,9 @@ func Test_readIntervieweeName(t *testing.T) {
 
 func Test_ps1String(t *testing.T) {
 	type args struct {
-		ps1           string
-		selectedTopic string
+		ps1             string
+		selectedTopic   string
+		intervieweeName string
 	}
 	tests := []struct {
 		name string
@@ -196,14 +197,14 @@ func Test_ps1String(t *testing.T) {
 	}{
 		{
 			name: "asd",
-			args: args{ps1: "abc", selectedTopic: "linux"},
-			want: "2f1b5b326d6c696e75781b5b306d20202420",
+			args: args{ps1: "$ ", selectedTopic: "linux", intervieweeName: "leo"},
+			want: "2f1b5b326d6c696e75781b5b306d20286c656f29202420",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := fmt.Sprintf("%x", ps1String(tt.args.ps1, tt.args.selectedTopic)); got != tt.want {
-				t.Errorf("ps1String() = [%x], want [%x]", got, tt.want)
+			if got := fmt.Sprintf("%x", ps1String(tt.args.ps1, tt.args.selectedTopic, tt.args.intervieweeName)); got != tt.want {
+				t.Errorf("ps1String() = %v, want %v", got, tt.want)
 			}
 		})
 	}
