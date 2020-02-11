@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/muesli/termenv"
 )
@@ -177,7 +179,6 @@ func setTopic(options []string) {
 
 func loadQuestionsFromTopic(topic, interviewsDir string) []Question {
 	// Clear previous questions ...
-	// questionsPerTopic = nil
 	questionsPerTopic := make([]Question, 0)
 
 	questionFilePath := filepath.Join(interviewsDir, "topics", topic, "questions")
@@ -282,6 +283,27 @@ func printWithColorln(msg, colorCode string) {
 	fmt.Println(termenv.String(msg).Foreground(colorProfile.Color(colorCode)))
 }
 
-func saveInterview() {
+func saveInterview() error {
+	intervieweeName := interview.Interviewee
+	savedDir := filepath.Join(interviewTopicsDir, "saved")
+	if !dirExists(savedDir) {
+		return fmt.Errorf("[%s] does not exist", savedDir)
+	}
 
+	savedInterviewName := filepath.Join(savedDir, intervieweeName)
+	if dirExists(savedInterviewName) {
+		printWithColorln(fmt.Sprintf("[%s] already exists, we will generate another name.", savedInterviewName), red)
+		seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+		randDirName := stringWithCharset(2, charset, seededRand)
+		savedInterviewName = fmt.Sprintf("%s-%s", savedInterviewName, randDirName)
+		err := os.MkdirAll(savedInterviewName, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+	return saveData(savedInterviewName, interview)
+}
+
+func saveData(savedInterviewNamePath string, interview Interview) error {
+	return nil
 }
