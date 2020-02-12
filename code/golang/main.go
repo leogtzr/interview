@@ -32,6 +32,7 @@ const (
 	cyan                              = "#66C2CD"
 	gray                              = "#B9BFCA"
 	minNumberOfCharsInIntervieweeName = 10
+	interviewFormatLayout             = "2006-01-2 15:04:05"
 )
 
 func main() {
@@ -122,6 +123,14 @@ func main() {
 			}
 			printWithColorln(fmt.Sprintf("Interview for '%s' has been saved.\n\n\tBye ...", interview.Interviewee), green)
 			os.Exit(1)
+
+		case loadCmd:
+			interviewFromFile, err := loadInterview(options)
+			if err != nil {
+				printWithColorln(err.Error(), red)
+				break
+			}
+			fmt.Println(interviewFromFile)
 		}
 	}
 

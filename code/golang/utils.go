@@ -61,6 +61,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return mehAnswerCmd, []string{}
 	case "finish", "done", "bye":
 		return finishCmd, []string{}
+	case "load":
+		return loadCmd, fullCommand[1:]
 	}
 	return noCmd, []string{}
 }
@@ -313,7 +315,7 @@ func saveData(savedInterviewNamePath string, interview Interview) error {
 
 	w := bufio.NewWriter(file)
 
-	fmt.Fprintf(w, "%s@%s\n", interview.Interviewee, interview.Date.Format("2006-01-2 15:04:05"))
+	fmt.Fprintf(w, "%s@%s\n", interview.Interviewee, interview.Date.Format(interviewFormatLayout))
 
 	for topicName, questions := range interview.Topics {
 		for _, q := range questions {
@@ -323,4 +325,59 @@ func saveData(savedInterviewNamePath string, interview Interview) error {
 		}
 	}
 	return w.Flush()
+}
+
+func loadInterview(options []string) (Interview, error) {
+	interviewName := strings.Join(options, " ")
+	interviewFile := filepath.Join(interviewTopicsDir, "saved", interviewName, "interview")
+	if !dirExists(interviewFile) {
+		return Interview{}, fmt.Errorf("'%s' does not exist", interviewFile)
+	}
+	file, err := os.Open(interviewFile)
+	if err != nil {
+		return Interview{}, err
+	}
+	defer file.Close()
+
+	interview := Interview{}
+
+	scanner := bufio.NewScanner(file)
+	if scanner.Scan() {
+		header := scanner.Text()
+		intervieweeName, err := extractNameFromInterviewHeaderRecord(header)
+		if err != nil {
+			return Interview{}, err
+		}
+		interview.Interviewee = intervieweeName
+
+		interviewDate, err := extractDateFromInterviewHeaderRecord(header)
+		if err != nil {
+			return Interview{}, err
+		}
+		interview.Date = interviewDate
+	}
+
+	// Load questions:
+	for scanner.Scan() {
+
+	}
+
+	return interview, nil
+}
+
+func extractNameFromInterviewHeaderRecord(header string) (string, error) {
+	fields := strings.Split(strings.TrimSpace(header), "@")
+	if len(fields) != 2 {
+		return "", fmt.Errorf("'%s' wrong header format", header)
+	}
+	return fields[0], nil
+}
+
+func extractDateFromInterviewHeaderRecord(header string) (time.Time, error) {
+	fields := strings.Split(strings.TrimSpace(header), "@")
+	if len(fields) != 2 {
+		return time.Time{}, fmt.Errorf("'%s' wrong header format", header)
+	}
+	interviewDate, err := time.Parse(interviewFormatLayout, fields[1])
+	return interviewDate, err
 }

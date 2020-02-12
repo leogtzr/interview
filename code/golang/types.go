@@ -60,4 +60,5 @@ const (
 	wrongAnswerCmd      Command = iota
 	mehAnswerCmd        Command = iota
 	finishCmd           Command = iota
+	loadCmd             Command = iota
 )
