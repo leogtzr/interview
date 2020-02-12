@@ -116,8 +116,12 @@ func main() {
 			printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
 
 		case finishCmd:
-			//TODO: pending ...
-			break
+			err := saveInterview()
+			if err != nil {
+				panic(err)
+			}
+			printWithColorln(fmt.Sprintf("Interview for '%s' has been saved.\n\n\tBye ...", interview.Interviewee), green)
+			os.Exit(1)
 		}
 	}
 

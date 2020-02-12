@@ -233,7 +233,7 @@ func (q Question) String() string {
 
 func printQuestion(questionIndex int) {
 	if hasStarted && (len(interview.Topics[selectedTopic]) > 0) {
-		fmt.Println(interview.Topics[selectedTopic])
+		fmt.Println(interview.Topics[selectedTopic][questionIndex])
 	}
 }
 
@@ -296,14 +296,31 @@ func saveInterview() error {
 		seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
 		randDirName := stringWithCharset(2, charset, seededRand)
 		savedInterviewName = fmt.Sprintf("%s-%s", savedInterviewName, randDirName)
-		err := os.MkdirAll(savedInterviewName, os.ModePerm)
-		if err != nil {
-			return err
-		}
 	}
-	return saveData(savedInterviewName, interview)
+	err := os.MkdirAll(savedInterviewName, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	return saveData(filepath.Join(savedInterviewName, "interview"), interview)
 }
 
 func saveData(savedInterviewNamePath string, interview Interview) error {
-	return nil
+	file, err := os.Create(savedInterviewNamePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	w := bufio.NewWriter(file)
+
+	fmt.Fprintf(w, "%s@%s\n", interview.Interviewee, interview.Date.Format("2006-01-2 15:04:05"))
+
+	for topicName, questions := range interview.Topics {
+		for _, q := range questions {
+			if q.Answer != NotAnsweredYet {
+				fmt.Fprintf(w, "%s@%d@%s@%d@%s\n", topicName, q.ID, q.Q, q.NextQuestionID, q.Answer)
+			}
+		}
+	}
+	return w.Flush()
 }

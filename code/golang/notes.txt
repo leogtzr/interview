@@ -6,6 +6,7 @@ n -> wrong answer
 meh -> neutral
 redo/r -> redo
 v -> view
+load interview file ... 
 
 finish/done -> finish interview ...
 
