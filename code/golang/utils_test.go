@@ -162,9 +162,9 @@ func TestQuestion_String(t *testing.T) {
 	}
 
 	tests := []test{
-		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet, NextQuestionID: -1}, want: "Q1: hola"},
-		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet, NextQuestionID: 2}, want: "Q1: hola (next: 2)"},
-		{q: Question{ID: 1, Q: "hola", Answer: Neutral, NextQuestionID: 2}, want: "Q1: hola (next: 2)"},
+		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet, NextQuestionID: -1}, want: "Q1: hola [NotAnsweredYet]"},
+		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet, NextQuestionID: 2}, want: "Q1: hola (next: 2) [NotAnsweredYet]"},
+		{q: Question{ID: 1, Q: "hola", Answer: Neutral, NextQuestionID: 2}, want: "Q1: hola (next: 2) [Neutral]"},
 	}
 
 	for _, tt := range tests {

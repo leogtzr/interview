@@ -130,7 +130,12 @@ func main() {
 				printWithColorln(err.Error(), red)
 				break
 			}
-			fmt.Println(interviewFromFile)
+			for topic, questions := range interviewFromFile.Topics {
+				fmt.Printf("[%s]\n", topic)
+				for _, q := range questions {
+					fmt.Println(q.String())
+				}
+			}
 		}
 	}
 

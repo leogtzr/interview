@@ -228,9 +228,9 @@ func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
 
 func (q Question) String() string {
 	if q.NextQuestionID == -1 {
-		return fmt.Sprintf("Q%d: %s", q.ID, q.Q)
+		return fmt.Sprintf("Q%d: %s [%s]", q.ID, q.Q, q.Answer)
 	}
-	return fmt.Sprintf("Q%d: %s (next: %d)", q.ID, q.Q, q.NextQuestionID)
+	return fmt.Sprintf("Q%d: %s (next: %d) [%s]", q.ID, q.Q, q.NextQuestionID, q.Answer)
 }
 
 func printQuestion(questionIndex int) {
