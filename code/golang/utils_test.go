@@ -233,3 +233,50 @@ func Test_extractQuestionInfo(t *testing.T) {
 	}
 
 }
+
+func Test_extractDateFromInterviewHeaderRecord(t *testing.T) {
+	type test struct {
+		header     string
+		want       time.Time
+		shouldFail bool
+	}
+
+	want, _ := time.Parse(interviewFormatLayout, "2020-02-11 22:32:28")
+	tests := []test{
+		{header: "Leo Gtz@2020-02-11 22:32:28", want: want, shouldFail: false},
+		{header: "abc", want: want, shouldFail: true},
+	}
+
+	for _, tt := range tests {
+		got, err := extractDateFromInterviewHeaderRecord(tt.header)
+		if err != nil && !tt.shouldFail {
+			t.Errorf("It should have failed for -> [%s]", tt.header)
+		}
+
+		if got != tt.want && !tt.shouldFail {
+			t.Errorf("got=[%s], want=[%s]", got, tt.want)
+		}
+	}
+}
+
+func Test_extractNameFromInterviewHeaderRecord(t *testing.T) {
+	type test struct {
+		header     string
+		want       string
+		shouldFail bool
+	}
+	tests := []test{
+		{header: "Leo Gtz@2020-02-11 22:32:28", want: "Leo Gtz", shouldFail: false},
+		{header: "Leo Gtz", want: "", shouldFail: true},
+	}
+	for _, tt := range tests {
+		got, err := extractNameFromInterviewHeaderRecord(tt.header)
+		if !tt.shouldFail && err != nil {
+			t.Errorf("it should have failed with: [%s]", tt.header)
+		}
+
+		if tt.shouldFail && err == nil {
+			t.Errorf("got=[%s], want=[%s]", got, tt.want)
+		}
+	}
+}
