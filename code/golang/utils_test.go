@@ -209,3 +209,27 @@ func Test_ps1String(t *testing.T) {
 		})
 	}
 }
+
+func Test_extractQuestionInfo(t *testing.T) {
+	type test struct {
+		record   string
+		topic    string
+		question Question
+	}
+
+	tests := []test{
+		{record: "linux@1@Cómo puedes sortear un archivo?@2@1",
+			topic: "linux", question: Question{ID: 1, Q: "Cómo puedes sortear un archivo?", NextQuestionID: 2, Answer: NotAnsweredYet}},
+	}
+
+	for _, tt := range tests {
+		gotTopic, gotQuestion := extractQuestionInfo(tt.record)
+		if gotTopic != tt.topic {
+			t.Errorf("got=[%s], want=[%s]", gotTopic, tt.topic)
+		}
+		if gotQuestion != tt.question {
+			t.Errorf("got=[%s], want=[%s]", gotQuestion, tt.question)
+		}
+	}
+
+}

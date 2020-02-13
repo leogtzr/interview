@@ -320,7 +320,7 @@ func saveData(savedInterviewNamePath string, interview Interview) error {
 	for topicName, questions := range interview.Topics {
 		for _, q := range questions {
 			if q.Answer != NotAnsweredYet {
-				fmt.Fprintf(w, "%s@%d@%s@%d@%s\n", topicName, q.ID, q.Q, q.NextQuestionID, q.Answer)
+				fmt.Fprintf(w, "%s@%d@%s@%d@%d\n", topicName, q.ID, q.Q, q.NextQuestionID, int(q.Answer))
 			}
 		}
 	}
@@ -357,9 +357,13 @@ func loadInterview(options []string) (Interview, error) {
 		interview.Date = interviewDate
 	}
 
+	interview.Topics = make(map[string]Questions)
+
 	// Load questions:
 	for scanner.Scan() {
-
+		questionFileRecord := scanner.Text()
+		topic, question := extractQuestionInfo(questionFileRecord)
+		interview.Topics[topic] = append(interview.Topics[topic], question)
 	}
 
 	return interview, nil
@@ -380,4 +384,21 @@ func extractDateFromInterviewHeaderRecord(header string) (time.Time, error) {
 	}
 	interviewDate, err := time.Parse(interviewFormatLayout, fields[1])
 	return interviewDate, err
+}
+
+func extractQuestionInfo(questionFileRecord string) (string, Question) {
+	fields := strings.Split(questionFileRecord, "@")
+	topic := fields[0]
+	id, _ := strconv.ParseInt(fields[1], 10, 64)
+	question := fields[2]
+	nextID, _ := strconv.ParseInt(fields[3], 10, 64)
+
+	q := Question{}
+	q.ID = int(id)
+	q.Q = question
+	q.NextQuestionID = int(nextID)
+	x, _ := strconv.ParseInt(fields[4], 10, 64)
+	q.Answer = Answer(int(x))
+
+	return topic, q
 }
