@@ -70,7 +70,12 @@ func main() {
 		case pwdCommand:
 			fmt.Println(termenv.String(selectedTopic).Bold())
 		case useCmd:
-			setTopic(options)
+			if usingInterviewFile {
+				fmt.Println("Setting from here ... ")
+				setTopicFrom(options, &interview.Topics)
+				break
+			}
+			setTopicFromFileSystem(options)
 		case startCmd:
 			if hasStarted {
 				printWithColorln("Interview has already started.", yellow)

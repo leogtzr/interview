@@ -181,7 +181,7 @@ func extractTopicName(options []string) string {
 	return topicName
 }
 
-func setTopic(options []string) {
+func setTopicFromFileSystem(options []string) {
 	topicName := extractTopicName(options)
 	topics := retrieveTopicsFromFileSystem(interviewTopicsDir)
 
@@ -194,6 +194,18 @@ func setTopic(options []string) {
 		fmt.Println(
 			termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color(red)))
 	}
+}
+
+func setTopicFrom(options []string, topicsFromInterviewFile *map[string]Questions) {
+	topicName := extractTopicName(options)
+	topics := retrieveTopicsFromInterview(topicsFromInterviewFile)
+	if topicExist(topicName, &topics) {
+		selectedTopic = topicName
+		return
+	}
+
+	fmt.Println(
+		termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color(red)))
 }
 
 func loadQuestionsFromTopic(topic, interviewsDir string) []Question {
@@ -284,7 +296,7 @@ func viewStats() {
 		return
 	}
 	for _, q := range interview.Topics[selectedTopic] {
-		fmt.Printf("[%s] -> [%s]\n", q, q.Answer)
+		fmt.Printf("[%s]\n", q)
 	}
 }
 
