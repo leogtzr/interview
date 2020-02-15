@@ -21,6 +21,7 @@ var (
 	colorProfile            = termenv.ColorProfile()
 	rgxQuestions            = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
 	interview               = Interview{Topics: make(map[string]Questions)}
+	usingInterviewFile      = false
 )
 
 const (
@@ -57,6 +58,10 @@ func main() {
 			fmt.Println("\tBye ... ")
 			os.Exit(0)
 		case topicsCmd:
+			if usingInterviewFile {
+				listTopicsFromInterviewFile(&interview.Topics)
+				break
+			}
 			listTopics(interviewTopicsDir)
 		case helpCmd:
 			printHelp()
@@ -130,6 +135,12 @@ func main() {
 				printWithColorln(err.Error(), red)
 				break
 			}
+
+			usingInterviewFile = true
+			printWithColorln("You will now be navigating through an interview file.", green)
+
+			interview = interviewFromFile
+
 			for topic, questions := range interviewFromFile.Topics {
 				fmt.Printf("[%s]\n", topic)
 				for _, q := range questions {

@@ -84,7 +84,7 @@ func exists(name string) bool {
 	return true
 }
 
-func retrieveTopics(interviewsDir string) []string {
+func retrieveTopicsFromFileSystem(interviewsDir string) []string {
 	topicsDir := filepath.Join(interviewsDir, "topics")
 	topicsInDir := []string{}
 
@@ -106,8 +106,25 @@ func retrieveTopics(interviewsDir string) []string {
 	return topicsInDir
 }
 
+func retrieveTopicsFromInterview(topics *map[string]Questions) []string {
+	tps := make([]string, 0)
+	for t := range *topics {
+		tps = append(tps, t)
+	}
+	return tps
+}
+
+func listTopicsFromInterviewFile(topics *map[string]Questions) {
+	if usingInterviewFile {
+		topics := retrieveTopicsFromInterview(&interview.Topics)
+		for _, topic := range topics {
+			fmt.Println(termenv.String(topic).Underline().Bold())
+		}
+	}
+}
+
 func listTopics(interviewsDir string) {
-	topics := retrieveTopics(interviewsDir)
+	topics := retrieveTopicsFromFileSystem(interviewsDir)
 	for _, topic := range topics {
 		fmt.Println(termenv.String(topic).Underline().Bold())
 	}
@@ -166,7 +183,7 @@ func extractTopicName(options []string) string {
 
 func setTopic(options []string) {
 	topicName := extractTopicName(options)
-	topics := retrieveTopics(interviewTopicsDir)
+	topics := retrieveTopicsFromFileSystem(interviewTopicsDir)
 
 	if topicExist(topicName, &topics) &&
 		exists(filepath.Join(interviewTopicsDir, "topics", topicName, "questions")) {
