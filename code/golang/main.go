@@ -57,6 +57,10 @@ func main() {
 		case exitCmd:
 			fmt.Println("\tBye ... ")
 			os.Exit(0)
+		case exitInterviewFile:
+			printWithColorln("Exiting from interview file ... ", gray)
+			resetStatus()
+			break
 		case topicsCmd:
 			if usingInterviewFile {
 				listTopicsFromInterviewFile(&interview.Topics)

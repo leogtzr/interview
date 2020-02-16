@@ -45,6 +45,7 @@ const (
 
 const (
 	exitCmd             Command = iota
+	exitInterviewFile   Command = iota
 	topicsCmd           Command = iota
 	helpCmd             Command = iota
 	useCmd              Command = iota

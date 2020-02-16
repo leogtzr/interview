@@ -63,6 +63,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return finishCmd, []string{}
 	case "load":
 		return loadCmd, fullCommand[1:]
+	case "exf":
+		return exitInterviewFile, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -430,4 +432,13 @@ func extractQuestionInfo(questionFileRecord string) (string, Question) {
 	q.Answer = Answer(int(x))
 
 	return topic, q
+}
+
+func resetStatus() {
+	interview = Interview{Topics: make(map[string]Questions)}
+	usingInterviewFile = false
+	hasStarted = false
+	questionIndex = 0
+	selectedTopic = ""
+	ps1 = "$ "
 }

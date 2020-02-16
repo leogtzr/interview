@@ -9,27 +9,28 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[exitCmd-0]
-	_ = x[topicsCmd-1]
-	_ = x[helpCmd-2]
-	_ = x[useCmd-3]
-	_ = x[clearScreenCommand-4]
-	_ = x[pwdCommand-5]
-	_ = x[noCmd-6]
-	_ = x[startCmd-7]
-	_ = x[printCmd-8]
-	_ = x[nextQuestionCmd-9]
-	_ = x[previousQuestionCmd-10]
-	_ = x[viewCmd-11]
-	_ = x[rightAnswerCmd-12]
-	_ = x[wrongAnswerCmd-13]
-	_ = x[mehAnswerCmd-14]
-	_ = x[finishCmd-15]
-	_ = x[loadCmd-16]
+	_ = x[exitInterviewFile-1]
+	_ = x[topicsCmd-2]
+	_ = x[helpCmd-3]
+	_ = x[useCmd-4]
+	_ = x[clearScreenCommand-5]
+	_ = x[pwdCommand-6]
+	_ = x[noCmd-7]
+	_ = x[startCmd-8]
+	_ = x[printCmd-9]
+	_ = x[nextQuestionCmd-10]
+	_ = x[previousQuestionCmd-11]
+	_ = x[viewCmd-12]
+	_ = x[rightAnswerCmd-13]
+	_ = x[wrongAnswerCmd-14]
+	_ = x[mehAnswerCmd-15]
+	_ = x[finishCmd-16]
+	_ = x[loadCmd-17]
 }
 
-const _Command_name = "exitCmdtopicsCmdhelpCmduseCmdclearScreenCommandpwdCommandnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdloadCmd"
+const _Command_name = "exitCmdexitInterviewFiletopicsCmdhelpCmduseCmdclearScreenCommandpwdCommandnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdloadCmd"
 
-var _Command_index = [...]uint8{0, 7, 16, 23, 29, 47, 57, 62, 70, 78, 93, 112, 119, 133, 147, 159, 168, 175}
+var _Command_index = [...]uint8{0, 7, 24, 33, 40, 46, 64, 74, 79, 87, 95, 110, 129, 136, 150, 164, 176, 185, 192}
 
 func (i Command) String() string {
 	if i < 0 || i >= Command(len(_Command_index)-1) {
