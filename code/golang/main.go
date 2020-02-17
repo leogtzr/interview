@@ -75,7 +75,6 @@ func main() {
 			fmt.Println(termenv.String(selectedTopic).Bold())
 		case useCmd:
 			if usingInterviewFile {
-				fmt.Println("Setting from here ... ")
 				setTopicFrom(options, &interview.Topics)
 				break
 			}

@@ -295,6 +295,7 @@ func gotoPreviousQuestion() {
 
 func viewStats() {
 	if len(interview.Topics[selectedTopic]) < 1 {
+		printWithColorln("You need to select a topic first.", red)
 		return
 	}
 	for _, q := range interview.Topics[selectedTopic] {
