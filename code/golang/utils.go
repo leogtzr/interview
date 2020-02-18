@@ -170,11 +170,8 @@ func toQuestion(question string) Question {
 	questionFields := strings.Split(question, "@")
 	id, _ := strconv.ParseInt(questionFields[0], 10, 64)
 	q := questionFields[1]
-	nextID, _ := strconv.ParseInt(questionFields[2], 10, 64)
-	if (nextID == 0) || (nextID == id) {
-		nextID = -1
-	}
-	return Question{ID: int(id), Q: q, Answer: NotAnsweredYet}
+	level, _ := strconv.ParseInt(questionFields[2], 10, 64)
+	return Question{ID: int(id), Q: q, Answer: NotAnsweredYet, Level: Level(level)}
 }
 
 func extractTopicName(options []string) string {
@@ -258,7 +255,7 @@ func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
 }
 
 func (q Question) String() string {
-	return fmt.Sprintf("Q%d: %s [%s]", q.ID, q.Q, q.Answer)
+	return fmt.Sprintf("Q%d: %s [%s] [%s]", q.ID, q.Q, q.Answer, q.Level)
 }
 
 func printQuestion(questionIndex int) {
@@ -296,7 +293,7 @@ func viewStats() {
 		return
 	}
 	for _, q := range interview.Topics[selectedTopic] {
-		fmt.Printf("[%s]\n", q)
+		fmt.Println(q)
 	}
 }
 
@@ -421,9 +418,7 @@ func extractQuestionInfo(questionFileRecord string) (string, Question) {
 	id, _ := strconv.ParseInt(fields[1], 10, 64)
 	question := fields[2]
 
-	q := Question{}
-	q.ID = int(id)
-	q.Q = question
+	q := Question{ID: int(id), Q: question}
 	x, _ := strconv.ParseInt(fields[4], 10, 64)
 	q.Answer = Answer(int(x))
 

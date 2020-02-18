@@ -10,10 +10,14 @@ type Question struct {
 	ID     int
 	Q      string
 	Answer Answer
+	Level  Level
 }
 
 // Answer ...
 type Answer int
+
+// Level ...
+type Level int
 
 // Questions ...
 type Questions []Question
@@ -40,6 +44,15 @@ const (
 	Wrong Answer = 3
 	// Neutral ...
 	Neutral Answer = 4
+)
+
+const (
+	// AssociateOrProgrammer ...
+	AssociateOrProgrammer Level = 1
+	// ProgrammerAnalyst ...
+	ProgrammerAnalyst Level = 2
+	// SrProgrammer ...
+	SrProgrammer Level = 3
 )
 
 const (
