@@ -7,10 +7,9 @@ type Command int
 
 // Question ...
 type Question struct {
-	ID             int
-	Q              string
-	NextQuestionID int
-	Answer         Answer
+	ID     int
+	Q      string
+	Answer Answer
 }
 
 // Answer ...

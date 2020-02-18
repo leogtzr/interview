@@ -174,7 +174,7 @@ func toQuestion(question string) Question {
 	if (nextID == 0) || (nextID == id) {
 		nextID = -1
 	}
-	return Question{ID: int(id), Q: q, NextQuestionID: int(nextID), Answer: NotAnsweredYet}
+	return Question{ID: int(id), Q: q, Answer: NotAnsweredYet}
 }
 
 func extractTopicName(options []string) string {
@@ -183,7 +183,6 @@ func extractTopicName(options []string) string {
 	return topicName
 }
 
-// TODO: Identify broken indexes ...
 func setTopicFromFileSystem(options []string) {
 	topicName := extractTopicName(options)
 	topics := retrieveTopicsFromFileSystem(interviewTopicsDir)
@@ -192,39 +191,11 @@ func setTopicFromFileSystem(options []string) {
 		exists(filepath.Join(interviewTopicsDir, "topics", topicName, "questions")) {
 		selectedTopic = topicName
 		questionsPerTopic := loadQuestionsFromTopic(selectedTopic, interviewTopicsDir)
-		if !linkedQuestionsInTopicAreValid(&questionsPerTopic) {
-			printWithColorln("There are questions that are not linked correctly ... ", red)
-		}
 		interview.Topics[selectedTopic] = questionsPerTopic
 	} else {
 		fmt.Println(
 			termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color(red)))
 	}
-}
-
-func existsIndexInQuestions(index int, questions *[]Question) bool {
-	if index == -1 {
-		return true
-	}
-	r := false
-	for _, q := range *questions {
-		if q.ID == index {
-			r = true
-			break
-		}
-	}
-	return r
-}
-
-func linkedQuestionsInTopicAreValid(questionsPerTopic *[]Question) bool {
-	r := true
-	for _, q := range *questionsPerTopic {
-		if !existsIndexInQuestions(q.NextQuestionID, questionsPerTopic) {
-			r = false
-			break
-		}
-	}
-	return r
 }
 
 func setTopicFrom(options []string, topicsFromInterviewFile *map[string]Questions) {
@@ -287,10 +258,7 @@ func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
 }
 
 func (q Question) String() string {
-	if q.NextQuestionID == -1 {
-		return fmt.Sprintf("Q%d: %s [%s]", q.ID, q.Q, q.Answer)
-	}
-	return fmt.Sprintf("Q%d: %s (next: %d) [%s]", q.ID, q.Q, q.NextQuestionID, q.Answer)
+	return fmt.Sprintf("Q%d: %s [%s]", q.ID, q.Q, q.Answer)
 }
 
 func printQuestion(questionIndex int) {
@@ -381,7 +349,7 @@ func saveData(savedInterviewNamePath string, interview Interview) error {
 	for topicName, questions := range interview.Topics {
 		for _, q := range questions {
 			if q.Answer != NotAnsweredYet {
-				fmt.Fprintf(w, "%s@%d@%s@%d@%d\n", topicName, q.ID, q.Q, q.NextQuestionID, int(q.Answer))
+				fmt.Fprintf(w, "%s@%d@%s@%d\n", topicName, q.ID, q.Q, int(q.Answer))
 			}
 		}
 	}
@@ -452,12 +420,10 @@ func extractQuestionInfo(questionFileRecord string) (string, Question) {
 	topic := fields[0]
 	id, _ := strconv.ParseInt(fields[1], 10, 64)
 	question := fields[2]
-	nextID, _ := strconv.ParseInt(fields[3], 10, 64)
 
 	q := Question{}
 	q.ID = int(id)
 	q.Q = question
-	q.NextQuestionID = int(nextID)
 	x, _ := strconv.ParseInt(fields[4], 10, 64)
 	q.Answer = Answer(int(x))
 

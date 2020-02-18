@@ -81,11 +81,11 @@ func Test_toQuestion(t *testing.T) {
 	tests := []test{
 		{
 			input:    "1@Cómo puedes sortear un archivo?@2",
-			question: Question{ID: 1, Q: "Cómo puedes sortear un archivo?", NextQuestionID: 2, Answer: NotAnsweredYet},
+			question: Question{ID: 1, Q: "Cómo puedes sortear un archivo?", Answer: NotAnsweredYet},
 		},
 		{
 			input:    "2@Cómo puedes obtener las ultimas 3 líneas de un archivo?@",
-			question: Question{ID: 2, Q: "Cómo puedes obtener las ultimas 3 líneas de un archivo?", NextQuestionID: -1, Answer: NotAnsweredYet},
+			question: Question{ID: 2, Q: "Cómo puedes obtener las ultimas 3 líneas de un archivo?", Answer: NotAnsweredYet},
 		},
 	}
 
@@ -162,9 +162,9 @@ func TestQuestion_String(t *testing.T) {
 	}
 
 	tests := []test{
-		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet, NextQuestionID: -1}, want: "Q1: hola [NotAnsweredYet]"},
-		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet, NextQuestionID: 2}, want: "Q1: hola (next: 2) [NotAnsweredYet]"},
-		{q: Question{ID: 1, Q: "hola", Answer: Neutral, NextQuestionID: 2}, want: "Q1: hola (next: 2) [Neutral]"},
+		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet}, want: "Q1: hola [NotAnsweredYet]"},
+		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet}, want: "Q1: hola [NotAnsweredYet]"},
+		{q: Question{ID: 1, Q: "hola", Answer: Neutral}, want: "Q1: hola [Neutral]"},
 	}
 
 	for _, tt := range tests {
@@ -219,7 +219,7 @@ func Test_extractQuestionInfo(t *testing.T) {
 
 	tests := []test{
 		{record: "linux@1@Cómo puedes sortear un archivo?@2@1",
-			topic: "linux", question: Question{ID: 1, Q: "Cómo puedes sortear un archivo?", NextQuestionID: 2, Answer: NotAnsweredYet}},
+			topic: "linux", question: Question{ID: 1, Q: "Cómo puedes sortear un archivo?", Answer: NotAnsweredYet}},
 	}
 
 	for _, tt := range tests {

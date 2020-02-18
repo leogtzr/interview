@@ -13,15 +13,15 @@ import (
 )
 
 var (
-	selectedTopic           = ""
-	ps1                     = "$ "
-	interviewTopicsDir      = ""
-	hasStarted         bool = false
-	questionIndex           = 0
-	colorProfile            = termenv.ColorProfile()
-	rgxQuestions            = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
-	interview               = Interview{Topics: make(map[string]Questions)}
-	usingInterviewFile      = false
+	selectedTopic      = ""
+	ps1                = "$ "
+	interviewTopicsDir = ""
+	hasStarted         = false
+	questionIndex      = 0
+	colorProfile       = termenv.ColorProfile()
+	rgxQuestions       = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
+	interview          = Interview{Topics: make(map[string]Questions)}
+	usingInterviewFile = false
 )
 
 const (
