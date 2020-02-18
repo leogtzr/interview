@@ -171,7 +171,7 @@ func toQuestion(question string) Question {
 	id, _ := strconv.ParseInt(questionFields[0], 10, 64)
 	q := questionFields[1]
 	nextID, _ := strconv.ParseInt(questionFields[2], 10, 64)
-	if nextID == 0 {
+	if (nextID == 0) || (nextID == id) {
 		nextID = -1
 	}
 	return Question{ID: int(id), Q: q, NextQuestionID: int(nextID), Answer: NotAnsweredYet}
@@ -183,6 +183,7 @@ func extractTopicName(options []string) string {
 	return topicName
 }
 
+// TODO: Identify broken indexes ...
 func setTopicFromFileSystem(options []string) {
 	topicName := extractTopicName(options)
 	topics := retrieveTopicsFromFileSystem(interviewTopicsDir)
@@ -191,11 +192,39 @@ func setTopicFromFileSystem(options []string) {
 		exists(filepath.Join(interviewTopicsDir, "topics", topicName, "questions")) {
 		selectedTopic = topicName
 		questionsPerTopic := loadQuestionsFromTopic(selectedTopic, interviewTopicsDir)
+		if !linkedQuestionsInTopicAreValid(&questionsPerTopic) {
+			printWithColorln("There are questions that are not linked correctly ... ", red)
+		}
 		interview.Topics[selectedTopic] = questionsPerTopic
 	} else {
 		fmt.Println(
 			termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color(red)))
 	}
+}
+
+func existsIndexInQuestions(index int, questions *[]Question) bool {
+	if index == -1 {
+		return true
+	}
+	r := false
+	for _, q := range *questions {
+		if q.ID == index {
+			r = true
+			break
+		}
+	}
+	return r
+}
+
+func linkedQuestionsInTopicAreValid(questionsPerTopic *[]Question) bool {
+	r := true
+	for _, q := range *questionsPerTopic {
+		if !existsIndexInQuestions(q.NextQuestionID, questionsPerTopic) {
+			r = false
+			break
+		}
+	}
+	return r
 }
 
 func setTopicFrom(options []string, topicsFromInterviewFile *map[string]Questions) {
