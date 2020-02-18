@@ -222,15 +222,45 @@ func loadQuestionsFromTopic(topic, interviewsDir string) []Question {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		questionText := scanner.Text()
+		if strings.HasPrefix(questionText, "#") {
+			fmt.Println("Filtering here ... ")
+			continue
+		}
+		if len(strings.TrimSpace(questionText)) == 0 {
+			fmt.Println("Filtering here 2 ")
+			continue
+		}
 		if isQuestionFormatValid(questionText, rgxQuestions) {
 			question := toQuestion(questionText)
 			questionsPerTopic = append(questionsPerTopic, question)
+		} else {
+			fmt.Printf("%s is not valid\n", questionText)
 		}
 	}
 
 	fmt.Printf("Loaded -> '%d' questions.\n", len(questionsPerTopic))
 
+	levelFound := findLevel(&questionsPerTopic, AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer)
+	fmt.Printf("We will begin: %s\n", levelFound)
 	return questionsPerTopic
+}
+
+func findLevel(questions *[]Question, levels ...Level) Level {
+	foundLevel := AssociateOrProgrammer
+	found := false
+	for _, lvl := range levels {
+		if found {
+			break
+		}
+		for _, q := range *questions {
+			if q.Level == lvl {
+				found = true
+				foundLevel = q.Level
+				break
+			}
+		}
+	}
+	return foundLevel
 }
 
 func shortIntervieweeName(name string, min int) string {

@@ -1,6 +1,5 @@
 .DEFAULT_GOAL := install
 
-# INSTALL_SCRIPT=./install.sh
 BIN_FILE=interview
 
 install:
