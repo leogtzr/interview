@@ -69,6 +69,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return increaseLevelCmd, []string{}
 	case "-":
 		return decreaseLevelCmd, []string{}
+	case "=":
+		return ignoreLevelCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -481,5 +483,14 @@ func decreaseLevel() {
 		printWithColorln(fmt.Sprintf("Level is now: %s", levels[levelIndex]), yellow)
 	} else {
 		printWithColorln(fmt.Sprintf("Level cannot be decreased, currently at: %s", levels[levelIndex]), red)
+	}
+}
+
+func ignoreLevel() {
+	ignoreLevelChecking = !ignoreLevelChecking
+	if ignoreLevelChecking {
+		printWithColorln("Ignoring level", cyan)
+	} else {
+		printWithColorln("Using level", cyan)
 	}
 }

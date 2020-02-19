@@ -11,11 +11,12 @@ func _() {
 	_ = x[AssociateOrProgrammer-1]
 	_ = x[ProgrammerAnalyst-2]
 	_ = x[SrProgrammer-3]
+	_ = x[All-4]
 }
 
-const _Level_name = "AssociateOrProgrammerProgrammerAnalystSrProgrammer"
+const _Level_name = "AssociateOrProgrammerProgrammerAnalystSrProgrammerAll"
 
-var _Level_index = [...]uint8{0, 21, 38, 50}
+var _Level_index = [...]uint8{0, 21, 38, 50, 53}
 
 func (i Level) String() string {
 	i -= 1

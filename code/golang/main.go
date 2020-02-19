@@ -166,6 +166,8 @@ func main() {
 			increaseLevel()
 		case decreaseLevelCmd:
 			decreaseLevel()
+		case ignoreLevelCmd:
+			ignoreLevel()
 		}
 	}
 

@@ -53,6 +53,8 @@ const (
 	ProgrammerAnalyst Level = 2
 	// SrProgrammer ...
 	SrProgrammer Level = 3
+	// All ...
+	All Level = 4
 )
 
 // Commands:
@@ -77,4 +79,5 @@ const (
 	loadCmd             Command = iota
 	increaseLevelCmd    Command = iota
 	decreaseLevelCmd    Command = iota
+	ignoreLevelCmd      Command = iota
 )
