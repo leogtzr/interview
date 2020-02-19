@@ -233,15 +233,13 @@ func loadQuestionsFromTopic(topic, interviewsDir string) []Question {
 		if isQuestionFormatValid(questionText, rgxQuestions) {
 			question := toQuestion(questionText)
 			questionsPerTopic = append(questionsPerTopic, question)
-		} else {
-			fmt.Printf("%s is not valid\n", questionText)
 		}
 	}
 
-	fmt.Printf("Loaded -> '%d' questions.\n", len(questionsPerTopic))
-
 	levelFound := findLevel(&questionsPerTopic, AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer)
-	fmt.Printf("We will begin: %s\n", levelFound)
+	fmt.Printf("Loaded -> '%d' questions, starting with: %s level.\n", len(questionsPerTopic), levelFound)
+
+	// fmt.Printf("We will begin: %s\n", levelFound)
 	return questionsPerTopic
 }
 
