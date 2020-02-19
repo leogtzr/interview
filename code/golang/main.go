@@ -132,6 +132,7 @@ func main() {
 				printWithColorln("Interview has not yet started.", yellow)
 				break
 			}
+			// TODO: Handle level here ...
 			interview.Topics[selectedTopic][questionIndex].Answer = Neutral
 			printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
 

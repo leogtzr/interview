@@ -308,10 +308,14 @@ func gotoNextQuestion() {
 		fmt.Println("run the start() command first.")
 	}
 
-	if (questionIndex + 1) < len(interview.Topics[selectedTopic]) {
-		questionIndex++
+	if ignoreLevelChecking {
+		if (questionIndex + 1) < len(interview.Topics[selectedTopic]) {
+			questionIndex++
+		} else {
+			fmt.Println(termenv.String("No questions left ... ").Foreground(colorProfile.Color(yellow)))
+		}
 	} else {
-		fmt.Println(termenv.String("No questions left ... ").Foreground(colorProfile.Color(yellow)))
+		// Gather questions and handle indexes based on the level ...
 	}
 }
 
@@ -466,31 +470,4 @@ func resetStatus() {
 	questionIndex = 0
 	selectedTopic = ""
 	ps1 = "$ "
-}
-
-func increaseLevel() {
-	if (levelIndex + 1) < len(levels) {
-		levelIndex++
-		printWithColorln(fmt.Sprintf("Level is now: %s", levels[levelIndex]), yellow)
-	} else {
-		printWithColorln(fmt.Sprintf("Level cannot increased, currently at: %s", levels[levelIndex]), red)
-	}
-}
-
-func decreaseLevel() {
-	if (levelIndex - 1) >= 0 {
-		levelIndex--
-		printWithColorln(fmt.Sprintf("Level is now: %s", levels[levelIndex]), yellow)
-	} else {
-		printWithColorln(fmt.Sprintf("Level cannot be decreased, currently at: %s", levels[levelIndex]), red)
-	}
-}
-
-func ignoreLevel() {
-	ignoreLevelChecking = !ignoreLevelChecking
-	if ignoreLevelChecking {
-		printWithColorln("Ignoring level", cyan)
-	} else {
-		printWithColorln("Using level", cyan)
-	}
 }
