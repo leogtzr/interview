@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/muesli/termenv"
+)
 
 func increaseLevel() {
 	if (levelIndex + 1) < len(levels) {
@@ -45,4 +49,50 @@ func findLevel(questions *[]Question, levels ...Level) Level {
 		}
 	}
 	return foundLevel
+}
+
+func gotoNextQuestion() {
+	if len(selectedTopic) == 0 {
+		fmt.Println("Load a topic first.")
+		return
+	}
+
+	if !hasStarted {
+		fmt.Println("run the start() command first.")
+	}
+
+	if ignoreLevelChecking {
+		if (questionIndex + 1) < len(interview.Topics[selectedTopic]) {
+			questionIndex++
+		} else {
+			fmt.Println(termenv.String("No questions left ... ").Foreground(colorProfile.Color(yellow)))
+		}
+	} else {
+		// TODO: put this in a method once we know it really works ...
+		currentLevel := levels[levelIndex]
+		currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
+		index := individualLevelIndexes[int(currentLevel)-1]
+		if (index + 1) < len(currentLevelQuestions) {
+			index++
+			individualLevelIndexes[int(currentLevel)-1] = index
+		} else {
+			printWithColorln("That was the last question", yellow)
+		}
+	}
+}
+
+func gotoPreviousQuestion() {
+	if (questionIndex - 1) >= 0 {
+		questionIndex--
+	}
+}
+
+func getQuestionsFromLevel(lvl Level, topic string, topics *map[string][]Question) []Question {
+	questions := make([]Question, 0)
+	for _, q := range (*topics)[topic] {
+		if q.Level == lvl {
+			questions = append(questions, q)
+		}
+	}
+	return questions
 }

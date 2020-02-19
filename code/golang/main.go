@@ -13,19 +13,20 @@ import (
 )
 
 var (
-	selectedTopic             = ""
-	ps1                       = "$ "
-	interviewTopicsDir        = ""
-	hasStarted                = false
-	questionIndex             = 0
-	colorProfile              = termenv.ColorProfile()
-	rgxQuestions              = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
-	interview                 = Interview{Topics: make(map[string]Questions)}
-	usingInterviewFile        = false
-	topicQuestionsLevel Level = AssociateOrProgrammer
-	levelIndex          int   = 0
-	ignoreLevelChecking       = false
-	levels                    = [3]Level{
+	selectedTopic                = ""
+	ps1                          = "$ "
+	interviewTopicsDir           = ""
+	hasStarted                   = false
+	questionIndex                = 0
+	colorProfile                 = termenv.ColorProfile()
+	rgxQuestions                 = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
+	interview                    = Interview{Topics: make(map[string][]Question)}
+	usingInterviewFile           = false
+	topicQuestionsLevel    Level = AssociateOrProgrammer
+	levelIndex             int   = 0
+	ignoreLevelChecking          = false
+	individualLevelIndexes       = []int{0, 0, 0}
+	levels                       = [3]Level{
 		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
 	}
 )
@@ -109,7 +110,11 @@ func main() {
 			gotoPreviousQuestion()
 			printQuestion(questionIndex)
 		case viewCmd:
-			viewStats()
+			if !ignoreLevelChecking {
+				viewStatsByLevel()
+			} else {
+				viewStats()
+			}
 		case rightAnswerCmd:
 			if !hasStarted {
 				printWithColorln("Interview has not yet started.", yellow)

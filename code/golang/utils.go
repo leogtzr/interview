@@ -114,7 +114,7 @@ func retrieveTopicsFromFileSystem(interviewsDir string) []string {
 	return topicsInDir
 }
 
-func retrieveTopicsFromInterview(topics *map[string]Questions) []string {
+func retrieveTopicsFromInterview(topics *map[string][]Question) []string {
 	tps := make([]string, 0)
 	for t := range *topics {
 		tps = append(tps, t)
@@ -122,7 +122,7 @@ func retrieveTopicsFromInterview(topics *map[string]Questions) []string {
 	return tps
 }
 
-func listTopicsFromInterviewFile(topics *map[string]Questions) {
+func listTopicsFromInterviewFile(topics *map[string][]Question) {
 	if usingInterviewFile {
 		topics := retrieveTopicsFromInterview(&interview.Topics)
 		for _, topic := range topics {
@@ -201,7 +201,7 @@ func setTopicFromFileSystem(options []string) {
 	}
 }
 
-func setTopicFrom(options []string, topicsFromInterviewFile *map[string]Questions) {
+func setTopicFrom(options []string, topicsFromInterviewFile *map[string][]Question) {
 	topicName := extractTopicName(options)
 	topics := retrieveTopicsFromInterview(topicsFromInterviewFile)
 	if topicExist(topicName, &topics) {
@@ -245,31 +245,12 @@ func loadQuestionsFromTopic(topic, interviewsDir string) []Question {
 	levelFound := findLevel(&questionsPerTopic, AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer)
 	fmt.Printf("Loaded -> '%d' questions, starting with: %s level.\n", len(questionsPerTopic), levelFound)
 
-	// fmt.Printf("We will begin: %s\n", levelFound)
 	return questionsPerTopic
-}
-
-func findLevel(questions *[]Question, levels ...Level) Level {
-	foundLevel := AssociateOrProgrammer
-	found := false
-	for _, lvl := range levels {
-		if found {
-			break
-		}
-		for _, q := range *questions {
-			if q.Level == lvl {
-				found = true
-				foundLevel = q.Level
-				break
-			}
-		}
-	}
-	return foundLevel
 }
 
 func shortIntervieweeName(name string, min int) string {
 	if len(name) == 0 {
-		return ""
+		return "(who?)"
 	}
 	if len(name) < min {
 		return fmt.Sprintf("(%s)", name)
@@ -293,35 +274,16 @@ func (q Question) String() string {
 }
 
 func printQuestion(questionIndex int) {
-	if hasStarted && (len(interview.Topics[selectedTopic]) > 0) {
+	dumpLevelIndexes()
+
+	if hasStarted && ignoreLevelChecking && (len(interview.Topics[selectedTopic]) > 0) {
 		fmt.Println(interview.Topics[selectedTopic][questionIndex])
-	}
-}
-
-func gotoNextQuestion() {
-	if len(selectedTopic) == 0 {
-		fmt.Println("Load a topic first.")
-		return
-	}
-
-	if !hasStarted {
-		fmt.Println("run the start() command first.")
-	}
-
-	if ignoreLevelChecking {
-		if (questionIndex + 1) < len(interview.Topics[selectedTopic]) {
-			questionIndex++
-		} else {
-			fmt.Println(termenv.String("No questions left ... ").Foreground(colorProfile.Color(yellow)))
-		}
 	} else {
-		// Gather questions and handle indexes based on the level ...
-	}
-}
-
-func gotoPreviousQuestion() {
-	if (questionIndex - 1) >= 0 {
-		questionIndex--
+		// TODO: use levels here ...
+		currentLevel := levels[levelIndex]
+		currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
+		index := individualLevelIndexes[int(currentLevel)-1]
+		fmt.Println(currentLevelQuestions[index])
 	}
 }
 
@@ -331,6 +293,18 @@ func viewStats() {
 		return
 	}
 	for _, q := range interview.Topics[selectedTopic] {
+		fmt.Println(q)
+	}
+}
+
+func viewStatsByLevel() {
+	if len(selectedTopic) == 0 {
+		printWithColorln("You need to select a topic first.", red)
+		return
+	}
+	currentLevel := levels[levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
+	for _, q := range currentLevelQuestions {
 		fmt.Println(q)
 	}
 }
@@ -421,7 +395,7 @@ func loadInterview(options []string) (Interview, error) {
 		interview.Date = interviewDate
 	}
 
-	interview.Topics = make(map[string]Questions)
+	interview.Topics = make(map[string][]Question)
 
 	// Load questions:
 	for scanner.Scan() {
@@ -464,10 +438,21 @@ func extractQuestionInfo(questionFileRecord string) (string, Question) {
 }
 
 func resetStatus() {
-	interview = Interview{Topics: make(map[string]Questions)}
+	interview = Interview{Topics: make(map[string][]Question)}
 	usingInterviewFile = false
 	hasStarted = false
 	questionIndex = 0
 	selectedTopic = ""
 	ps1 = "$ "
+}
+
+func dumpLevelIndexes() {
+	fmt.Printf("%s\n", AssociateOrProgrammer)
+	fmt.Println(individualLevelIndexes[int(AssociateOrProgrammer)-1])
+
+	fmt.Printf("%s\n", ProgrammerAnalyst)
+	fmt.Println(individualLevelIndexes[int(ProgrammerAnalyst)-1])
+
+	fmt.Printf("%s\n", SrProgrammer)
+	fmt.Println(individualLevelIndexes[int(SrProgrammer)-1])
 }

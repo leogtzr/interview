@@ -19,20 +19,11 @@ type Answer int
 // Level ...
 type Level int
 
-// Questions ...
-type Questions []Question
-
 // Interview ...
 type Interview struct {
 	Interviewee string
 	Date        time.Time
-	Topics      map[string]Questions
-}
-
-// Topic ...
-type Topic struct {
-	Name      string
-	Questions Questions
+	Topics      map[string][]Question
 }
 
 const (

@@ -11,3 +11,16 @@ func stringWithCharset(length int, charset string, seededRand *rand.Rand) string
 	}
 	return string(b)
 }
+
+// Equal ...
+func Equal(a, b []Question) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
+}
