@@ -68,7 +68,6 @@ func gotoNextQuestion() {
 			fmt.Println(termenv.String("No questions left ... ").Foreground(colorProfile.Color(yellow)))
 		}
 	} else {
-		// TODO: put this in a method once we know it really works ...
 		currentLevel := levels[levelIndex]
 		currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
 		index := individualLevelIndexes[int(currentLevel)-1]
@@ -82,8 +81,24 @@ func gotoNextQuestion() {
 }
 
 func gotoPreviousQuestion() {
-	if (questionIndex - 1) >= 0 {
-		questionIndex--
+	if len(selectedTopic) == 0 {
+		fmt.Println("Load a topic first.")
+		return
+	}
+
+	if ignoreLevelChecking {
+		if (questionIndex - 1) >= 0 {
+			questionIndex--
+		}
+	} else {
+		currentLevel := levels[levelIndex]
+		index := individualLevelIndexes[int(currentLevel)-1]
+		if (index - 1) >= 0 {
+			index--
+			individualLevelIndexes[int(currentLevel)-1] = index
+		} else {
+			printWithColorln("That was the last question", yellow)
+		}
 	}
 }
 

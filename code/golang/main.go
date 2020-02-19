@@ -120,8 +120,12 @@ func main() {
 				printWithColorln("Interview has not yet started.", yellow)
 				break
 			}
-			interview.Topics[selectedTopic][questionIndex].Answer = OK
-			printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green)
+			if ignoreLevelChecking {
+				qs := interview.Topics[selectedTopic]
+				setAnswerAsOK(&qs, questionIndex)
+			} else {
+				setAnswerAsOkWithLevel()
+			}
 
 		case wrongAnswerCmd:
 			if !hasStarted {
@@ -129,17 +133,25 @@ func main() {
 				break
 			}
 
-			interview.Topics[selectedTopic][questionIndex].Answer = Wrong
-			printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red)
+			if ignoreLevelChecking {
+				qs := interview.Topics[selectedTopic]
+				setAnswerAsWrong(&qs, questionIndex)
+			} else {
+				setAnswerAsWrongWithLevel()
+			}
 
 		case mehAnswerCmd:
 			if !hasStarted {
 				printWithColorln("Interview has not yet started.", yellow)
 				break
 			}
-			// TODO: Handle level here ...
-			interview.Topics[selectedTopic][questionIndex].Answer = Neutral
-			printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
+
+			if ignoreLevelChecking {
+				qs := interview.Topics[selectedTopic]
+				setAnswerAsNeutral(&qs, questionIndex)
+			} else {
+				setAnswerAsNeutralWithLevel()
+			}
 
 		case finishCmd:
 			err := saveInterview()
@@ -174,6 +186,8 @@ func main() {
 			decreaseLevel()
 		case ignoreLevelCmd:
 			ignoreLevel()
+		case showLevelCmd:
+			showLevel()
 		}
 	}
 

@@ -29,11 +29,12 @@ func _() {
 	_ = x[increaseLevelCmd-18]
 	_ = x[decreaseLevelCmd-19]
 	_ = x[ignoreLevelCmd-20]
+	_ = x[showLevelCmd-21]
 }
 
-const _Command_name = "exitCmdexitInterviewFiletopicsCmdhelpCmduseCmdclearScreenCommandpwdCommandnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdloadCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmd"
+const _Command_name = "exitCmdexitInterviewFiletopicsCmdhelpCmduseCmdclearScreenCommandpwdCommandnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdloadCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmd"
 
-var _Command_index = [...]uint8{0, 7, 24, 33, 40, 46, 64, 74, 79, 87, 95, 110, 129, 136, 150, 164, 176, 185, 192, 208, 224, 238}
+var _Command_index = [...]uint8{0, 7, 24, 33, 40, 46, 64, 74, 79, 87, 95, 110, 129, 136, 150, 164, 176, 185, 192, 208, 224, 238, 250}
 
 func (i Command) String() string {
 	if i < 0 || i >= Command(len(_Command_index)-1) {

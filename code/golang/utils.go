@@ -71,6 +71,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return decreaseLevelCmd, []string{}
 	case "=":
 		return ignoreLevelCmd, []string{}
+	case "lvl":
+		return showLevelCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -276,10 +278,13 @@ func (q Question) String() string {
 func printQuestion(questionIndex int) {
 	dumpLevelIndexes()
 
-	if hasStarted && ignoreLevelChecking && (len(interview.Topics[selectedTopic]) > 0) {
+	if !hasStarted {
+		return
+	}
+
+	if ignoreLevelChecking && (len(interview.Topics[selectedTopic]) > 0) {
 		fmt.Println(interview.Topics[selectedTopic][questionIndex])
 	} else {
-		// TODO: use levels here ...
 		currentLevel := levels[levelIndex]
 		currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
 		index := individualLevelIndexes[int(currentLevel)-1]
@@ -455,4 +460,60 @@ func dumpLevelIndexes() {
 
 	fmt.Printf("%s\n", SrProgrammer)
 	fmt.Println(individualLevelIndexes[int(SrProgrammer)-1])
+}
+
+func showLevel() {
+	currentLevel := levels[levelIndex]
+	printWithColorln(currentLevel.String(), cyan)
+}
+
+func setAnswerAsNeutral(questions *[]Question, idx int) {
+	(*questions)[idx].Answer = Neutral
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
+}
+
+func setAnswerAsNeutralWithLevel() {
+	currentLevel := levels[levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
+	index := individualLevelIndexes[int(currentLevel)-1]
+	id := currentLevelQuestions[index].ID
+	markQuestionAs(id, Neutral)
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
+
+}
+
+func setAnswerAsOK(questions *[]Question, idx int) {
+	(*questions)[idx].Answer = OK
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green)
+}
+
+func setAnswerAsOkWithLevel() {
+	currentLevel := levels[levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
+	index := individualLevelIndexes[int(currentLevel)-1]
+	id := currentLevelQuestions[index].ID
+	markQuestionAs(id, OK)
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green)
+}
+
+func setAnswerAsWrong(questions *[]Question, idx int) {
+	(*questions)[idx].Answer = Wrong
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red)
+}
+
+func setAnswerAsWrongWithLevel() {
+	currentLevel := levels[levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
+	index := individualLevelIndexes[int(currentLevel)-1]
+	id := currentLevelQuestions[index].ID
+	markQuestionAs(id, Wrong)
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red)
+}
+
+func markQuestionAs(id int, ans Answer) {
+	for _, q := range interview.Topics[selectedTopic] {
+		if q.ID == id {
+			interview.Topics[selectedTopic][id-1].Answer = ans
+		}
+	}
 }
