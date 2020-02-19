@@ -72,4 +72,5 @@ const (
 	decreaseLevelCmd    Command = iota
 	ignoreLevelCmd      Command = iota
 	showLevelCmd        Command = iota
+	showStatsCmd        Command = iota
 )

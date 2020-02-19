@@ -188,6 +188,9 @@ func main() {
 			ignoreLevel()
 		case showLevelCmd:
 			showLevel()
+		case showStatsCmd:
+			showStats()
+			break
 		}
 	}
 

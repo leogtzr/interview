@@ -73,6 +73,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return ignoreLevelCmd, []string{}
 	case "lvl":
 		return showLevelCmd, []string{}
+	case "stats":
+		return showStatsCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -516,4 +518,13 @@ func markQuestionAs(id int, ans Answer) {
 			interview.Topics[selectedTopic][id-1].Answer = ans
 		}
 	}
+}
+
+func showStats() {
+	currentLevel := levels[levelIndex]
+	fmt.Printf(
+		`Level: %s
+Ignoring level: %t
+Questions in bucket: %t
+`, currentLevel, ignoreLevelChecking, len(selectedTopic) != 0)
 }
