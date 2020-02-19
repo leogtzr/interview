@@ -65,6 +65,10 @@ func userInputToCmd(input string) (Command, []string) {
 		return loadCmd, fullCommand[1:]
 	case "exf":
 		return exitInterviewFile, []string{}
+	case "+":
+		return increaseLevelCmd, []string{}
+	case "-":
+		return decreaseLevelCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -460,4 +464,22 @@ func resetStatus() {
 	questionIndex = 0
 	selectedTopic = ""
 	ps1 = "$ "
+}
+
+func increaseLevel() {
+	if (levelIndex + 1) < len(levels) {
+		levelIndex++
+		printWithColorln(fmt.Sprintf("Level is now: %s", levels[levelIndex]), yellow)
+	} else {
+		printWithColorln(fmt.Sprintf("Level cannot increased, currently at: %s", levels[levelIndex]), red)
+	}
+}
+
+func decreaseLevel() {
+	if (levelIndex - 1) >= 0 {
+		levelIndex--
+		printWithColorln(fmt.Sprintf("Level is now: %s", levels[levelIndex]), yellow)
+	} else {
+		printWithColorln(fmt.Sprintf("Level cannot be decreased, currently at: %s", levels[levelIndex]), red)
+	}
 }

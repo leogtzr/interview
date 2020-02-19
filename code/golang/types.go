@@ -55,6 +55,7 @@ const (
 	SrProgrammer Level = 3
 )
 
+// Commands:
 const (
 	exitCmd             Command = iota
 	exitInterviewFile   Command = iota
@@ -74,4 +75,6 @@ const (
 	mehAnswerCmd        Command = iota
 	finishCmd           Command = iota
 	loadCmd             Command = iota
+	increaseLevelCmd    Command = iota
+	decreaseLevelCmd    Command = iota
 )

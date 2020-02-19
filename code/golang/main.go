@@ -22,7 +22,12 @@ var (
 	rgxQuestions              = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
 	interview                 = Interview{Topics: make(map[string]Questions)}
 	usingInterviewFile        = false
-	topicQuestionsLevel Level = SrProgrammer
+	topicQuestionsLevel Level = AssociateOrProgrammer
+	levelIndex          int   = 0
+	ignoreLevelChecking       = false
+	levels                    = [3]Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
+	}
 )
 
 const (
@@ -156,6 +161,11 @@ func main() {
 					fmt.Println(q.String())
 				}
 			}
+
+		case increaseLevelCmd:
+			increaseLevel()
+		case decreaseLevelCmd:
+			decreaseLevel()
 		}
 	}
 
