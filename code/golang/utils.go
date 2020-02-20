@@ -522,9 +522,67 @@ func markQuestionAs(id int, ans Answer) {
 
 func showStats() {
 	currentLevel := levels[levelIndex]
-	fmt.Printf(
-		`Level: %s
+
+	if len(selectedTopic) == 0 {
+		fmt.Printf("Level: %s\nIgnoring level: %t\nQuestions in bucket: %t",
+			currentLevel,
+			ignoreLevelChecking,
+			len(selectedTopic) != 0)
+	} else {
+		counts := countGeneral(&interview.Topics)
+		notAnsweredCount := counts[NotAnsweredYet]
+		okCount := counts[OK]
+		wrongCount := counts[Wrong]
+		neutralCount := counts[Neutral]
+		total := notAnsweredCount + okCount + wrongCount + neutralCount
+		fmt.Printf(`
+Level: %s
 Ignoring level: %t
 Questions in bucket: %t
-`, currentLevel, ignoreLevelChecking, len(selectedTopic) != 0)
+Not Answered: %d (%.2f)
+OK: %d (%.2f)
+Wrong: %d (%.2f)
+Neutral: %d (%.2f)
+`, currentLevel,
+			ignoreLevelChecking,
+			len(selectedTopic) != 0, notAnsweredCount,
+			perc(notAnsweredCount, total),
+			okCount, perc(okCount, total),
+			wrongCount, perc(wrongCount, total),
+			neutralCount, perc(neutralCount, total),
+		)
+	}
+}
+
+func count(questions *[]Question, ans Answer) int {
+	c := 0
+	for _, q := range *questions {
+		if q.Answer == ans {
+			c++
+		}
+	}
+	return c
+}
+
+func perc(count, total int) float64 {
+	return (float64(count) * 100.0) / float64(total)
+}
+
+func countGeneral(topics *map[string][]Question) map[Answer]int {
+	counts := make(map[Answer]int, 0)
+
+	// flat the questions ...
+	questions := make([]Question, 0)
+	for _, qs := range *topics {
+		for _, q := range qs {
+			questions = append(questions, q)
+		}
+	}
+
+	counts[NotAnsweredYet] = count(&questions, NotAnsweredYet)
+	counts[OK] = count(&questions, OK)
+	counts[Wrong] = count(&questions, Wrong)
+	counts[Neutral] = count(&questions, Neutral)
+
+	return counts
 }
