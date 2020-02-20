@@ -330,6 +330,10 @@ func printWithColorln(msg, colorCode string) {
 	fmt.Println(termenv.String(msg).Foreground(colorProfile.Color(colorCode)))
 }
 
+func printWithColorf(msg, colorCode string, a ...interface{}) {
+	fmt.Printf(termenv.String(msg).Foreground(colorProfile.Color(colorCode)).String(), a...)
+}
+
 func saveInterview() error {
 	intervieweeName := interview.Interviewee
 	savedDir := filepath.Join(interviewTopicsDir, "saved")
@@ -535,22 +539,27 @@ func showStats() {
 		wrongCount := counts[Wrong]
 		neutralCount := counts[Neutral]
 		total := notAnsweredCount + okCount + wrongCount + neutralCount
-		fmt.Printf(`
-Level: %s
-Ignoring level: %t
-Questions in bucket: %t
-Not Answered: %d (%.2f)
-OK: %d (%.2f)
-Wrong: %d (%.2f)
-Neutral: %d (%.2f)
-`, currentLevel,
-			ignoreLevelChecking,
-			len(selectedTopic) != 0, notAnsweredCount,
-			perc(notAnsweredCount, total),
-			okCount, perc(okCount, total),
-			wrongCount, perc(wrongCount, total),
-			neutralCount, perc(neutralCount, total),
-		)
+
+		fmt.Printf("Level: ")
+		printWithColorf("%s\n", green, currentLevel)
+
+		fmt.Printf("Ignoring level: ")
+		printWithColorf("%t\n", green, ignoreLevelChecking)
+
+		fmt.Printf("Questions in bucket: ")
+		printWithColorf("%t\n", green, len(selectedTopic) != 0)
+
+		fmt.Printf("Not Answered: ")
+		printWithColorf("%d (%.2f%%)\n", green, notAnsweredCount, perc(notAnsweredCount, total))
+
+		fmt.Printf("OK: ")
+		printWithColorf("%d (%.2f%%)\n", green, okCount, perc(okCount, total))
+
+		fmt.Printf("Wrong: ")
+		printWithColorf("%d (%.2f%%)\n", green, wrongCount, perc(wrongCount, total))
+
+		fmt.Printf("Neutral: ")
+		printWithColorf("%d (%.2f%%)\n", green, neutralCount, perc(neutralCount, total))
 	}
 }
 
