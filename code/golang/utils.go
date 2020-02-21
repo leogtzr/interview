@@ -602,9 +602,9 @@ func countGeneral(topics *map[string][]Question) map[Answer]int {
 	return counts
 }
 
-func setLevel(lvl Level) {
-	levelIndex = int(lvl) - 1
-	currentLevel := levels[levelIndex]
+func setLevel(lvl Level, index *int, lvls [3]Level) {
+	*index = int(lvl) - 1
+	currentLevel := lvls[*index]
 	fmt.Printf("Current level is: ")
 	printWithColorln(fmt.Sprintf("%s", currentLevel), green)
 }

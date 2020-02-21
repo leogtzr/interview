@@ -280,3 +280,48 @@ func Test_extractNameFromInterviewHeaderRecord(t *testing.T) {
 		}
 	}
 }
+
+func Test_setLevel(t *testing.T) {
+	type test struct {
+		level Level
+		want  int
+	}
+
+	lvls := [3]Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
+	}
+
+	tests := []test{
+		{level: AssociateOrProgrammer, want: 0},
+		{level: ProgrammerAnalyst, want: 1},
+		{level: SrProgrammer, want: 2},
+	}
+
+	for _, tt := range tests {
+		idx := -1
+		setLevel(tt.level, &idx, lvls)
+		if idx != tt.want {
+			t.Errorf("got=[%d], want=[%d]", idx, tt.want)
+		}
+	}
+
+}
+
+func Test_perc(t *testing.T) {
+	type test struct {
+		count, total int
+		want         float64
+	}
+
+	tests := []test{
+		{count: 30, total: 100, want: 30.0},
+		{count: 10, total: 100, want: 10.0},
+	}
+
+	for _, tt := range tests {
+		got := perc(tt.count, tt.total)
+		if got != tt.want {
+			t.Errorf("got=[%f], want=[%f]", got, tt.want)
+		}
+	}
+}
