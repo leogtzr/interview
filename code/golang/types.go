@@ -50,27 +50,30 @@ const (
 
 // Commands:
 const (
-	exitCmd             Command = iota
-	exitInterviewFile   Command = iota
-	topicsCmd           Command = iota
-	helpCmd             Command = iota
-	useCmd              Command = iota
-	clearScreenCommand  Command = iota
-	pwdCommand          Command = iota
-	noCmd               Command = iota
-	startCmd            Command = iota
-	printCmd            Command = iota
-	nextQuestionCmd     Command = iota
-	previousQuestionCmd Command = iota
-	viewCmd             Command = iota
-	rightAnswerCmd      Command = iota
-	wrongAnswerCmd      Command = iota
-	mehAnswerCmd        Command = iota
-	finishCmd           Command = iota
-	loadCmd             Command = iota
-	increaseLevelCmd    Command = iota
-	decreaseLevelCmd    Command = iota
-	ignoreLevelCmd      Command = iota
-	showLevelCmd        Command = iota
-	showStatsCmd        Command = iota
+	exitCmd                        Command = iota
+	exitInterviewFile              Command = iota
+	topicsCmd                      Command = iota
+	helpCmd                        Command = iota
+	useCmd                         Command = iota
+	clearScreenCommand             Command = iota
+	pwdCommand                     Command = iota
+	noCmd                          Command = iota
+	startCmd                       Command = iota
+	printCmd                       Command = iota
+	nextQuestionCmd                Command = iota
+	previousQuestionCmd            Command = iota
+	viewCmd                        Command = iota
+	rightAnswerCmd                 Command = iota
+	wrongAnswerCmd                 Command = iota
+	mehAnswerCmd                   Command = iota
+	finishCmd                      Command = iota
+	loadCmd                        Command = iota
+	increaseLevelCmd               Command = iota
+	decreaseLevelCmd               Command = iota
+	ignoreLevelCmd                 Command = iota
+	showLevelCmd                   Command = iota
+	showStatsCmd                   Command = iota
+	setAssociateProgrammerLevelCmd Command = iota
+	setProgrammerAnalystLevelCmd   Command = iota
+	setSRProgrammerLevelCmd        Command = iota
 )

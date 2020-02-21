@@ -190,7 +190,12 @@ func main() {
 			showLevel()
 		case showStatsCmd:
 			showStats()
-			break
+		case setAssociateProgrammerLevelCmd:
+			setLevel(AssociateOrProgrammer)
+		case setProgrammerAnalystLevelCmd:
+			setLevel(ProgrammerAnalyst)
+		case setSRProgrammerLevelCmd:
+			setLevel(SrProgrammer)
 		}
 	}
 

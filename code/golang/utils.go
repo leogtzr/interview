@@ -75,6 +75,12 @@ func userInputToCmd(input string) (Command, []string) {
 		return showLevelCmd, []string{}
 	case "stats":
 		return showStatsCmd, []string{}
+	case "ap":
+		return setAssociateProgrammerLevelCmd, []string{}
+	case "pa":
+		return setProgrammerAnalystLevelCmd, []string{}
+	case "sr":
+		return setSRProgrammerLevelCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -594,4 +600,11 @@ func countGeneral(topics *map[string][]Question) map[Answer]int {
 	counts[Neutral] = count(&questions, Neutral)
 
 	return counts
+}
+
+func setLevel(lvl Level) {
+	levelIndex = int(lvl) - 1
+	currentLevel := levels[levelIndex]
+	fmt.Printf("Current level is: ")
+	printWithColorln(fmt.Sprintf("%s", currentLevel), green)
 }
