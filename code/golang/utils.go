@@ -32,7 +32,7 @@ func userInputToCmd(input string) (Command, []string) {
 		return exitCmd, []string{}
 	case "topics", "tps", "t", "/t", ":t":
 		return topicsCmd, []string{}
-	case "help", ":h", "/h", "--h", "-h":
+	case "help", ":h", "/h", "--h", "-h", "h":
 		return helpCmd, []string{}
 	case "use", "u", "/u", ":u", "-u", "--u", "set":
 		if len(fullCommand) <= 1 {
@@ -148,12 +148,37 @@ func listTopics(interviewsDir string) {
 	}
 }
 
-// TODO: complete help message.
 func printHelp() {
 	usage := `
 commands:
 
+	exit|quit|:q|/q|q 			exits from this application.
+	topics|tps|t|/t|:t 			list current available topics from file system or a loaded interview.
+	help|:h|/h|--h|-h 			shows this message.
+	use|u|/u|:u|-u|--u|set 			sets an available topic.
+	cls|clear 				clears the screen.
+	pwd 					prints the current selected topic.
+	start|begin 				starts the interview.
+	print|print()|p|p() 			prints the current question.
+	next|nxt|> 				moves to the next question.
+	previous|prev|< 			moves to the previous question.
+	view|v					prints the current available questions by level.
+	no|n|mal|wrong|nop|bad|nel 		marks a question as wrong.
+	ok|yes|si|right|y			marks a question as right / OK.
+	hmm|meh|?				marks a question as neutral.
+	finish|done|bye				finishes an interview.
+	load <interview name>			loads an interview from the file system.
+	+					increases the level of the interview, it could be from Programmer Analyst to a Sr Programmer Analyst as an example.
+	- 					decreases the level of the interview.
+	= 					ignore levels.
+	lvl					prints the current interview level.
+	stats					shows some stats and the current configuration for the interview.
+	ap					sets the level of the interview to "Associate Programmer"
+	pa					sets the level of the interview to "Programmer Analyst"
+	sr					sets the level of the interview to "Sr Programmer Analyst"
 
+
+	Any other command or sentence that is not listed here will be simply ignored.
 	`
 
 	fmt.Println(usage)
@@ -298,7 +323,7 @@ func printQuestion(questionIndex int) {
 	}
 }
 
-func viewStats() {
+func viewQuestions() {
 	if len(interview.Topics[selectedTopic]) < 1 {
 		printWithColorln("You need to select a topic first.", red)
 		return
@@ -308,7 +333,7 @@ func viewStats() {
 	}
 }
 
-func viewStatsByLevel() {
+func viewQuestionsByLevel() {
 	if len(selectedTopic) == 0 {
 		printWithColorln("You need to select a topic first.", red)
 		return

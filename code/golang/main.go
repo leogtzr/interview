@@ -111,9 +111,9 @@ func main() {
 			printQuestion(questionIndex)
 		case viewCmd:
 			if !ignoreLevelChecking {
-				viewStatsByLevel()
+				viewQuestionsByLevel()
 			} else {
-				viewStats()
+				viewQuestions()
 			}
 		case rightAnswerCmd:
 			if !hasStarted {
