@@ -1,12 +1,4 @@
 stats
-time()
-next ... for next
-y -> answer valid
-n -> wrong answer
-meh -> neutral
-redo/r -> redo
-v -> view
 load interview file ... 
-finish/done -> finish interview ...
 
 TODO: Check what to do with loading ...
