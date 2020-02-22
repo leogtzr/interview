@@ -525,10 +525,14 @@ func showStats() {
 	currentLevel := levels[levelIndex]
 
 	if len(selectedTopic) == 0 {
-		fmt.Printf("Level: %s\nIgnoring level: %t\nQuestions in bucket: %t",
-			currentLevel,
-			ignoreLevelChecking,
-			len(selectedTopic) != 0)
+		fmt.Printf("Level: ")
+		printWithColorf("%s\n", green, currentLevel)
+
+		fmt.Printf("Ignoring level: ")
+		printWithColorf("%t\n", green, ignoreLevelChecking)
+
+		fmt.Printf("Questions in bucket: ")
+		printWithColorf("%t\n", green, len(selectedTopic) != 0)
 	} else {
 		counts := countGeneral(&interview.Topics)
 		notAnsweredCount := counts[NotAnsweredYet]
