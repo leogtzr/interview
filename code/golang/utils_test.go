@@ -146,6 +146,7 @@ func Test_shortIntervieweeName(t *testing.T) {
 		{"Leonardo Gutierrez", "(Leonardo G...)"},
 		{"Leonardo", "(Leonardo)"},
 		{"Leo", "(Leo)"},
+		{"", "(who?)"},
 	}
 	for _, tt := range tests {
 		got := shortIntervieweeName(tt.name, minNumberOfCharsInIntervieweeName)
@@ -324,4 +325,45 @@ func Test_perc(t *testing.T) {
 			t.Errorf("got=[%f], want=[%f]", got, tt.want)
 		}
 	}
+}
+
+func Test_countGeneral(t *testing.T) {
+	type test struct {
+		topics map[string][]Question
+		want   map[Answer]int
+	}
+
+	tests := []test{
+		{
+			topics: map[string][]Question{
+				"java": []Question{
+					Question{ID: 1, Q: "A", Answer: NotAnsweredYet, Level: SrProgrammer},
+					Question{ID: 2, Q: "A", Answer: NotAnsweredYet, Level: SrProgrammer},
+					Question{ID: 3, Q: "A", Answer: Wrong, Level: SrProgrammer},
+				},
+			},
+			want: map[Answer]int{
+				NotAnsweredYet: 2,
+				Wrong:          1,
+				Neutral:        0,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		got := countGeneral(&tt.topics)
+		if got[NotAnsweredYet] != tt.want[NotAnsweredYet] {
+			t.Errorf("got=[%d], want=[%d]", got[NotAnsweredYet], tt.want[NotAnsweredYet])
+		}
+		if got[Wrong] != tt.want[Wrong] {
+			t.Errorf("got=[%d], want=[%d]", got[Wrong], tt.want[Wrong])
+		}
+		if got[OK] != tt.want[OK] {
+			t.Errorf("got=[%d], want=[%d]", got[OK], tt.want[OK])
+		}
+		if got[Neutral] != tt.want[Neutral] {
+			t.Errorf("got=[%d], want=[%d]", got[Neutral], tt.want[Neutral])
+		}
+	}
+
 }

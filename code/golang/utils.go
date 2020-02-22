@@ -284,8 +284,6 @@ func (q Question) String() string {
 }
 
 func printQuestion(questionIndex int) {
-	dumpLevelIndexes()
-
 	if !hasStarted {
 		return
 	}
@@ -461,17 +459,6 @@ func resetStatus() {
 	questionIndex = 0
 	selectedTopic = ""
 	ps1 = "$ "
-}
-
-func dumpLevelIndexes() {
-	fmt.Printf("%s\n", AssociateOrProgrammer)
-	fmt.Println(individualLevelIndexes[int(AssociateOrProgrammer)-1])
-
-	fmt.Printf("%s\n", ProgrammerAnalyst)
-	fmt.Println(individualLevelIndexes[int(ProgrammerAnalyst)-1])
-
-	fmt.Printf("%s\n", SrProgrammer)
-	fmt.Println(individualLevelIndexes[int(SrProgrammer)-1])
 }
 
 func showLevel() {
