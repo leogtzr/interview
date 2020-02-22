@@ -40,9 +40,9 @@ func userInputToCmd(input string) (Command, []string) {
 		}
 		return useCmd, fullCommand[1:]
 	case "cls", "clear":
-		return clearScreenCommand, []string{}
+		return clearScreenCmd, []string{}
 	case "pwd":
-		return pwdCommand, []string{}
+		return pwdCmd, []string{}
 	case "start", "begin":
 		return startCmd, []string{}
 	case "p", "print", "print()", "p()":
@@ -64,7 +64,7 @@ func userInputToCmd(input string) (Command, []string) {
 	case "load":
 		return loadCmd, fullCommand[1:]
 	case "exf":
-		return exitInterviewFile, []string{}
+		return exitInterviewFileCmd, []string{}
 	case "+":
 		return increaseLevelCmd, []string{}
 	case "-":

@@ -64,7 +64,7 @@ func main() {
 		case exitCmd:
 			fmt.Println("\tBye ... ")
 			os.Exit(0)
-		case exitInterviewFile:
+		case exitInterviewFileCmd:
 			printWithColorln("Exiting from interview file ... ", gray)
 			resetStatus()
 			break
@@ -76,9 +76,9 @@ func main() {
 			listTopics(interviewTopicsDir)
 		case helpCmd:
 			printHelp()
-		case clearScreenCommand:
+		case clearScreenCmd:
 			clearScreen()
-		case pwdCommand:
+		case pwdCmd:
 			fmt.Println(termenv.String(selectedTopic).Bold())
 		case useCmd:
 			if usingInterviewFile {

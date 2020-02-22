@@ -9,12 +9,12 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[exitCmd-0]
-	_ = x[exitInterviewFile-1]
+	_ = x[exitInterviewFileCmd-1]
 	_ = x[topicsCmd-2]
 	_ = x[helpCmd-3]
 	_ = x[useCmd-4]
-	_ = x[clearScreenCommand-5]
-	_ = x[pwdCommand-6]
+	_ = x[clearScreenCmd-5]
+	_ = x[pwdCmd-6]
 	_ = x[noCmd-7]
 	_ = x[startCmd-8]
 	_ = x[printCmd-9]
@@ -36,9 +36,9 @@ func _() {
 	_ = x[setSRProgrammerLevelCmd-25]
 }
 
-const _Command_name = "exitCmdexitInterviewFiletopicsCmdhelpCmduseCmdclearScreenCommandpwdCommandnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdloadCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmdshowStatsCmdsetAssociateProgrammerLevelCmdsetProgrammerAnalystLevelCmdsetSRProgrammerLevelCmd"
+const _Command_name = "exitCmdexitInterviewFileCmdtopicsCmdhelpCmduseCmdclearScreenCmdpwdCmdnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdloadCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmdshowStatsCmdsetAssociateProgrammerLevelCmdsetProgrammerAnalystLevelCmdsetSRProgrammerLevelCmd"
 
-var _Command_index = [...]uint16{0, 7, 24, 33, 40, 46, 64, 74, 79, 87, 95, 110, 129, 136, 150, 164, 176, 185, 192, 208, 224, 238, 250, 262, 292, 320, 343}
+var _Command_index = [...]uint16{0, 7, 27, 36, 43, 49, 63, 69, 74, 82, 90, 105, 124, 131, 145, 159, 171, 180, 187, 203, 219, 233, 245, 257, 287, 315, 338}
 
 func (i Command) String() string {
 	if i < 0 || i >= Command(len(_Command_index)-1) {

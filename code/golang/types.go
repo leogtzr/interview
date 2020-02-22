@@ -51,12 +51,12 @@ const (
 // Commands:
 const (
 	exitCmd                        Command = iota
-	exitInterviewFile              Command = iota
+	exitInterviewFileCmd           Command = iota
 	topicsCmd                      Command = iota
 	helpCmd                        Command = iota
 	useCmd                         Command = iota
-	clearScreenCommand             Command = iota
-	pwdCommand                     Command = iota
+	clearScreenCmd                 Command = iota
+	pwdCmd                         Command = iota
 	noCmd                          Command = iota
 	startCmd                       Command = iota
 	printCmd                       Command = iota
