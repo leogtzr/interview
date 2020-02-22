@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -224,11 +225,16 @@ func Test_ps1String(t *testing.T) {
 			args: args{ps1: "$ ", selectedTopic: "linux", intervieweeName: "leo"},
 			want: "2f1b5b326d6c696e75781b5b306d20286c656f29202420",
 		},
+		{
+			name: "asd2",
+			args: args{ps1: "$ ", selectedTopic: "", intervieweeName: "leo"},
+			want: "2420",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := fmt.Sprintf("%x", ps1String(tt.args.ps1, tt.args.selectedTopic, tt.args.intervieweeName)); got != tt.want {
-				t.Errorf("ps1String() = %v, want %v", got, tt.want)
+				t.Errorf("ps1String() = [%v], want [%v]", got, tt.want)
 			}
 		})
 	}
@@ -446,4 +452,48 @@ func Test_setAnswerAsWrong(t *testing.T) {
 			t.Errorf("%s should have been marked as Wrong.", q)
 		}
 	}
+}
+
+func Test_extractTopicName(t *testing.T) {
+	type test struct {
+		options []string
+		want    string
+	}
+
+	tests := []test{
+		{options: []string{"a", "b", "c"}, want: "a"},
+	}
+
+	for _, tt := range tests {
+		got := extractTopicName(tt.options)
+		if got != tt.want {
+			t.Errorf("got=[%s], want=[%s]", got, tt.want)
+		}
+	}
+}
+
+func Test_retrieveTopicsFromInterview(t *testing.T) {
+	type test struct {
+		topics map[string][]Question
+		want   []string
+	}
+	tests := []test{
+		{
+			topics: map[string][]Question{
+				"java":  []Question{},
+				"linux": []Question{},
+				"bash":  []Question{},
+			},
+			want: []string{"bash", "java", "linux"},
+		},
+	}
+
+	for _, tt := range tests {
+		got := retrieveTopicsFromInterview(&tt.topics)
+		sort.Strings(got)
+		if !EqualTopics(got, tt.want) {
+			t.Errorf("got=[%s], want=[%s]", got, tt.want)
+		}
+	}
+
 }

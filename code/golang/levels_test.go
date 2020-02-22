@@ -62,3 +62,57 @@ func Test_getQuestionsFromLevel(t *testing.T) {
 		}
 	}
 }
+
+func Test_increaseLevel(t *testing.T) {
+	type test struct {
+		lvlIndex           int
+		lvls               [3]Level
+		incraseTimes, want int
+	}
+
+	levels := [3]Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
+	}
+
+	tests := []test{
+		{lvlIndex: 0, lvls: levels, incraseTimes: 1, want: 1},
+		{lvlIndex: 0, lvls: levels, incraseTimes: 10, want: len(levels) - 1},
+	}
+
+	for _, tt := range tests {
+		for i := 0; i < tt.incraseTimes; i++ {
+			increaseLevel(&tt.lvlIndex, tt.lvls)
+		}
+		if tt.lvlIndex != tt.want {
+			t.Errorf("want=[%d] after increasing %d times, current index is: %d", tt.want, tt.incraseTimes, tt.lvlIndex)
+		}
+	}
+}
+
+func Test_decreaseLevel(t *testing.T) {
+	type test struct {
+		lvlIndex            int
+		lvls                [3]Level
+		decreaseTimes, want int
+	}
+
+	interviewLevels := [3]Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
+	}
+
+	tests := []test{
+		{lvlIndex: len(interviewLevels), lvls: interviewLevels, decreaseTimes: 2, want: 1},
+		{lvlIndex: len(interviewLevels), lvls: interviewLevels, decreaseTimes: 1, want: len(interviewLevels) - 1},
+		{lvlIndex: len(interviewLevels), lvls: interviewLevels, decreaseTimes: 2, want: len(interviewLevels) - 2},
+		{lvlIndex: 0, lvls: levels, decreaseTimes: 10, want: 0},
+	}
+
+	for _, tt := range tests {
+		for i := 0; i < tt.decreaseTimes; i++ {
+			decreaseLevel(&tt.lvlIndex, tt.lvls)
+		}
+		if tt.lvlIndex != tt.want {
+			t.Errorf("want=[%d] after decreasing %d times, current index is: %d", tt.want, tt.decreaseTimes, tt.lvlIndex)
+		}
+	}
+}

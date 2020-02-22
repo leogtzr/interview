@@ -6,21 +6,21 @@ import (
 	"github.com/muesli/termenv"
 )
 
-func increaseLevel() {
-	if (levelIndex + 1) < len(levels) {
-		levelIndex++
-		printWithColorln(fmt.Sprintf("Level is now: %s", levels[levelIndex]), yellow)
+func increaseLevel(lvlIndex *int, lvls [3]Level) {
+	if (*lvlIndex + 1) < len(lvls) {
+		*lvlIndex++
+		printWithColorln(fmt.Sprintf("Level is now: %s", lvls[*lvlIndex]), yellow)
 	} else {
-		printWithColorln(fmt.Sprintf("Level cannot increased, currently at: %s", levels[levelIndex]), red)
+		printWithColorln(fmt.Sprintf("Level cannot increased, currently at: %s", lvls[*lvlIndex]), red)
 	}
 }
 
-func decreaseLevel() {
-	if (levelIndex - 1) >= 0 {
-		levelIndex--
-		printWithColorln(fmt.Sprintf("Level is now: %s", levels[levelIndex]), yellow)
+func decreaseLevel(lvlIndex *int, lvls [3]Level) {
+	if (*lvlIndex - 1) >= 0 {
+		*lvlIndex--
+		printWithColorln(fmt.Sprintf("Level is now: %s", lvls[*lvlIndex]), yellow)
 	} else {
-		printWithColorln(fmt.Sprintf("Level cannot be decreased, currently at: %s", levels[levelIndex]), red)
+		printWithColorln(fmt.Sprintf("Level cannot be decreased, currently at: %s", lvls[*lvlIndex]), red)
 	}
 }
 

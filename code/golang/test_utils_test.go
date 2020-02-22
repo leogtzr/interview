@@ -18,7 +18,6 @@ func TestEqual(t *testing.T) {
 				Question{ID: 1, Answer: NotAnsweredYet, Q: "A", Level: SrProgrammer},
 			}, result: true,
 		},
-
 		{
 			a: []Question{
 				Question{ID: 1, Answer: NotAnsweredYet, Q: "A", Level: SrProgrammer},
@@ -27,10 +26,15 @@ func TestEqual(t *testing.T) {
 				Question{ID: 2, Answer: NotAnsweredYet, Q: "A", Level: SrProgrammer},
 			}, result: false,
 		},
-
 		{
 			a: []Question{},
 			b: []Question{}, result: true,
+		},
+		{
+			a: []Question{
+				Question{ID: 1},
+			},
+			b: []Question{}, result: false,
 		},
 	}
 

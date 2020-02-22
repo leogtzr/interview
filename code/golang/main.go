@@ -181,9 +181,9 @@ func main() {
 			}
 
 		case increaseLevelCmd:
-			increaseLevel()
+			increaseLevel(&levelIndex, levels)
 		case decreaseLevelCmd:
-			decreaseLevel()
+			decreaseLevel(&levelIndex, levels)
 		case ignoreLevelCmd:
 			ignoreLevel()
 		case showLevelCmd:

@@ -515,7 +515,6 @@ func setAnswerAsWrongWithLevel() {
 func markQuestionAs(id int, ans Answer, qs *[]Question) {
 	for _, q := range *qs {
 		if q.ID == id {
-			// interview.Topics[selectedTopic][id-1].Answer = ans
 			(*qs)[id-1].Answer = ans
 			break
 		}
