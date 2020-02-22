@@ -52,6 +52,17 @@ func Test_userInputToCmd(t *testing.T) {
 		{input: "meh", want: mehAnswerCmd},
 		{input: "finish", want: finishCmd},
 		{input: "load", want: loadCmd},
+		{input: "topics", want: topicsCmd},
+		{input: "help", want: helpCmd},
+		{input: "exf", want: exitInterviewFile},
+		{input: "+", want: increaseLevelCmd},
+		{input: "-", want: decreaseLevelCmd},
+		{input: "=", want: ignoreLevelCmd},
+		{input: "lvl", want: showLevelCmd},
+		{input: "stats", want: showStatsCmd},
+		{input: "ap", want: setAssociateProgrammerLevelCmd},
+		{input: "pa", want: setProgrammerAnalystLevelCmd},
+		{input: "sr", want: setSRProgrammerLevelCmd},
 	}
 
 	for _, tc := range tests {
@@ -378,4 +389,61 @@ func Test_countGeneral(t *testing.T) {
 		}
 	}
 
+}
+
+func Test_setAnswerAsNeutral(t *testing.T) {
+	qs := []Question{
+		Question{ID: 1, Answer: OK},
+		Question{ID: 2, Answer: OK},
+		Question{ID: 3, Answer: Wrong},
+		Question{ID: 4, Answer: NotAnsweredYet},
+	}
+
+	for idx := range qs {
+		setAnswerAsNeutral(&qs, idx)
+	}
+
+	for _, q := range qs {
+		if q.Answer != Neutral {
+			t.Errorf("%s should have been marked as Neutral.", q)
+		}
+	}
+}
+
+func Test_setAnswerAsOK(t *testing.T) {
+	qs := []Question{
+		Question{ID: 1, Answer: OK},
+		Question{ID: 2, Answer: OK},
+		Question{ID: 3, Answer: Wrong},
+		Question{ID: 4, Answer: NotAnsweredYet},
+	}
+
+	for idx := range qs {
+		setAnswerAsOK(&qs, idx)
+	}
+
+	for _, q := range qs {
+		if q.Answer != OK {
+			t.Errorf("%s should have been marked as OK.", q)
+		}
+	}
+}
+
+func Test_setAnswerAsWrong(t *testing.T) {
+	qs := []Question{
+		Question{ID: 1, Answer: OK},
+		Question{ID: 2, Answer: OK},
+		Question{ID: 3, Answer: Wrong},
+		Question{ID: 4, Answer: NotAnsweredYet},
+	}
+
+	for idx := range qs {
+		setAnswerAsWrong(&qs, idx)
+	}
+
+	for _, q := range qs {
+		if q.Answer != Wrong {
+			t.Errorf("%s should have been marked as Wrong.", q)
+		}
+	}
 }

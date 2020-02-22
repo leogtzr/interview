@@ -476,7 +476,8 @@ func setAnswerAsNeutralWithLevel() {
 	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
 	index := individualLevelIndexes[int(currentLevel)-1]
 	id := currentLevelQuestions[index].ID
-	markQuestionAs(id, Neutral)
+	qs := interview.Topics[selectedTopic]
+	markQuestionAs(id, Neutral, &qs)
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
 
 }
@@ -491,7 +492,8 @@ func setAnswerAsOkWithLevel() {
 	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
 	index := individualLevelIndexes[int(currentLevel)-1]
 	id := currentLevelQuestions[index].ID
-	markQuestionAs(id, OK)
+	qs := interview.Topics[selectedTopic]
+	markQuestionAs(id, OK, &qs)
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green)
 }
 
@@ -505,14 +507,17 @@ func setAnswerAsWrongWithLevel() {
 	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
 	index := individualLevelIndexes[int(currentLevel)-1]
 	id := currentLevelQuestions[index].ID
-	markQuestionAs(id, Wrong)
+	qa := interview.Topics[selectedTopic]
+	markQuestionAs(id, Wrong, &qa)
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red)
 }
 
-func markQuestionAs(id int, ans Answer) {
-	for _, q := range interview.Topics[selectedTopic] {
+func markQuestionAs(id int, ans Answer, qs *[]Question) {
+	for _, q := range *qs {
 		if q.ID == id {
-			interview.Topics[selectedTopic][id-1].Answer = ans
+			// interview.Topics[selectedTopic][id-1].Answer = ans
+			(*qs)[id-1].Answer = ans
+			break
 		}
 	}
 }
