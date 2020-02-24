@@ -185,7 +185,7 @@ func main() {
 		case decreaseLevelCmd:
 			decreaseLevel(&levelIndex, levels)
 		case ignoreLevelCmd:
-			ignoreLevel()
+			toggleLevelChecking(&ignoreLevelChecking)
 		case showLevelCmd:
 			showLevel()
 		case showStatsCmd:

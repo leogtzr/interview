@@ -116,3 +116,22 @@ func Test_decreaseLevel(t *testing.T) {
 		}
 	}
 }
+
+func Test_toggleLevelChecking(t *testing.T) {
+	type test struct {
+		lvlCheck bool
+		want     bool
+	}
+
+	tests := []test{
+		{lvlCheck: false, want: true},
+		{lvlCheck: true, want: false},
+	}
+
+	for _, tt := range tests {
+		toggleLevelChecking(&tt.lvlCheck)
+		if tt.lvlCheck != tt.want {
+			t.Errorf("the check should be %t after change. Currently is: %t", tt.want, tt.lvlCheck)
+		}
+	}
+}

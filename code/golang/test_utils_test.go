@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestEqual(t *testing.T) {
 	type test struct {
@@ -42,6 +44,27 @@ func TestEqual(t *testing.T) {
 		got := Equal(tt.a, tt.b)
 		if got != tt.result {
 			t.Errorf("[%s] and [%s] should be equal", tt.a, tt.b)
+		}
+	}
+}
+
+func TestEqualTopics(t *testing.T) {
+	type test struct {
+		a      []string
+		b      []string
+		result bool
+	}
+
+	tests := []test{
+		{a: []string{"java", "linux"}, b: []string{"linux", "java"}, result: false},
+		{a: []string{"java", "linux"}, b: []string{"java", "linux"}, result: true},
+		{a: []string{"java"}, b: []string{"java", "linux"}, result: false},
+	}
+
+	for _, tt := range tests {
+		got := EqualTopics(tt.a, tt.b)
+		if got != tt.result {
+			t.Errorf("got=[%t], should be [%t]", got, tt.result)
 		}
 	}
 }

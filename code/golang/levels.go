@@ -24,9 +24,9 @@ func decreaseLevel(lvlIndex *int, lvls [3]Level) {
 	}
 }
 
-func ignoreLevel() {
-	ignoreLevelChecking = !ignoreLevelChecking
-	if ignoreLevelChecking {
+func toggleLevelChecking(lvlCheck *bool) {
+	*lvlCheck = !(*lvlCheck)
+	if *lvlCheck {
 		printWithColorln("Ignoring level", cyan)
 	} else {
 		printWithColorln("Using level", cyan)
