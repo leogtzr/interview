@@ -130,6 +130,10 @@ func Test_retrieveTopics(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error creating directory (%s)", err)
 	}
+	_, err = os.Create(filepath.Join(tmpPath, "questions"))
+	if err != nil {
+		t.Errorf("Error creating questions file (%s)", err)
+	}
 
 	topics := retrieveTopicsFromFileSystem(filepath.Join("/tmp", randDirName))
 	if topics == nil || len(topics) != 1 {

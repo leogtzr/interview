@@ -111,10 +111,14 @@ func retrieveTopicsFromFileSystem(interviewsDir string) []string {
 	}
 
 	err := filepath.Walk(topicsDir, func(path string, info os.FileInfo, err error) error {
-		path = filepath.Base(path)
-		if path == "topics" {
+		if !exists(filepath.Join(path, "questions")) {
 			return nil
 		}
+		path = filepath.Base(path)
+		if path == "topics" || path == "questions" {
+			return nil
+		}
+		// fmt.Println("Going to append: ", path)
 		topicsInDir = append(topicsInDir, path)
 		return nil
 	})
