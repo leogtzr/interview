@@ -81,6 +81,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return setProgrammerAnalystLevelCmd, []string{}
 	case "sr":
 		return setSRProgrammerLevelCmd, []string{}
+	case "validate", "val", "check":
+		return validateQuestionsCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -252,6 +254,10 @@ func setTopicFrom(options []string, topicsFromInterviewFile *map[string][]Questi
 		termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color(red)))
 }
 
+func shouldIgnoreLine(line string) bool {
+	return strings.HasPrefix(line, "#") || len(strings.TrimSpace(line)) == 0
+}
+
 func loadQuestionsFromTopic(topic, interviewsDir string) []Question {
 	// Clear previous questions ...
 	questionsPerTopic := make([]Question, 0)
@@ -267,12 +273,7 @@ func loadQuestionsFromTopic(topic, interviewsDir string) []Question {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		questionText := scanner.Text()
-		if strings.HasPrefix(questionText, "#") {
-			fmt.Println("Filtering here ... ")
-			continue
-		}
-		if len(strings.TrimSpace(questionText)) == 0 {
-			fmt.Println("Filtering here 2 ")
+		if shouldIgnoreLine(questionText) {
 			continue
 		}
 		if isQuestionFormatValid(questionText, rgxQuestions) {
@@ -323,6 +324,11 @@ func printQuestion(questionIndex int) {
 		currentLevel := levels[levelIndex]
 		currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
 		index := individualLevelIndexes[int(currentLevel)-1]
+		// fmt.Printf("[%s], index: %d\n", currentLevelQuestions, index)
+		// TODO: There is a bug here ...
+		/*
+
+		 */
 		fmt.Println(currentLevelQuestions[index])
 	}
 }
@@ -631,4 +637,57 @@ func setLevel(lvl Level, index *int, lvls [3]Level) {
 	currentLevel := lvls[*index]
 	fmt.Printf("Current level is: ")
 	printWithColorln(fmt.Sprintf("%s", currentLevel), green)
+}
+
+func validateQuestions(interviewsDir string) {
+	topicsDir := filepath.Join(interviewsDir, "topics")
+
+	if !dirExists(topicsDir) {
+		log.Fatalf("'%s' does not exist", topicsDir)
+	}
+	err := filepath.Walk(topicsDir, func(path string, info os.FileInfo, err error) error {
+		if !exists(filepath.Join(path, "questions")) {
+			return nil
+		}
+		path = filepath.Base(path)
+		if path == "topics" || path == "questions" {
+			return nil
+		}
+		questionFile := filepath.Join(topicsDir, path, "questions")
+		if has, lineNumbers := hasErrors(questionFile); has {
+			fmt.Printf("%s has errors, lines:\n", questionFile)
+			for _, line := range lineNumbers {
+				fmt.Printf("\t%d\n", line)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func hasErrors(interviewFilePath string) (bool, []int) {
+	has := false
+	lineNumbers := []int{}
+	file, err := os.Open(interviewFilePath)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	questionIndex := 0
+	for scanner.Scan() {
+		questionIndex++
+		questionText := scanner.Text()
+		if shouldIgnoreLine(questionText) {
+			continue
+		}
+		if !isQuestionFormatValid(questionText, rgxQuestions) {
+			has = true
+			lineNumbers = append(lineNumbers, questionIndex)
+		}
+	}
+	return has, lineNumbers
 }

@@ -103,9 +103,12 @@ func gotoPreviousQuestion() {
 }
 
 func getQuestionsFromLevel(lvl Level, topic string, topics *map[string][]Question) []Question {
+	// fmt.Printf("Questions are: [%s]\n", *topics)
+	// fmt.Printf("Level is: [%s]\n", lvl)
 	questions := make([]Question, 0)
 	for _, q := range (*topics)[topic] {
 		if q.Level == lvl {
+			// fmt.Println("Adding a question :)")
 			questions = append(questions, q)
 		}
 	}

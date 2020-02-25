@@ -196,6 +196,8 @@ func main() {
 			setLevel(ProgrammerAnalyst, &levelIndex, levels)
 		case setSRProgrammerLevelCmd:
 			setLevel(SrProgrammer, &levelIndex, levels)
+		case validateQuestionsCmd:
+			validateQuestions(interviewTopicsDir)
 		}
 	}
 

@@ -76,4 +76,5 @@ const (
 	setAssociateProgrammerLevelCmd Command = iota
 	setProgrammerAnalystLevelCmd   Command = iota
 	setSRProgrammerLevelCmd        Command = iota
+	validateQuestionsCmd           Command = iota
 )
