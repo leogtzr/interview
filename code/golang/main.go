@@ -45,11 +45,11 @@ const (
 
 func main() {
 
-	userInput := bufio.NewReader(os.Stdin)
 	interviewTopicsDir = os.Getenv("INTERVIEW_DIR")
 	if interviewTopicsDir == "" {
 		log.Fatal("INTERVIEW_DIR environment variable not defined.")
 	}
+	userInput := bufio.NewReader(os.Stdin)
 
 	for {
 		fmt.Print(ps1String(ps1, selectedTopic, interview.Interviewee))
