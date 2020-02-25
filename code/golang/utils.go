@@ -320,17 +320,16 @@ func printQuestion(questionIndex int) {
 
 	if ignoreLevelChecking && (len(interview.Topics[selectedTopic]) > 0) {
 		fmt.Println(interview.Topics[selectedTopic][questionIndex])
-	} else {
-		currentLevel := levels[levelIndex]
-		currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
-		index := individualLevelIndexes[int(currentLevel)-1]
-		// fmt.Printf("[%s], index: %d\n", currentLevelQuestions, index)
-		// TODO: There is a bug here ...
-		/*
-
-		 */
-		fmt.Println(currentLevelQuestions[index])
+		return
 	}
+	currentLevel := levels[levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
+	if len(currentLevelQuestions) == 0 {
+		printWithColorln("There are no questions for this level.", yellow)
+		return
+	}
+	index := individualLevelIndexes[int(currentLevel)-1]
+	fmt.Println(currentLevelQuestions[index])
 }
 
 func viewQuestions() {

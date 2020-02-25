@@ -68,3 +68,24 @@ func TestEqualTopics(t *testing.T) {
 		}
 	}
 }
+
+func TestEqualLineNumbers(t *testing.T) {
+	type test struct {
+		a      []int
+		b      []int
+		result bool
+	}
+
+	tests := []test{
+		{a: []int{2, 3}, b: []int{3, 4}, result: false},
+		{a: []int{2, 3}, b: []int{2, 3}, result: true},
+		{a: []int{2, 3}, b: []int{2, 3, 4}, result: false},
+	}
+
+	for _, tt := range tests {
+		got := EqualLineNumbers(tt.a, tt.b)
+		if got != tt.result {
+			t.Errorf("got=[%t], should be [%t]", got, tt.result)
+		}
+	}
+}

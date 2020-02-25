@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
 	"os"
@@ -500,4 +501,53 @@ func Test_retrieveTopicsFromInterview(t *testing.T) {
 		}
 	}
 
+}
+
+func Test_hasErrors(t *testing.T) {
+	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
+	randDirName := stringWithCharset(5, charset, seededRand)
+	tmpPath := filepath.Join("/tmp", randDirName, "topics", "linux")
+
+	err := os.MkdirAll(tmpPath, os.ModePerm)
+	if err != nil {
+		t.Errorf("Error creating directory (%s)", err)
+	}
+	questionFileNoErrors, err := os.Create(filepath.Join(tmpPath, "questions"))
+	if err != nil {
+		t.Errorf("Error creating questions file (%s)", err)
+	}
+	defer questionFileNoErrors.Close()
+
+	w := bufio.NewWriter(questionFileNoErrors)
+	fmt.Fprintln(w, "3@Hello@4")
+	fmt.Fprintln(w, "5@Hello")
+	fmt.Fprintln(w, "4@Hello")
+	w.Flush()
+
+	type test struct {
+		wantHas         bool
+		wantLineNumbers []int
+	}
+
+	tests := []test{
+		{wantHas: true, wantLineNumbers: []int{2, 3}},
+	}
+
+	for _, tt := range tests {
+		has, lineNumbers := hasErrors(filepath.Join(tmpPath, "questions"))
+		if has != tt.wantHas {
+			t.Errorf("got=[%t], want=[%t]", has, tt.wantHas)
+		}
+		if !EqualLineNumbers(lineNumbers, tt.wantLineNumbers) {
+			t.Errorf("got=[%s], want=[%s]",
+				strings.Trim(strings.Replace(fmt.Sprint(lineNumbers), " ", ",", -1), "[]"),
+				strings.Trim(strings.Replace(fmt.Sprint(tt.wantLineNumbers), " ", ",", -1), "[]"),
+			)
+		}
+	}
+
+	err = os.RemoveAll(tmpPath)
+	if err != nil {
+		t.Errorf("unexpedted error: [%s]", err)
+	}
 }
