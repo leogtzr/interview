@@ -11,6 +11,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/muesli/termenv"
 )
 
 func Test_sanitizeUserInput(t *testing.T) {
@@ -317,9 +319,13 @@ func Test_extractNameFromInterviewHeaderRecord(t *testing.T) {
 }
 
 func Test_setLevel(t *testing.T) {
+
+	colorProfile := termenv.ColorProfile()
+
 	type test struct {
-		level Level
-		want  int
+		level  Level
+		config Config
+		want   int
 	}
 
 	lvls := [3]Level{
@@ -327,16 +333,15 @@ func Test_setLevel(t *testing.T) {
 	}
 
 	tests := []test{
-		{level: AssociateOrProgrammer, want: 0},
-		{level: ProgrammerAnalyst, want: 1},
-		{level: SrProgrammer, want: 2},
+		{level: AssociateOrProgrammer, config: Config{levelIndex: -1, colorProfile: colorProfile, levels: lvls}, want: 0},
+		{level: ProgrammerAnalyst, config: Config{levelIndex: -1, colorProfile: colorProfile, levels: lvls}, want: 1},
+		{level: SrProgrammer, config: Config{levelIndex: -1, colorProfile: colorProfile, levels: lvls}, want: 2},
 	}
 
 	for _, tt := range tests {
-		idx := -1
-		setLevel(tt.level, &idx, lvls)
-		if idx != tt.want {
-			t.Errorf("got=[%d], want=[%d]", idx, tt.want)
+		setLevel(tt.level, &tt.config)
+		if tt.config.levelIndex != tt.want {
+			t.Errorf("got=[%d], want=[%d]", tt.config.levelIndex, tt.want)
 		}
 	}
 
@@ -410,8 +415,12 @@ func Test_setAnswerAsNeutral(t *testing.T) {
 		Question{ID: 4, Answer: NotAnsweredYet},
 	}
 
-	for idx := range qs {
-		setAnswerAsNeutral(&qs, idx)
+	colorProfile := termenv.ColorProfile()
+	config := Config{colorProfile: colorProfile}
+
+	for i := 0; i < len(qs); i++ {
+		setAnswerAsNeutral(&qs, &config)
+		config.questionIndex++
 	}
 
 	for _, q := range qs {
@@ -429,8 +438,12 @@ func Test_setAnswerAsOK(t *testing.T) {
 		Question{ID: 4, Answer: NotAnsweredYet},
 	}
 
-	for idx := range qs {
-		setAnswerAsOK(&qs, idx)
+	colorProfile := termenv.ColorProfile()
+	config := Config{colorProfile: colorProfile}
+
+	for i := 0; i < len(qs); i++ {
+		setAnswerAsOK(&qs, &config)
+		config.questionIndex++
 	}
 
 	for _, q := range qs {
@@ -448,8 +461,12 @@ func Test_setAnswerAsWrong(t *testing.T) {
 		Question{ID: 4, Answer: NotAnsweredYet},
 	}
 
-	for idx := range qs {
-		setAnswerAsWrong(&qs, idx)
+	colorProfile := termenv.ColorProfile()
+	config := Config{colorProfile: colorProfile}
+
+	for i := 0; i < len(qs); i++ {
+		setAnswerAsWrong(&qs, &config)
+		config.questionIndex++
 	}
 
 	for _, q := range qs {
@@ -533,8 +550,10 @@ func Test_hasErrors(t *testing.T) {
 		{wantHas: true, wantLineNumbers: []int{2, 3}},
 	}
 
+	config := Config{rgxQuestions: *regexp.MustCompile("^\\d+@.+@(\\d+)?$")}
+
 	for _, tt := range tests {
-		has, lineNumbers := hasErrors(filepath.Join(tmpPath, "questions"))
+		has, lineNumbers := hasErrors(filepath.Join(tmpPath, "questions"), &config)
 		if has != tt.wantHas {
 			t.Errorf("got=[%t], want=[%t]", has, tt.wantHas)
 		}

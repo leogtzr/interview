@@ -12,25 +12,6 @@ import (
 	"github.com/muesli/termenv"
 )
 
-var (
-	selectedTopic                = ""
-	ps1                          = "$ "
-	interviewTopicsDir           = ""
-	hasStarted                   = false
-	questionIndex                = 0
-	colorProfile                 = termenv.ColorProfile()
-	rgxQuestions                 = regexp.MustCompile("^\\d+@.+@(\\d+)?$")
-	interview                    = Interview{Topics: make(map[string][]Question)}
-	usingInterviewFile           = false
-	topicQuestionsLevel    Level = AssociateOrProgrammer
-	levelIndex             int   = 0
-	ignoreLevelChecking          = false
-	individualLevelIndexes       = []int{0, 0, 0}
-	levels                       = [3]Level{
-		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
-	}
-)
-
 const (
 	red                               = "#E88388"
 	green                             = "#A8CC8C"
@@ -45,14 +26,29 @@ const (
 
 func main() {
 
-	interviewTopicsDir = os.Getenv("INTERVIEW_DIR")
-	if interviewTopicsDir == "" {
+	config := Config{}
+	config.interviewTopicsDir = os.Getenv("INTERVIEW_DIR")
+	if config.interviewTopicsDir == "" {
 		log.Fatal("INTERVIEW_DIR environment variable not defined.")
 	}
+	config.rgxQuestions = *regexp.MustCompile("^\\d+@.+@(\\d+)?$")
+	config.selectedTopic = ""
+	config.ps1 = "$ "
+	config.colorProfile = termenv.ColorProfile()
+	config.interview = Interview{Topics: make(map[string][]Question)}
+	config.topicQuestionsLevel = AssociateOrProgrammer
+	config.levelIndex = 0
+	config.ignoreLevelChecking = false
+	config.individualLevelIndexes = []int{0, 0, 0}
+	config.usingInterviewFile = false
+	config.levels = [3]Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
+	}
+
 	userInput := bufio.NewReader(os.Stdin)
 
 	for {
-		fmt.Print(ps1String(ps1, selectedTopic, interview.Interviewee))
+		fmt.Print(ps1String(config.ps1, config.selectedTopic, config.interview.Interviewee))
 		text, _ := userInput.ReadString('\n')
 		text = strings.TrimSpace(text)
 		if len(text) == 0 {
@@ -65,113 +61,113 @@ func main() {
 			fmt.Println("\tBye ... ")
 			os.Exit(0)
 		case exitInterviewFileCmd:
-			printWithColorln("Exiting from interview file ... ", gray)
-			resetStatus()
+			printWithColorln("Exiting from interview file ... ", gray, &config)
+			resetStatus(&config)
 			break
 		case topicsCmd:
-			if usingInterviewFile {
-				listTopicsFromInterviewFile(&interview.Topics)
+			if config.usingInterviewFile {
+				listTopicsFromInterviewFile(&config.interview.Topics, &config)
 				break
 			}
-			listTopics(interviewTopicsDir)
+			listTopics(config.interviewTopicsDir)
 		case helpCmd:
 			printHelp()
 		case clearScreenCmd:
 			clearScreen()
 		case pwdCmd:
-			fmt.Println(termenv.String(selectedTopic).Bold())
+			fmt.Println(termenv.String(config.selectedTopic).Bold())
 		case useCmd:
-			if usingInterviewFile {
-				setTopicFrom(options, &interview.Topics)
+			if config.usingInterviewFile {
+				setTopicFrom(options, &config.interview.Topics, &config)
 				break
 			}
-			setTopicFromFileSystem(options)
+			setTopicFromFileSystem(options, &config)
 		case startCmd:
-			if hasStarted {
-				printWithColorln("Interview has already started.", yellow)
+			if config.hasStarted {
+				printWithColorln("Interview has already started.", yellow, &config)
 				break
 			}
 			fmt.Printf("Interviewee name: ")
 			if name, ok := readIntervieweeName(os.Stdin); !ok {
 				break
 			} else {
-				interview.Interviewee = name
-				interview.Date = time.Now()
+				config.interview.Interviewee = name
+				config.interview.Date = time.Now()
 			}
-			hasStarted = true
-			questionIndex = 0
-			printQuestion(questionIndex)
+			config.hasStarted = true
+			config.questionIndex = 0
+			printQuestion(config.questionIndex, &config)
 		case printCmd:
-			printQuestion(questionIndex)
+			printQuestion(config.questionIndex, &config)
 		case nextQuestionCmd:
-			gotoNextQuestion()
-			printQuestion(questionIndex)
+			gotoNextQuestion(&config)
+			printQuestion(config.questionIndex, &config)
 		case previousQuestionCmd:
-			gotoPreviousQuestion()
-			printQuestion(questionIndex)
+			gotoPreviousQuestion(&config)
+			printQuestion(config.questionIndex, &config)
 		case viewCmd:
-			if !ignoreLevelChecking {
-				viewQuestionsByLevel()
+			if !config.ignoreLevelChecking {
+				viewQuestionsByLevel(&config)
 			} else {
-				viewQuestions()
+				viewQuestions(&config)
 			}
 		case rightAnswerCmd:
-			if !hasStarted {
-				printWithColorln("Interview has not yet started.", yellow)
+			if !config.hasStarted {
+				printWithColorln("Interview has not yet started.", yellow, &config)
 				break
 			}
-			if ignoreLevelChecking {
-				qs := interview.Topics[selectedTopic]
-				setAnswerAsOK(&qs, questionIndex)
+			if config.ignoreLevelChecking {
+				qs := config.interview.Topics[config.selectedTopic]
+				setAnswerAsOK(&qs, &config)
 			} else {
-				setAnswerAsOkWithLevel()
+				setAnswerAsOkWithLevel(&config)
 			}
 
 		case wrongAnswerCmd:
-			if !hasStarted {
-				printWithColorln("Interview has not yet started.", yellow)
+			if !config.hasStarted {
+				printWithColorln("Interview has not yet started.", yellow, &config)
 				break
 			}
 
-			if ignoreLevelChecking {
-				qs := interview.Topics[selectedTopic]
-				setAnswerAsWrong(&qs, questionIndex)
+			if config.ignoreLevelChecking {
+				qs := config.interview.Topics[config.selectedTopic]
+				setAnswerAsWrong(&qs, &config)
 			} else {
-				setAnswerAsWrongWithLevel()
+				setAnswerAsWrongWithLevel(&config)
 			}
 
 		case mehAnswerCmd:
-			if !hasStarted {
-				printWithColorln("Interview has not yet started.", yellow)
+			if !config.hasStarted {
+				printWithColorln("Interview has not yet started.", yellow, &config)
 				break
 			}
 
-			if ignoreLevelChecking {
-				qs := interview.Topics[selectedTopic]
-				setAnswerAsNeutral(&qs, questionIndex)
+			if config.ignoreLevelChecking {
+				qs := config.interview.Topics[config.selectedTopic]
+				setAnswerAsNeutral(&qs, &config)
 			} else {
-				setAnswerAsNeutralWithLevel()
+				setAnswerAsNeutralWithLevel(&config)
 			}
 
 		case finishCmd:
-			err := saveInterview()
+			err := saveInterview(&config)
 			if err != nil {
 				panic(err)
 			}
-			printWithColorln(fmt.Sprintf("Interview for '%s' has been saved.\n\n\tBye ...", interview.Interviewee), green)
+			printWithColorln(fmt.Sprintf("Interview for '%s' has been saved.\n\n\tBye ...", config.interview.Interviewee), green, &config)
 			os.Exit(1)
 
 		case loadCmd:
-			interviewFromFile, err := loadInterview(options)
+			interviewFromFile, err := loadInterview(options, &config)
 			if err != nil {
-				printWithColorln(err.Error(), red)
+				printWithColorln(err.Error(), red, &config)
 				break
 			}
 
-			usingInterviewFile = true
-			printWithColorln("You will now be navigating through an interview file.", green)
+			config.usingInterviewFile = true
+			printWithColorln("You will now be navigating through an interview file.", green, &config)
 
-			interview = interviewFromFile
+			config.interview = interviewFromFile
 
 			for topic, questions := range interviewFromFile.Topics {
 				fmt.Printf("[%s]\n", topic)
@@ -181,23 +177,23 @@ func main() {
 			}
 
 		case increaseLevelCmd:
-			increaseLevel(&levelIndex, levels)
+			increaseLevel(&config)
 		case decreaseLevelCmd:
-			decreaseLevel(&levelIndex, levels)
+			decreaseLevel(&config)
 		case ignoreLevelCmd:
-			toggleLevelChecking(&ignoreLevelChecking)
+			toggleLevelChecking(&config)
 		case showLevelCmd:
-			showLevel()
+			showLevel(&config)
 		case showStatsCmd:
-			showStats()
+			showStats(&config)
 		case setAssociateProgrammerLevelCmd:
-			setLevel(AssociateOrProgrammer, &levelIndex, levels)
+			setLevel(AssociateOrProgrammer, &config)
 		case setProgrammerAnalystLevelCmd:
-			setLevel(ProgrammerAnalyst, &levelIndex, levels)
+			setLevel(ProgrammerAnalyst, &config)
 		case setSRProgrammerLevelCmd:
-			setLevel(SrProgrammer, &levelIndex, levels)
+			setLevel(SrProgrammer, &config)
 		case validateQuestionsCmd:
-			validateQuestions(interviewTopicsDir)
+			validateQuestions(&config)
 		}
 	}
 

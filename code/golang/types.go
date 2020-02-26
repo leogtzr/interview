@@ -1,6 +1,29 @@
 package main
 
-import "time"
+import (
+	"regexp"
+	"time"
+
+	"github.com/muesli/termenv"
+)
+
+// Config ...
+type Config struct {
+	selectedTopic          string
+	ps1                    string
+	interviewTopicsDir     string
+	hasStarted             bool
+	questionIndex          int
+	usingInterviewFile     bool
+	topicQuestionsLevel    Level
+	levelIndex             int
+	ignoreLevelChecking    bool
+	individualLevelIndexes []int
+	levels                 [3]Level
+	colorProfile           termenv.Profile
+	rgxQuestions           regexp.Regexp
+	interview              Interview
+}
 
 // Command ...
 type Command int

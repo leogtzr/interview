@@ -2,6 +2,8 @@ package main
 
 import (
 	"testing"
+
+	"github.com/muesli/termenv"
 )
 
 func Test_getQuestionsFromLevel(t *testing.T) {
@@ -64,8 +66,11 @@ func Test_getQuestionsFromLevel(t *testing.T) {
 }
 
 func Test_increaseLevel(t *testing.T) {
+
+	colorProfile := termenv.ColorProfile()
+
 	type test struct {
-		lvlIndex           int
+		config             Config
 		lvls               [3]Level
 		incraseTimes, want int
 	}
@@ -75,23 +80,26 @@ func Test_increaseLevel(t *testing.T) {
 	}
 
 	tests := []test{
-		{lvlIndex: 0, lvls: levels, incraseTimes: 1, want: 1},
-		{lvlIndex: 0, lvls: levels, incraseTimes: 10, want: len(levels) - 1},
+		{config: Config{colorProfile: colorProfile, levelIndex: 0, levels: levels}, incraseTimes: 1, want: 1},
+		{config: Config{colorProfile: colorProfile, levelIndex: 0, levels: levels}, incraseTimes: 10, want: len(levels) - 1},
 	}
 
 	for _, tt := range tests {
 		for i := 0; i < tt.incraseTimes; i++ {
-			increaseLevel(&tt.lvlIndex, tt.lvls)
+			increaseLevel(&tt.config)
 		}
-		if tt.lvlIndex != tt.want {
-			t.Errorf("want=[%d] after increasing %d times, current index is: %d", tt.want, tt.incraseTimes, tt.lvlIndex)
+		if tt.config.levelIndex != tt.want {
+			t.Errorf("want=[%d] after increasing %d times, current index is: %d", tt.want, tt.incraseTimes, tt.config.levelIndex)
 		}
 	}
 }
 
 func Test_decreaseLevel(t *testing.T) {
+
+	colorProfile := termenv.ColorProfile()
+
 	type test struct {
-		lvlIndex            int
+		config              Config
 		lvls                [3]Level
 		decreaseTimes, want int
 	}
@@ -101,37 +109,37 @@ func Test_decreaseLevel(t *testing.T) {
 	}
 
 	tests := []test{
-		{lvlIndex: len(interviewLevels), lvls: interviewLevels, decreaseTimes: 2, want: 1},
-		{lvlIndex: len(interviewLevels), lvls: interviewLevels, decreaseTimes: 1, want: len(interviewLevels) - 1},
-		{lvlIndex: len(interviewLevels), lvls: interviewLevels, decreaseTimes: 2, want: len(interviewLevels) - 2},
-		{lvlIndex: 0, lvls: levels, decreaseTimes: 10, want: 0},
+		{config: Config{colorProfile: colorProfile, levelIndex: len(interviewLevels), levels: interviewLevels}, decreaseTimes: 2, want: 1},
+		{config: Config{colorProfile: colorProfile, levelIndex: len(interviewLevels), levels: interviewLevels}, decreaseTimes: 1, want: len(interviewLevels) - 1},
+		{config: Config{colorProfile: colorProfile, levelIndex: len(interviewLevels), levels: interviewLevels}, decreaseTimes: 2, want: len(interviewLevels) - 2},
+		{config: Config{colorProfile: colorProfile, levelIndex: 0, levels: interviewLevels}, decreaseTimes: 10, want: 0},
 	}
 
 	for _, tt := range tests {
 		for i := 0; i < tt.decreaseTimes; i++ {
-			decreaseLevel(&tt.lvlIndex, tt.lvls)
+			decreaseLevel(&tt.config)
 		}
-		if tt.lvlIndex != tt.want {
-			t.Errorf("want=[%d] after decreasing %d times, current index is: %d", tt.want, tt.decreaseTimes, tt.lvlIndex)
+		if tt.config.levelIndex != tt.want {
+			t.Errorf("want=[%d] after decreasing %d times, current index is: %d", tt.want, tt.decreaseTimes, tt.config.levelIndex)
 		}
 	}
 }
 
 func Test_toggleLevelChecking(t *testing.T) {
 	type test struct {
-		lvlCheck bool
-		want     bool
+		config Config
+		want   bool
 	}
 
 	tests := []test{
-		{lvlCheck: false, want: true},
-		{lvlCheck: true, want: false},
+		{config: Config{ignoreLevelChecking: false}, want: true},
+		{config: Config{ignoreLevelChecking: true}, want: false},
 	}
 
 	for _, tt := range tests {
-		toggleLevelChecking(&tt.lvlCheck)
-		if tt.lvlCheck != tt.want {
-			t.Errorf("the check should be %t after change. Currently is: %t", tt.want, tt.lvlCheck)
+		toggleLevelChecking(&tt.config)
+		if tt.config.ignoreLevelChecking != tt.want {
+			t.Errorf("the check should be %t after change. Currently is: %t", tt.want, tt.config.ignoreLevelChecking)
 		}
 	}
 }

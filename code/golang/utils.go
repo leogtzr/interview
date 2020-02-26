@@ -138,9 +138,9 @@ func retrieveTopicsFromInterview(topics *map[string][]Question) []string {
 	return tps
 }
 
-func listTopicsFromInterviewFile(topics *map[string][]Question) {
-	if usingInterviewFile {
-		topics := retrieveTopicsFromInterview(&interview.Topics)
+func listTopicsFromInterviewFile(topics *map[string][]Question, config *Config) {
+	if config.usingInterviewFile {
+		topics := retrieveTopicsFromInterview(&config.interview.Topics)
 		for _, topic := range topics {
 			fmt.Println(termenv.String(topic).Underline().Bold())
 		}
@@ -227,38 +227,38 @@ func extractTopicName(options []string) string {
 	return topicName
 }
 
-func setTopicFromFileSystem(options []string) {
+func setTopicFromFileSystem(options []string, config *Config) {
 	topicName := extractTopicName(options)
-	topics := retrieveTopicsFromFileSystem(interviewTopicsDir)
+	topics := retrieveTopicsFromFileSystem(config.interviewTopicsDir)
 
 	if topicExist(topicName, &topics) &&
-		exists(filepath.Join(interviewTopicsDir, "topics", topicName, "questions")) {
-		selectedTopic = topicName
-		questionsPerTopic := loadQuestionsFromTopic(selectedTopic, interviewTopicsDir)
-		interview.Topics[selectedTopic] = questionsPerTopic
+		exists(filepath.Join(config.interviewTopicsDir, "topics", topicName, "questions")) {
+		config.selectedTopic = topicName
+		questionsPerTopic := loadQuestionsFromTopic(config.selectedTopic, config.interviewTopicsDir, config)
+		config.interview.Topics[config.selectedTopic] = questionsPerTopic
 	} else {
 		fmt.Println(
-			termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color(red)))
+			termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(config.colorProfile.Color(red)))
 	}
 }
 
-func setTopicFrom(options []string, topicsFromInterviewFile *map[string][]Question) {
+func setTopicFrom(options []string, topicsFromInterviewFile *map[string][]Question, config *Config) {
 	topicName := extractTopicName(options)
 	topics := retrieveTopicsFromInterview(topicsFromInterviewFile)
 	if topicExist(topicName, &topics) {
-		selectedTopic = topicName
+		config.selectedTopic = topicName
 		return
 	}
 
 	fmt.Println(
-		termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(colorProfile.Color(red)))
+		termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(config.colorProfile.Color(red)))
 }
 
 func shouldIgnoreLine(line string) bool {
 	return strings.HasPrefix(line, "#") || len(strings.TrimSpace(line)) == 0
 }
 
-func loadQuestionsFromTopic(topic, interviewsDir string) []Question {
+func loadQuestionsFromTopic(topic, interviewsDir string, config *Config) []Question {
 	// Clear previous questions ...
 	questionsPerTopic := make([]Question, 0)
 
@@ -276,7 +276,7 @@ func loadQuestionsFromTopic(topic, interviewsDir string) []Question {
 		if shouldIgnoreLine(questionText) {
 			continue
 		}
-		if isQuestionFormatValid(questionText, rgxQuestions) {
+		if isQuestionFormatValid(questionText, &config.rgxQuestions) {
 			question := toQuestion(questionText)
 			questionsPerTopic = append(questionsPerTopic, question)
 		}
@@ -313,42 +313,42 @@ func (q Question) String() string {
 	return fmt.Sprintf("Q%d: %s [%s] [%s]", q.ID, q.Q, q.Answer, q.Level)
 }
 
-func printQuestion(questionIndex int) {
-	if !hasStarted {
+func printQuestion(questionIndex int, config *Config) {
+	if !config.hasStarted {
 		return
 	}
 
-	if ignoreLevelChecking && (len(interview.Topics[selectedTopic]) > 0) {
-		fmt.Println(interview.Topics[selectedTopic][questionIndex])
+	if config.ignoreLevelChecking && (len(config.interview.Topics[config.selectedTopic]) > 0) {
+		fmt.Println(config.interview.Topics[config.selectedTopic][config.questionIndex])
 		return
 	}
-	currentLevel := levels[levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
+	currentLevel := config.levels[config.levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
 	if len(currentLevelQuestions) == 0 {
-		printWithColorln("There are no questions for this level.", yellow)
+		printWithColorln("There are no questions for this level.", yellow, config)
 		return
 	}
-	index := individualLevelIndexes[int(currentLevel)-1]
+	index := config.individualLevelIndexes[int(currentLevel)-1]
 	fmt.Println(currentLevelQuestions[index])
 }
 
-func viewQuestions() {
-	if len(interview.Topics[selectedTopic]) < 1 {
-		printWithColorln("You need to select a topic first.", red)
+func viewQuestions(config *Config) {
+	if len(config.interview.Topics[config.selectedTopic]) < 1 {
+		printWithColorln("You need to select a topic first.", red, config)
 		return
 	}
-	for _, q := range interview.Topics[selectedTopic] {
+	for _, q := range config.interview.Topics[config.selectedTopic] {
 		fmt.Println(q)
 	}
 }
 
-func viewQuestionsByLevel() {
-	if len(selectedTopic) == 0 {
-		printWithColorln("You need to select a topic first.", red)
+func viewQuestionsByLevel(config *Config) {
+	if len(config.selectedTopic) == 0 {
+		printWithColorln("You need to select a topic first.", red, config)
 		return
 	}
-	currentLevel := levels[levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
+	currentLevel := config.levels[config.levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
 	for _, q := range currentLevelQuestions {
 		fmt.Println(q)
 	}
@@ -364,24 +364,24 @@ func readIntervieweeName(stdin io.Reader) (string, bool) {
 	return strings.TrimSpace(text), true
 }
 
-func printWithColorln(msg, colorCode string) {
-	fmt.Println(termenv.String(msg).Foreground(colorProfile.Color(colorCode)))
+func printWithColorln(msg, colorCode string, config *Config) {
+	fmt.Println(termenv.String(msg).Foreground(config.colorProfile.Color(colorCode)))
 }
 
-func printWithColorf(msg, colorCode string, a ...interface{}) {
-	fmt.Printf(termenv.String(msg).Foreground(colorProfile.Color(colorCode)).String(), a...)
+func printWithColorf(config *Config, msg, colorCode string, a ...interface{}) {
+	fmt.Printf(termenv.String(msg).Foreground(config.colorProfile.Color(colorCode)).String(), a...)
 }
 
-func saveInterview() error {
-	intervieweeName := interview.Interviewee
-	savedDir := filepath.Join(interviewTopicsDir, "saved")
+func saveInterview(config *Config) error {
+	intervieweeName := config.interview.Interviewee
+	savedDir := filepath.Join(config.interviewTopicsDir, "saved")
 	if !dirExists(savedDir) {
 		return fmt.Errorf("[%s] does not exist", savedDir)
 	}
 
 	savedInterviewName := filepath.Join(savedDir, intervieweeName)
 	if dirExists(savedInterviewName) {
-		printWithColorln(fmt.Sprintf("[%s] already exists, we will generate another name.", savedInterviewName), red)
+		printWithColorln(fmt.Sprintf("[%s] already exists, we will generate another name.", savedInterviewName), red, config)
 		seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
 		randDirName := stringWithCharset(2, charset, seededRand)
 		savedInterviewName = fmt.Sprintf("%s-%s", savedInterviewName, randDirName)
@@ -390,7 +390,7 @@ func saveInterview() error {
 	if err != nil {
 		return err
 	}
-	return saveData(filepath.Join(savedInterviewName, "interview"), interview)
+	return saveData(filepath.Join(savedInterviewName, "interview"), config.interview)
 }
 
 func saveData(savedInterviewNamePath string, interview Interview) error {
@@ -414,9 +414,9 @@ func saveData(savedInterviewNamePath string, interview Interview) error {
 	return w.Flush()
 }
 
-func loadInterview(options []string) (Interview, error) {
+func loadInterview(options []string, config *Config) (Interview, error) {
 	interviewName := strings.Join(options, " ")
-	interviewFile := filepath.Join(interviewTopicsDir, "saved", interviewName, "interview")
+	interviewFile := filepath.Join(config.interviewTopicsDir, "saved", interviewName, "interview")
 	if !dirExists(interviewFile) {
 		return Interview{}, fmt.Errorf("'%s' does not exist", interviewFile)
 	}
@@ -486,64 +486,64 @@ func extractQuestionInfo(questionFileRecord string) (string, Question) {
 	return topic, q
 }
 
-func resetStatus() {
-	interview = Interview{Topics: make(map[string][]Question)}
-	usingInterviewFile = false
-	hasStarted = false
-	questionIndex = 0
-	selectedTopic = ""
-	ps1 = "$ "
+func resetStatus(config *Config) {
+	config.interview = Interview{Topics: make(map[string][]Question)}
+	config.usingInterviewFile = false
+	config.hasStarted = false
+	config.questionIndex = 0
+	config.selectedTopic = ""
+	config.ps1 = "$ "
 }
 
-func showLevel() {
-	currentLevel := levels[levelIndex]
-	printWithColorln(currentLevel.String(), cyan)
+func showLevel(config *Config) {
+	currentLevel := config.levels[config.levelIndex]
+	printWithColorln(currentLevel.String(), cyan, config)
 }
 
-func setAnswerAsNeutral(questions *[]Question, idx int) {
-	(*questions)[idx].Answer = Neutral
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
+func setAnswerAsNeutral(questions *[]Question, config *Config) {
+	(*questions)[config.questionIndex].Answer = Neutral
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta, config)
 }
 
-func setAnswerAsNeutralWithLevel() {
-	currentLevel := levels[levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
-	index := individualLevelIndexes[int(currentLevel)-1]
+func setAnswerAsNeutralWithLevel(config *Config) {
+	currentLevel := config.levels[config.levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
+	index := config.individualLevelIndexes[int(currentLevel)-1]
 	id := currentLevelQuestions[index].ID
-	qs := interview.Topics[selectedTopic]
+	qs := config.interview.Topics[config.selectedTopic]
 	markQuestionAs(id, Neutral, &qs)
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta)
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta, config)
 
 }
 
-func setAnswerAsOK(questions *[]Question, idx int) {
-	(*questions)[idx].Answer = OK
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green)
+func setAnswerAsOK(questions *[]Question, config *Config) {
+	(*questions)[config.questionIndex].Answer = OK
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green, config)
 }
 
-func setAnswerAsOkWithLevel() {
-	currentLevel := levels[levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
-	index := individualLevelIndexes[int(currentLevel)-1]
+func setAnswerAsOkWithLevel(config *Config) {
+	currentLevel := config.levels[config.levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
+	index := config.individualLevelIndexes[int(currentLevel)-1]
 	id := currentLevelQuestions[index].ID
-	qs := interview.Topics[selectedTopic]
+	qs := config.interview.Topics[config.selectedTopic]
 	markQuestionAs(id, OK, &qs)
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green)
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green, config)
 }
 
-func setAnswerAsWrong(questions *[]Question, idx int) {
-	(*questions)[idx].Answer = Wrong
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red)
+func setAnswerAsWrong(questions *[]Question, config *Config) {
+	(*questions)[config.questionIndex].Answer = Wrong
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red, config)
 }
 
-func setAnswerAsWrongWithLevel() {
-	currentLevel := levels[levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, selectedTopic, &interview.Topics)
-	index := individualLevelIndexes[int(currentLevel)-1]
+func setAnswerAsWrongWithLevel(config *Config) {
+	currentLevel := config.levels[config.levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
+	index := config.individualLevelIndexes[int(currentLevel)-1]
 	id := currentLevelQuestions[index].ID
-	qa := interview.Topics[selectedTopic]
+	qa := config.interview.Topics[config.selectedTopic]
 	markQuestionAs(id, Wrong, &qa)
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red)
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red, config)
 }
 
 func markQuestionAs(id int, ans Answer, qs *[]Question) {
@@ -555,20 +555,20 @@ func markQuestionAs(id int, ans Answer, qs *[]Question) {
 	}
 }
 
-func showStats() {
-	currentLevel := levels[levelIndex]
+func showStats(config *Config) {
+	currentLevel := config.levels[config.levelIndex]
 
-	if len(selectedTopic) == 0 {
+	if len(config.selectedTopic) == 0 {
 		fmt.Printf("Level: ")
-		printWithColorf("%s\n", green, currentLevel)
+		printWithColorf(config, "%s\n", green, currentLevel)
 
 		fmt.Printf("Ignoring level: ")
-		printWithColorf("%t\n", green, ignoreLevelChecking)
+		printWithColorf(config, "%t\n", green, config.ignoreLevelChecking)
 
 		fmt.Printf("Questions in bucket: ")
-		printWithColorf("%t\n", green, len(selectedTopic) != 0)
+		printWithColorf(config, "%t\n", green, len(config.selectedTopic) != 0)
 	} else {
-		counts := countGeneral(&interview.Topics)
+		counts := countGeneral(&config.interview.Topics)
 		notAnsweredCount := counts[NotAnsweredYet]
 		okCount := counts[OK]
 		wrongCount := counts[Wrong]
@@ -576,25 +576,25 @@ func showStats() {
 		total := notAnsweredCount + okCount + wrongCount + neutralCount
 
 		fmt.Printf("Level: ")
-		printWithColorf("%s\n", green, currentLevel)
+		printWithColorf(config, "%s\n", green, currentLevel)
 
 		fmt.Printf("Ignoring level: ")
-		printWithColorf("%t\n", green, ignoreLevelChecking)
+		printWithColorf(config, "%t\n", green, config.ignoreLevelChecking)
 
 		fmt.Printf("Questions in bucket: ")
-		printWithColorf("%t\n", green, len(selectedTopic) != 0)
+		printWithColorf(config, "%t\n", green, len(config.selectedTopic) != 0)
 
 		fmt.Printf("Not Answered: ")
-		printWithColorf("%d (%.2f%%)\n", green, notAnsweredCount, perc(notAnsweredCount, total))
+		printWithColorf(config, "%d (%.2f%%)\n", green, notAnsweredCount, perc(notAnsweredCount, total))
 
 		fmt.Printf("OK: ")
-		printWithColorf("%d (%.2f%%)\n", green, okCount, perc(okCount, total))
+		printWithColorf(config, "%d (%.2f%%)\n", green, okCount, perc(okCount, total))
 
 		fmt.Printf("Wrong: ")
-		printWithColorf("%d (%.2f%%)\n", green, wrongCount, perc(wrongCount, total))
+		printWithColorf(config, "%d (%.2f%%)\n", green, wrongCount, perc(wrongCount, total))
 
 		fmt.Printf("Neutral: ")
-		printWithColorf("%d (%.2f%%)\n", green, neutralCount, perc(neutralCount, total))
+		printWithColorf(config, "%d (%.2f%%)\n", green, neutralCount, perc(neutralCount, total))
 	}
 }
 
@@ -631,15 +631,15 @@ func countGeneral(topics *map[string][]Question) map[Answer]int {
 	return counts
 }
 
-func setLevel(lvl Level, index *int, lvls [3]Level) {
-	*index = int(lvl) - 1
-	currentLevel := lvls[*index]
+func setLevel(lvl Level, config *Config) {
+	config.levelIndex = int(lvl) - 1
+	currentLevel := config.levels[config.levelIndex]
 	fmt.Printf("Current level is: ")
-	printWithColorln(fmt.Sprintf("%s", currentLevel), green)
+	printWithColorln(fmt.Sprintf("%s", currentLevel), green, config)
 }
 
-func validateQuestions(interviewsDir string) {
-	topicsDir := filepath.Join(interviewsDir, "topics")
+func validateQuestions(config *Config) {
+	topicsDir := filepath.Join(config.interviewTopicsDir, "topics")
 
 	if !dirExists(topicsDir) {
 		log.Fatalf("'%s' does not exist", topicsDir)
@@ -653,7 +653,7 @@ func validateQuestions(interviewsDir string) {
 			return nil
 		}
 		questionFile := filepath.Join(topicsDir, path, "questions")
-		if has, lineNumbers := hasErrors(questionFile); has {
+		if has, lineNumbers := hasErrors(questionFile, config); has {
 			fmt.Printf("%s has errors, lines:\n", questionFile)
 			for _, line := range lineNumbers {
 				fmt.Printf("\t%d\n", line)
@@ -666,7 +666,7 @@ func validateQuestions(interviewsDir string) {
 	}
 }
 
-func hasErrors(interviewFilePath string) (bool, []int) {
+func hasErrors(interviewFilePath string, config *Config) (bool, []int) {
 	has := false
 	lineNumbers := []int{}
 	file, err := os.Open(interviewFilePath)
@@ -683,7 +683,7 @@ func hasErrors(interviewFilePath string) (bool, []int) {
 		if shouldIgnoreLine(questionText) {
 			continue
 		}
-		if !isQuestionFormatValid(questionText, rgxQuestions) {
+		if !isQuestionFormatValid(questionText, &config.rgxQuestions) {
 			has = true
 			lineNumbers = append(lineNumbers, questionIndex)
 		}
