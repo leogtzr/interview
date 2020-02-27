@@ -59,6 +59,7 @@ func gotoNextQuestion(config *Config) {
 
 	if !config.hasStarted {
 		fmt.Println("run the start() command first.")
+		return
 	}
 
 	if config.ignoreLevelChecking {

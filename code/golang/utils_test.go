@@ -570,3 +570,41 @@ func Test_hasErrors(t *testing.T) {
 		t.Errorf("unexpedted error: [%s]", err)
 	}
 }
+
+func Test_resetStatus(t *testing.T) {
+	config := Config{}
+	topics := make(map[string][]Question)
+	javaQuestions := []Question{
+		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
+	}
+	topics["java"] = javaQuestions
+
+	config.interview = Interview{Interviewee: "Hello", Date: time.Now(), Topics: topics}
+	config.usingInterviewFile = true
+	config.hasStarted = true
+	config.questionIndex = 23
+	config.selectedTopic = "java"
+	config.ps1 = "hello"
+
+	resetStatus(&config)
+
+	if len(config.interview.Topics) != 0 {
+		t.Error("topics should be empty")
+	}
+	if config.usingInterviewFile {
+		t.Error("flag should been changed")
+	}
+	if config.hasStarted {
+		t.Error("flag should been changed")
+	}
+	if config.questionIndex != 0 {
+		t.Error("questionIndex should be 0 after reset.")
+	}
+	if config.selectedTopic != "" {
+		t.Error("topic should be empty after reset")
+	}
+	if config.ps1 != "$ " {
+		t.Error("ps1 should be '$ ' after reset")
+	}
+}
