@@ -258,7 +258,6 @@ func shouldIgnoreLine(line string) bool {
 	return strings.HasPrefix(line, "#") || len(strings.TrimSpace(line)) == 0
 }
 
-// questionsPerTopic := loadQuestionsFromTopic(config.selectedTopic, config.interviewTopicsDir, config)
 func loadQuestionsFromTopic(config *Config) []Question {
 	// Clear previous questions ...
 	questionsPerTopic := make([]Question, 0)
