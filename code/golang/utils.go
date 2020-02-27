@@ -284,8 +284,14 @@ func loadQuestionsFromTopic(topic, interviewsDir string, config *Config) []Quest
 
 	levelFound := findLevel(&questionsPerTopic, AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer)
 	fmt.Printf("Loaded -> '%d' questions, starting with: %s level.\n", len(questionsPerTopic), levelFound)
-	// TODO: show count stats by level here ...
-	fmt.Println(levelQuestionCounts(&questionsPerTopic))
+
+	levelQCounts := levelQuestionCounts(&questionsPerTopic)
+	fmt.Printf("Associate Programmer = ")
+	printWithColorf(config, "%d\n", green, levelQCounts[AssociateOrProgrammer])
+	fmt.Printf("Programmer Analyst = ")
+	printWithColorf(config, "%d\n", green, levelQCounts[ProgrammerAnalyst])
+	fmt.Printf("Sr. Programmer  = ")
+	printWithColorf(config, "%d\n", green, levelQCounts[SrProgrammer])
 
 	return questionsPerTopic
 }
