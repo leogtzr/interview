@@ -11,7 +11,8 @@ install:
 
 clean:
 	go clean
-
+	rm --force interview
+	rm --force cp.out
 test:
 	go test
 
@@ -21,4 +22,3 @@ check:
 cover:
 	go test -coverprofile cp.out
 	go tool cover -html=cp.out
-	

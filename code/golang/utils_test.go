@@ -608,3 +608,48 @@ func Test_resetStatus(t *testing.T) {
 		t.Error("ps1 should be '$ ' after reset")
 	}
 }
+
+func Test_levelQuestionCounts(t *testing.T) {
+	type test struct {
+		qs   []Question
+		want map[Level]int
+	}
+
+	tests := []test{
+		{qs: []Question{
+			Question{Level: AssociateOrProgrammer},
+			Question{Level: AssociateOrProgrammer},
+			Question{Level: AssociateOrProgrammer},
+			Question{Level: SrProgrammer},
+		}, want: map[Level]int{
+			AssociateOrProgrammer: 3,
+			SrProgrammer:          1,
+			ProgrammerAnalyst:     0,
+		}},
+
+		{qs: []Question{
+			Question{Level: AssociateOrProgrammer},
+			Question{Level: AssociateOrProgrammer},
+			Question{Level: AssociateOrProgrammer},
+		}, want: map[Level]int{
+			AssociateOrProgrammer: 3,
+			SrProgrammer:          0,
+			ProgrammerAnalyst:     0,
+		}},
+
+		{qs: []Question{}, want: map[Level]int{}},
+	}
+
+	lvls := []Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
+	}
+
+	for _, tt := range tests {
+		got := levelQuestionCounts(&tt.qs)
+		for _, lvl := range lvls {
+			if got[lvl] != tt.want[lvl] {
+				t.Errorf("got=[%d], want=[%d] for %s", got[lvl], tt.want[lvl], lvl)
+			}
+		}
+	}
+}

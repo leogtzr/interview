@@ -284,8 +284,18 @@ func loadQuestionsFromTopic(topic, interviewsDir string, config *Config) []Quest
 
 	levelFound := findLevel(&questionsPerTopic, AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer)
 	fmt.Printf("Loaded -> '%d' questions, starting with: %s level.\n", len(questionsPerTopic), levelFound)
+	// TODO: show count stats by level here ...
+	fmt.Println(levelQuestionCounts(&questionsPerTopic))
 
 	return questionsPerTopic
+}
+
+func levelQuestionCounts(qs *[]Question) map[Level]int {
+	counts := make(map[Level]int)
+	for _, q := range *qs {
+		counts[q.Level]++
+	}
+	return counts
 }
 
 func shortIntervieweeName(name string, min int) string {
