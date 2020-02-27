@@ -653,3 +653,23 @@ func Test_levelQuestionCounts(t *testing.T) {
 		}
 	}
 }
+
+func Test_shouldIgnoreLine(t *testing.T) {
+	type test struct {
+		line string
+		want bool
+	}
+
+	tests := []test{
+		{line: "hola", want: false},
+		{line: "# comment", want: true},
+		{line: "", want: true},
+	}
+
+	for _, tt := range tests {
+		got := shouldIgnoreLine(tt.line)
+		if got != tt.want {
+			t.Errorf("got=[%t], want=[%t]", got, tt.want)
+		}
+	}
+}

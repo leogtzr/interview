@@ -234,7 +234,7 @@ func setTopicFromFileSystem(options []string, config *Config) {
 	if topicExist(topicName, &topics) &&
 		exists(filepath.Join(config.interviewTopicsDir, "topics", topicName, "questions")) {
 		config.selectedTopic = topicName
-		questionsPerTopic := loadQuestionsFromTopic(config.selectedTopic, config.interviewTopicsDir, config)
+		questionsPerTopic := loadQuestionsFromTopic(config)
 		config.interview.Topics[config.selectedTopic] = questionsPerTopic
 	} else {
 		fmt.Println(
@@ -258,11 +258,12 @@ func shouldIgnoreLine(line string) bool {
 	return strings.HasPrefix(line, "#") || len(strings.TrimSpace(line)) == 0
 }
 
-func loadQuestionsFromTopic(topic, interviewsDir string, config *Config) []Question {
+// questionsPerTopic := loadQuestionsFromTopic(config.selectedTopic, config.interviewTopicsDir, config)
+func loadQuestionsFromTopic(config *Config) []Question {
 	// Clear previous questions ...
 	questionsPerTopic := make([]Question, 0)
 
-	questionFilePath := filepath.Join(interviewsDir, "topics", topic, "questions")
+	questionFilePath := filepath.Join(config.interviewTopicsDir, "topics", config.selectedTopic, "questions")
 
 	file, err := os.Open(questionFilePath)
 	if err != nil {
