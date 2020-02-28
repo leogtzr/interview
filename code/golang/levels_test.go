@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/muesli/termenv"
 )
@@ -168,19 +170,103 @@ func Test_findLevel(t *testing.T) {
 	}
 }
 
+// not feeling very proud about this test but ... meh
 func Test_gotoNextQuestion(t *testing.T) {
-	type args struct {
-		config *Config
+	topics := make(map[string][]Question)
+	linuxQuestions := []Question{
+		Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 3, Q: "lx3", Level: AssociateOrProgrammer, Answer: OK},
+		Question{ID: 4, Q: "lx4", Level: SrProgrammer, Answer: OK},
 	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
+
+	javaQuestions := []Question{
+		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotoNextQuestion(tt.args.config)
-		})
+
+	randomQuestions := []Question{}
+
+	topics["linux"] = linuxQuestions
+	topics["java"] = javaQuestions
+	topics["random"] = randomQuestions
+
+	config := Config{}
+	config.levels = [3]Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
 	}
+	config.interview = Interview{Interviewee: "Hello", Date: time.Now(), Topics: topics}
+	config.selectedTopic = "linux"
+	config.hasStarted = true
+	config.questionIndex = 0
+	config.individualLevelIndexes = []int{0, 0, 0}
+
+	gotoNextQuestion(&config)
+	gotoNextQuestion(&config)
+
+	if config.individualLevelIndexes[int(AssociateOrProgrammer)-1] != 2 {
+		t.Errorf("got=[%d], want=[2]", config.individualLevelIndexes[int(AssociateOrProgrammer)])
+	}
+
+	config.individualLevelIndexes[0] = 0
+	config.ignoreLevelChecking = true
+	gotoNextQuestion(&config)
+	if config.questionIndex != 1 {
+		t.Errorf("questionIndex should be 1")
+	}
+}
+
+func Test_gotoPreviousQuestion(t *testing.T) {
+	topics := make(map[string][]Question)
+	linuxQuestions := []Question{
+		Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 3, Q: "lx3", Level: SrProgrammer, Answer: OK},
+		Question{ID: 4, Q: "lx4", Level: SrProgrammer, Answer: OK},
+	}
+
+	javaQuestions := []Question{
+		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
+	}
+
+	randomQuestions := []Question{}
+
+	topics["linux"] = linuxQuestions
+	topics["java"] = javaQuestions
+	topics["random"] = randomQuestions
+
+	config := Config{}
+	config.levels = [3]Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
+	}
+	config.interview = Interview{Interviewee: "Hello", Date: time.Now(), Topics: topics}
+	config.selectedTopic = ""
+	config.hasStarted = true
+	config.questionIndex = 0
+	config.individualLevelIndexes = []int{0, 0, 0}
+	config.ignoreLevelChecking = true
+	config.questionIndex = 1
+
+	gotoPreviousQuestion(&config)
+	if config.questionIndex != 1 {
+		t.Errorf("index should have been decreased.")
+	}
+	config.selectedTopic = "java"
+	gotoPreviousQuestion(&config)
+	if config.questionIndex != 0 {
+		t.Errorf("index should be 0")
+	}
+
+	fmt.Println("************************************")
+	config.ignoreLevelChecking = false
+	config.questionIndex = 1
+	config.levelIndex = 1
+	config.individualLevelIndexes = []int{1, 2, 3}
+
+	gotoPreviousQuestion(&config)
+	if config.individualLevelIndexes[1] != 1 {
+		t.Errorf("expected 1, got=[%d] instead", config.individualLevelIndexes[1])
+	}
+
 }
