@@ -100,4 +100,5 @@ const (
 	setProgrammerAnalystLevelCmd   Command = iota
 	setSRProgrammerLevelCmd        Command = iota
 	validateQuestionsCmd           Command = iota
+	countCmd                       Command = iota
 )

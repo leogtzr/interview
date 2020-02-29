@@ -83,6 +83,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return setSRProgrammerLevelCmd, []string{}
 	case "validate", "val", "check":
 		return validateQuestionsCmd, []string{}
+	case "count", "cnt", "c":
+		return countCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -705,4 +707,15 @@ func hasErrors(interviewFilePath string, config *Config) (bool, []int) {
 		}
 	}
 	return has, lineNumbers
+}
+
+func showCounts(config *Config) {
+	qs := config.interview.Topics[config.selectedTopic]
+	levelQCounts := levelQuestionCounts(&qs)
+	fmt.Printf("Associate Programmer = ")
+	printWithColorf(config, "%d\n", green, levelQCounts[AssociateOrProgrammer])
+	fmt.Printf("Programmer Analyst = ")
+	printWithColorf(config, "%d\n", green, levelQCounts[ProgrammerAnalyst])
+	fmt.Printf("Sr. Programmer  = ")
+	printWithColorf(config, "%d\n", green, levelQCounts[SrProgrammer])
 }

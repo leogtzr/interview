@@ -194,6 +194,8 @@ func main() {
 			setLevel(SrProgrammer, &config)
 		case validateQuestionsCmd:
 			validateQuestions(&config)
+		case countCmd:
+			showCounts(&config)
 		}
 	}
 
