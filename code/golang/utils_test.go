@@ -674,16 +674,6 @@ func Test_shouldIgnoreLine(t *testing.T) {
 	}
 }
 
-/*
-func markQuestionAs(id int, ans Answer, qs *[]Question) {
-	for _, q := range *qs {
-		if q.ID == id {
-			(*qs)[id-1].Answer = ans
-			break
-		}
-	}
-}
-*/
 func Test_markQuestionAs(t *testing.T) {
 	type test struct {
 		id  int
