@@ -673,3 +673,38 @@ func Test_shouldIgnoreLine(t *testing.T) {
 		}
 	}
 }
+
+/*
+func markQuestionAs(id int, ans Answer, qs *[]Question) {
+	for _, q := range *qs {
+		if q.ID == id {
+			(*qs)[id-1].Answer = ans
+			break
+		}
+	}
+}
+*/
+func Test_markQuestionAs(t *testing.T) {
+	type test struct {
+		id  int
+		ans Answer
+		qs  []Question
+	}
+
+	tests := []test{
+		{id: 1, ans: Wrong, qs: []Question{
+			Question{ID: 0, Answer: NotAnsweredYet},
+			Question{ID: 1, Answer: NotAnsweredYet},
+			Question{ID: 2, Answer: NotAnsweredYet},
+			Question{ID: 3, Answer: NotAnsweredYet},
+			Question{ID: 4, Answer: NotAnsweredYet},
+		}},
+	}
+
+	for _, tt := range tests {
+		markQuestionAs(tt.id, tt.ans, &tt.qs)
+		if tt.qs[tt.id-1].Answer != tt.ans {
+			t.Errorf("want=[%s], got=[%s]", tt.ans, tt.qs[tt.id].Answer)
+		}
+	}
+}
