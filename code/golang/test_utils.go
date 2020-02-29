@@ -40,7 +40,8 @@ func EqualTopics(a, b []string) bool {
 	return true
 }
 
-func EqualLineNumbers(a, b []int) bool {
+// EqualNumbers ...
+func EqualNumbers(a, b []int) bool {
 	if len(a) != len(b) {
 		return false
 	}

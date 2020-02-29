@@ -719,3 +719,22 @@ func showCounts(config *Config) {
 	fmt.Printf("Sr. Programmer  = ")
 	printWithColorf(config, "%d\n", green, levelQCounts[SrProgrammer])
 }
+
+// NewConfig Creates a new Configuration object.
+func NewConfig() Config {
+	cfg := Config{}
+	cfg.rgxQuestions = *regexp.MustCompile("^\\d+@.+@(\\d+)?$")
+	cfg.selectedTopic = ""
+	cfg.ps1 = "$ "
+	cfg.colorProfile = termenv.ColorProfile()
+	cfg.interview = Interview{Topics: make(map[string][]Question)}
+	cfg.topicQuestionsLevel = AssociateOrProgrammer
+	cfg.levelIndex = 0
+	cfg.ignoreLevelChecking = false
+	cfg.individualLevelIndexes = []int{0, 0, 0}
+	cfg.usingInterviewFile = false
+	cfg.levels = [3]Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
+	}
+	return cfg
+}

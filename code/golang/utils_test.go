@@ -557,7 +557,7 @@ func Test_hasErrors(t *testing.T) {
 		if has != tt.wantHas {
 			t.Errorf("got=[%t], want=[%t]", has, tt.wantHas)
 		}
-		if !EqualLineNumbers(lineNumbers, tt.wantLineNumbers) {
+		if !EqualNumbers(lineNumbers, tt.wantLineNumbers) {
 			t.Errorf("got=[%s], want=[%s]",
 				strings.Trim(strings.Replace(fmt.Sprint(lineNumbers), " ", ",", -1), "[]"),
 				strings.Trim(strings.Replace(fmt.Sprint(tt.wantLineNumbers), " ", ",", -1), "[]"),
@@ -697,4 +697,55 @@ func Test_markQuestionAs(t *testing.T) {
 			t.Errorf("want=[%s], got=[%s]", tt.ans, tt.qs[tt.id].Answer)
 		}
 	}
+}
+
+func TestNewConfig(t *testing.T) {
+	const expectedNumberOfIndividualLevelIndexes = 3
+	const expectedSelectedTopic = ""
+	const expectedPs1 = "$ "
+	const expectedNumberOfInitialTopics = 0
+	const expectedQuestionLevel = AssociateOrProgrammer
+	const expectedInitialLevelIndex = 0
+	const expectedIgnoringLevelCheck = false
+	expectedIndividualLevelIndexes := []int{0, 0, 0}
+	const expectedUsingInterviewFile = false
+	expectedLevels := [3]Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
+	}
+
+	config := NewConfig()
+	if len(config.individualLevelIndexes) != expectedNumberOfIndividualLevelIndexes {
+		t.Errorf("got=[%d], want=[%d]", len(config.individualLevelIndexes), expectedNumberOfIndividualLevelIndexes)
+	}
+	if config.selectedTopic != expectedSelectedTopic {
+		t.Errorf("got=[%s], want=[%s]", config.selectedTopic, expectedSelectedTopic)
+	}
+	if config.ps1 != expectedPs1 {
+		t.Errorf("got=[%s], want=[%s]", config.ps1, expectedPs1)
+	}
+	if len(config.interview.Topics) != expectedNumberOfInitialTopics {
+		t.Errorf("got=[%d], want=[%d]", len(config.interview.Topics), expectedNumberOfInitialTopics)
+	}
+	if config.topicQuestionsLevel != expectedQuestionLevel {
+		t.Errorf("got=[%s], want=[%s]", config.topicQuestionsLevel, expectedQuestionLevel)
+	}
+	if config.ignoreLevelChecking != expectedIgnoringLevelCheck {
+		t.Errorf("got=[%t], want=[%t]", config.ignoreLevelChecking, expectedIgnoringLevelCheck)
+	}
+	if config.levelIndex != expectedInitialLevelIndex {
+		t.Errorf("got=[%d], want=[%d]", config.levelIndex, expectedInitialLevelIndex)
+	}
+	if !EqualNumbers(expectedIndividualLevelIndexes, config.individualLevelIndexes) {
+		got := strings.Trim(strings.Replace(fmt.Sprint(config.individualLevelIndexes), " ", ",", -1), "[]")
+		want := strings.Trim(strings.Replace(fmt.Sprint(expectedIndividualLevelIndexes), " ", ",", -1), "[]")
+		t.Errorf("got=[%s], want=[%s]", got, want)
+	}
+
+	if config.levels != expectedLevels {
+		t.Errorf("got=[%s], want=[%s]", config.levels, expectedLevels)
+	}
+}
+
+func Test_showCounts(t *testing.T) {
+
 }

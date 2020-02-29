@@ -5,44 +5,18 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
 	"github.com/muesli/termenv"
 )
 
-const (
-	red                               = "#E88388"
-	green                             = "#A8CC8C"
-	yellow                            = "#DBAB79"
-	blue                              = "#71BEF2"
-	magenta                           = "#D290E4"
-	cyan                              = "#66C2CD"
-	gray                              = "#B9BFCA"
-	minNumberOfCharsInIntervieweeName = 10
-	interviewFormatLayout             = "2006-01-2 15:04:05"
-)
-
 func main() {
 
-	config := Config{}
+	config := NewConfig()
 	config.interviewTopicsDir = os.Getenv("INTERVIEW_DIR")
 	if config.interviewTopicsDir == "" {
 		log.Fatal("INTERVIEW_DIR environment variable not defined.")
-	}
-	config.rgxQuestions = *regexp.MustCompile("^\\d+@.+@(\\d+)?$")
-	config.selectedTopic = ""
-	config.ps1 = "$ "
-	config.colorProfile = termenv.ColorProfile()
-	config.interview = Interview{Topics: make(map[string][]Question)}
-	config.topicQuestionsLevel = AssociateOrProgrammer
-	config.levelIndex = 0
-	config.ignoreLevelChecking = false
-	config.individualLevelIndexes = []int{0, 0, 0}
-	config.usingInterviewFile = false
-	config.levels = [3]Level{
-		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
 	}
 
 	userInput := bufio.NewReader(os.Stdin)

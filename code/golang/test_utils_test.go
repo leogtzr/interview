@@ -83,7 +83,7 @@ func TestEqualLineNumbers(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := EqualLineNumbers(tt.a, tt.b)
+		got := EqualNumbers(tt.a, tt.b)
 		if got != tt.result {
 			t.Errorf("got=[%t], should be [%t]", got, tt.result)
 		}
