@@ -23,6 +23,9 @@ func sanitizeUserInput(input string) string {
 
 // Transforms user's input to a Command
 func userInputToCmd(input string) (Command, []string) {
+	if len(input) == 0 {
+		return noCmd, []string{}
+	}
 	fullCommand := words(input)
 	input = fullCommand[0]
 	input = sanitizeUserInput(input)

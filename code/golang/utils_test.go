@@ -67,6 +67,10 @@ func Test_userInputToCmd(t *testing.T) {
 		{input: "ap", want: setAssociateProgrammerLevelCmd},
 		{input: "pa", want: setProgrammerAnalystLevelCmd},
 		{input: "sr", want: setSRProgrammerLevelCmd},
+		{input: "use", want: noCmd},
+		{input: "validate", want: validateQuestionsCmd},
+		{input: "c", want: countCmd},
+		{input: "", want: noCmd},
 	}
 
 	for _, tc := range tests {
@@ -207,12 +211,25 @@ func TestQuestion_String(t *testing.T) {
 }
 
 func Test_readIntervieweeName(t *testing.T) {
-	name := "Leonardo"
-	reader := strings.NewReader(name)
+	type test struct {
+		input      string
+		output     string
+		hasContent bool
+	}
 
-	got, ok := readIntervieweeName(reader)
-	if !ok {
-		t.Errorf("got=[%s], want=[%s]", got, name)
+	tests := []test{
+		{input: "Leonardo", output: "Leonardo", hasContent: true},
+		{input: "", output: "", hasContent: false},
+	}
+
+	for _, tt := range tests {
+		got, ok := readIntervieweeName(strings.NewReader(tt.input))
+		if ok != tt.hasContent {
+			t.Errorf("got=[%t], want=[%t]", ok, tt.hasContent)
+		}
+		if got != tt.output {
+			t.Errorf("got=[%s], want=[%s]", got, tt.output)
+		}
 	}
 }
 
