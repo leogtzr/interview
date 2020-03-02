@@ -11,6 +11,7 @@ import (
 func Test_getQuestionsFromLevel(t *testing.T) {
 	type test struct {
 		lvl       Level
+		config    Config
 		topic     string
 		questions []Question
 	}
@@ -34,6 +35,9 @@ func Test_getQuestionsFromLevel(t *testing.T) {
 	topics["java"] = javaQuestions
 	topics["random"] = randomQuestions
 
+	config := Config{}
+	config.interview = Interview{Interviewee: "Hello", Date: time.Now(), Topics: topics}
+
 	tests := []test{
 		{
 			lvl:   AssociateOrProgrammer,
@@ -42,6 +46,7 @@ func Test_getQuestionsFromLevel(t *testing.T) {
 				Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
 				Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
 			},
+			config: config,
 		},
 
 		{
@@ -50,17 +55,20 @@ func Test_getQuestionsFromLevel(t *testing.T) {
 			questions: []Question{
 				Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
 			},
+			config: config,
 		},
 
 		{
 			lvl:       SrProgrammer,
 			topic:     "random",
 			questions: []Question{},
+			config:    config,
 		},
 	}
 
 	for _, tt := range tests {
-		got := getQuestionsFromLevel(tt.lvl, tt.topic, &topics)
+		tt.config.selectedTopic = tt.topic
+		got := getQuestionsFromLevel(tt.lvl, &tt.config)
 		if !Equal(got, tt.questions) {
 			t.Errorf("got=[%s], want=[%s]", got, tt.questions)
 		}

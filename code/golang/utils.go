@@ -344,7 +344,7 @@ func printQuestion(questionIndex int, config *Config) {
 		return
 	}
 	currentLevel := config.levels[config.levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 	if len(currentLevelQuestions) == 0 {
 		printWithColorln("There are no questions for this level.", yellow, config)
 		return
@@ -369,7 +369,7 @@ func viewQuestionsByLevel(config *Config) {
 		return
 	}
 	currentLevel := config.levels[config.levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 	for _, q := range currentLevelQuestions {
 		fmt.Println(q)
 	}
@@ -528,7 +528,7 @@ func setAnswerAsNeutral(questions *[]Question, config *Config) {
 
 func setAnswerAsNeutralWithLevel(config *Config) {
 	currentLevel := config.levels[config.levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 	index := config.individualLevelIndexes[int(currentLevel)-1]
 	id := currentLevelQuestions[index].ID
 	qs := config.interview.Topics[config.selectedTopic]
@@ -544,7 +544,7 @@ func setAnswerAsOK(questions *[]Question, config *Config) {
 
 func setAnswerAsOkWithLevel(config *Config) {
 	currentLevel := config.levels[config.levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 	index := config.individualLevelIndexes[int(currentLevel)-1]
 	id := currentLevelQuestions[index].ID
 	qs := config.interview.Topics[config.selectedTopic]
@@ -559,7 +559,7 @@ func setAnswerAsWrong(questions *[]Question, config *Config) {
 
 func setAnswerAsWrongWithLevel(config *Config) {
 	currentLevel := config.levels[config.levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 	index := config.individualLevelIndexes[int(currentLevel)-1]
 	id := currentLevelQuestions[index].ID
 	qa := config.interview.Topics[config.selectedTopic]

@@ -70,7 +70,7 @@ func gotoNextQuestion(config *Config) {
 		}
 	} else {
 		currentLevel := config.levels[config.levelIndex]
-		currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
+		currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 		index := config.individualLevelIndexes[int(currentLevel)-1]
 		if (index + 1) < len(currentLevelQuestions) {
 			index++
@@ -103,9 +103,11 @@ func gotoPreviousQuestion(config *Config) {
 	}
 }
 
-func getQuestionsFromLevel(lvl Level, topic string, topics *map[string][]Question) []Question {
+// old: func getQuestionsFromLevel(lvl Level, topic string, topics *map[string][]Question) []Question {
+// usage: currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
+func getQuestionsFromLevel(lvl Level, config *Config) []Question {
 	questions := make([]Question, 0)
-	for _, q := range (*topics)[topic] {
+	for _, q := range (config.interview.Topics)[config.selectedTopic] {
 		if q.Level == lvl {
 			questions = append(questions, q)
 		}
