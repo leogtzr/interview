@@ -1,13 +1,16 @@
 package main
 
 const (
-	red                               = "#E88388"
-	green                             = "#A8CC8C"
-	yellow                            = "#DBAB79"
-	blue                              = "#71BEF2"
-	magenta                           = "#D290E4"
-	cyan                              = "#66C2CD"
-	gray                              = "#B9BFCA"
+	red     = "#E88388"
+	green   = "#A8CC8C"
+	yellow  = "#DBAB79"
+	blue    = "#71BEF2"
+	magenta = "#D290E4"
+	cyan    = "#66C2CD"
+	gray    = "#B9BFCA"
+)
+
+const (
 	minNumberOfCharsInIntervieweeName = 10
 	interviewFormatLayout             = "2006-01-2 15:04:05"
 )

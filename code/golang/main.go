@@ -32,7 +32,7 @@ func main() {
 
 		switch cmd {
 		case exitCmd:
-			fmt.Println("\tBye ... ")
+			printWithColorln("Bye", magenta, &config)
 			os.Exit(0)
 		case exitInterviewFileCmd:
 			printWithColorln("Exiting from interview file ... ", gray, &config)
@@ -69,7 +69,6 @@ func main() {
 				config.interview.Date = time.Now()
 			}
 			config.hasStarted = true
-			config.questionIndex = 0
 			printQuestion(config.questionIndex, &config)
 		case printCmd:
 			printQuestion(config.questionIndex, &config)
@@ -94,7 +93,7 @@ func main() {
 				qs := config.interview.Topics[config.selectedTopic]
 				setAnswerAsOK(&qs, &config)
 			} else {
-				setAnswerAsOkWithLevel(&config)
+				answerAs(&config, OK, green)
 			}
 
 		case wrongAnswerCmd:
@@ -107,7 +106,7 @@ func main() {
 				qs := config.interview.Topics[config.selectedTopic]
 				setAnswerAsWrong(&qs, &config)
 			} else {
-				setAnswerAsWrongWithLevel(&config)
+				answerAs(&config, Wrong, red)
 			}
 
 		case mehAnswerCmd:
@@ -120,7 +119,7 @@ func main() {
 				qs := config.interview.Topics[config.selectedTopic]
 				setAnswerAsNeutral(&qs, &config)
 			} else {
-				setAnswerAsNeutralWithLevel(&config)
+				answerAs(&config, Neutral, yellow)
 			}
 
 		case finishCmd:

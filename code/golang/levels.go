@@ -103,8 +103,6 @@ func gotoPreviousQuestion(config *Config) {
 	}
 }
 
-// old: func getQuestionsFromLevel(lvl Level, topic string, topics *map[string][]Question) []Question {
-// usage: currentLevelQuestions := getQuestionsFromLevel(currentLevel, config.selectedTopic, &config.interview.Topics)
 func getQuestionsFromLevel(lvl Level, config *Config) []Question {
 	questions := make([]Question, 0)
 	for _, q := range (config.interview.Topics)[config.selectedTopic] {

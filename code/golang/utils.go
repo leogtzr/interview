@@ -526,44 +526,23 @@ func setAnswerAsNeutral(questions *[]Question, config *Config) {
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta, config)
 }
 
-func setAnswerAsNeutralWithLevel(config *Config) {
-	currentLevel := config.levels[config.levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
-	index := config.individualLevelIndexes[int(currentLevel)-1]
-	id := currentLevelQuestions[index].ID
-	qs := config.interview.Topics[config.selectedTopic]
-	markQuestionAs(id, Neutral, &qs)
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta, config)
-
-}
-
 func setAnswerAsOK(questions *[]Question, config *Config) {
 	(*questions)[config.questionIndex].Answer = OK
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green, config)
 }
 
-func setAnswerAsOkWithLevel(config *Config) {
+func answerAs(config *Config, ans Answer, messageColorCode string) {
 	currentLevel := config.levels[config.levelIndex]
 	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 	index := config.individualLevelIndexes[int(currentLevel)-1]
 	id := currentLevelQuestions[index].ID
 	qs := config.interview.Topics[config.selectedTopic]
-	markQuestionAs(id, OK, &qs)
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green, config)
+	markQuestionAs(id, ans, &qs)
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", ans), messageColorCode, config)
 }
 
 func setAnswerAsWrong(questions *[]Question, config *Config) {
 	(*questions)[config.questionIndex].Answer = Wrong
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red, config)
-}
-
-func setAnswerAsWrongWithLevel(config *Config) {
-	currentLevel := config.levels[config.levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
-	index := config.individualLevelIndexes[int(currentLevel)-1]
-	id := currentLevelQuestions[index].ID
-	qa := config.interview.Topics[config.selectedTopic]
-	markQuestionAs(id, Wrong, &qa)
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red, config)
 }
 
@@ -736,6 +715,7 @@ func NewConfig() Config {
 	cfg.ignoreLevelChecking = false
 	cfg.individualLevelIndexes = []int{0, 0, 0}
 	cfg.usingInterviewFile = false
+	cfg.questionIndex = 0
 	cfg.levels = [3]Level{
 		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
 	}
