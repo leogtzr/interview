@@ -341,21 +341,25 @@ func printQuestion(questionIndex int, config *Config) {
 
 	if config.ignoreLevelChecking && (len(config.interview.Topics[config.selectedTopic]) > 0) {
 		fmt.Println(config.interview.Topics[config.selectedTopic][config.questionIndex])
+		fmt.Println()
 		return
 	}
 	currentLevel := config.levels[config.levelIndex]
 	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 	if len(currentLevelQuestions) == 0 {
 		printWithColorln("There are no questions for this level.", yellow, config)
+		fmt.Println()
 		return
 	}
 	index := config.individualLevelIndexes[int(currentLevel)-1]
 	fmt.Println(currentLevelQuestions[index])
+	fmt.Println()
 }
 
 func viewQuestions(config *Config) {
 	if len(config.interview.Topics[config.selectedTopic]) < 1 {
 		printWithColorln("You need to select a topic first.", red, config)
+		fmt.Println()
 		return
 	}
 	for _, q := range config.interview.Topics[config.selectedTopic] {
