@@ -814,3 +814,38 @@ func Test_answerAs(t *testing.T) {
 	}
 
 }
+
+func Test_setTopicFrom(t *testing.T) {
+	topics := map[string][]Question{
+		"linux":  []Question{},
+		"java":   []Question{},
+		"spring": []Question{},
+	}
+
+	type test struct {
+		topics       map[string][]Question
+		inputOptions []string
+		want         string
+	}
+
+	tests := []test{
+		{
+			topics:       topics,
+			inputOptions: []string{"java"},
+			want:         "java",
+		},
+		{
+			topics:       topics,
+			inputOptions: []string{"c++"},
+			want:         "",
+		},
+	}
+
+	for _, tt := range tests {
+		config := Config{}
+		setTopicFrom(tt.inputOptions, &tt.topics, &config)
+		if config.selectedTopic != tt.want {
+			t.Errorf("got=[%s], want=[%s]", config.selectedTopic, tt.want)
+		}
+	}
+}

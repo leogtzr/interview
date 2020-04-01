@@ -247,8 +247,8 @@ func setTopicFromFileSystem(options []string, config *Config) {
 	}
 }
 
-func setTopicFrom(options []string, topicsFromInterviewFile *map[string][]Question, config *Config) {
-	topicName := extractTopicName(options)
+func setTopicFrom(inputOptions []string, topicsFromInterviewFile *map[string][]Question, config *Config) {
+	topicName := extractTopicName(inputOptions)
 	topics := retrieveTopicsFromInterview(topicsFromInterviewFile)
 	if topicExist(topicName, &topics) {
 		config.selectedTopic = topicName

@@ -13,6 +13,7 @@ clean:
 	go clean
 	rm --force interview
 	rm --force cp.out
+
 test:
 	go test
 
