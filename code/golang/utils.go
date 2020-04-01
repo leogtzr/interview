@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -88,6 +89,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return validateQuestionsCmd, []string{}
 	case "count", "cnt", "c":
 		return countCmd, []string{}
+	case "nt", "notes":
+		return notesCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -724,4 +727,51 @@ func NewConfig() Config {
 		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
 	}
 	return cfg
+}
+
+func createNotes(config *Config) error {
+	if !config.hasStarted {
+		return fmt.Errorf("Interview hasn't started")
+	}
+	intervieweeName := config.interview.Interviewee
+	savedDir := filepath.Join(config.interviewTopicsDir, "saved")
+	if !dirExists(savedDir) {
+		return fmt.Errorf("[%s] does not exist", savedDir)
+	}
+	savedInterviewName := filepath.Join(savedDir, intervieweeName)
+	if !dirExists(savedInterviewName) {
+		err := os.MkdirAll(savedInterviewName, os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
+	notesFilePath := filepath.Join(savedInterviewName, "notes.txt")
+	file, err := os.OpenFile(notesFilePath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0660)
+	if err != nil {
+		return err
+	}
+
+	w := bufio.NewWriter(file)
+	fmt.Fprintf(w, "Notes:\n\n")
+	w.Flush()
+
+	oldStdout, oldStdin, oldSterr := os.Stdout, os.Stdin, os.Stderr
+	cmd := command(runtime.GOOS, notesFilePath)
+	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
+	cmdErr := cmd.Run()
+	if cmdErr != nil {
+		panic(cmdErr)
+	}
+
+	os.Stdout, os.Stdin, os.Stderr = oldStdout, oldStdin, oldSterr
+
+	return nil
+}
+
+func command(os, notesFile string) *exec.Cmd {
+	if os == "windows" {
+		return exec.Command("notepad", notesFile)
+	}
+	return exec.Command("/usr/bin/xterm", "-fa", "Monospace", "-fs", "14", "-e", "/usr/bin/vim", "+$", notesFile)
 }

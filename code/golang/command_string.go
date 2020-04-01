@@ -36,11 +36,12 @@ func _() {
 	_ = x[setSRProgrammerLevelCmd-25]
 	_ = x[validateQuestionsCmd-26]
 	_ = x[countCmd-27]
+	_ = x[notesCmd-28]
 }
 
-const _Command_name = "exitCmdexitInterviewFileCmdtopicsCmdhelpCmduseCmdclearScreenCmdpwdCmdnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdloadCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmdshowStatsCmdsetAssociateProgrammerLevelCmdsetProgrammerAnalystLevelCmdsetSRProgrammerLevelCmdvalidateQuestionsCmdcountCmd"
+const _Command_name = "exitCmdexitInterviewFileCmdtopicsCmdhelpCmduseCmdclearScreenCmdpwdCmdnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdloadCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmdshowStatsCmdsetAssociateProgrammerLevelCmdsetProgrammerAnalystLevelCmdsetSRProgrammerLevelCmdvalidateQuestionsCmdcountCmdnotesCmd"
 
-var _Command_index = [...]uint16{0, 7, 27, 36, 43, 49, 63, 69, 74, 82, 90, 105, 124, 131, 145, 159, 171, 180, 187, 203, 219, 233, 245, 257, 287, 315, 338, 358, 366}
+var _Command_index = [...]uint16{0, 7, 27, 36, 43, 49, 63, 69, 74, 82, 90, 105, 124, 131, 145, 159, 171, 180, 187, 203, 219, 233, 245, 257, 287, 315, 338, 358, 366, 374}
 
 func (i Command) String() string {
 	if i < 0 || i >= Command(len(_Command_index)-1) {

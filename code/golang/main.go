@@ -169,6 +169,11 @@ func main() {
 			validateQuestions(&config)
 		case countCmd:
 			showCounts(&config)
+		case notesCmd:
+			err := createNotes(&config)
+			if err != nil {
+				printWithColorln(err.Error(), yellow, &config)
+			}
 		}
 	}
 
