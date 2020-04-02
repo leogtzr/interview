@@ -751,6 +751,7 @@ func createNotes(config *Config) error {
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	w := bufio.NewWriter(file)
 	fmt.Fprintf(w, "Notes:\n\n")
