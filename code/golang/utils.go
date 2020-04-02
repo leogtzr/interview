@@ -757,22 +757,19 @@ func createNotes(config *Config) error {
 	fmt.Fprintf(w, "Notes:\n\n")
 	w.Flush()
 
-	oldStdout, oldStdin, oldSterr := os.Stdout, os.Stdin, os.Stderr
-	cmd := openOSEditor(runtime.GOOS, notesFilePath)
-	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
-	cmdErr := cmd.Run()
-	if cmdErr != nil {
-		panic(cmdErr)
-	}
-
-	os.Stdout, os.Stdin, os.Stderr = oldStdout, oldStdin, oldSterr
-
-	return nil
+	return openOSEditor(runtime.GOOS, notesFilePath)
 }
 
-func openOSEditor(os, notesFile string) *exec.Cmd {
-	if os == "windows" {
-		return exec.Command("notepad", notesFile)
+func openOSEditor(osVersion, notesFile string) error {
+	var cmd *exec.Cmd
+	oldStdout, oldStdin, oldSterr := os.Stdout, os.Stdin, os.Stderr
+	if osVersion == "windows" {
+		cmd = exec.Command("notepad", notesFile)
+	} else {
+		cmd = exec.Command("/usr/bin/xterm", "-fa", "Monospace", "-fs", "14", "-e", "/usr/bin/vim", "+$", notesFile)
 	}
-	return exec.Command("/usr/bin/xterm", "-fa", "Monospace", "-fs", "14", "-e", "/usr/bin/vim", "+$", notesFile)
+	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
+	err := cmd.Run()
+	os.Stdout, os.Stdin, os.Stderr = oldStdout, oldStdin, oldSterr
+	return err
 }
