@@ -758,7 +758,7 @@ func createNotes(config *Config) error {
 	w.Flush()
 
 	oldStdout, oldStdin, oldSterr := os.Stdout, os.Stdin, os.Stderr
-	cmd := command(runtime.GOOS, notesFilePath)
+	cmd := openOSEditor(runtime.GOOS, notesFilePath)
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
 	cmdErr := cmd.Run()
 	if cmdErr != nil {
@@ -770,7 +770,7 @@ func createNotes(config *Config) error {
 	return nil
 }
 
-func command(os, notesFile string) *exec.Cmd {
+func openOSEditor(os, notesFile string) *exec.Cmd {
 	if os == "windows" {
 		return exec.Command("notepad", notesFile)
 	}
