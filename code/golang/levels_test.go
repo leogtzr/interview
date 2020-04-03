@@ -68,8 +68,7 @@ func Test_getQuestionsFromLevel(t *testing.T) {
 
 	for _, tt := range tests {
 		tt.config.selectedTopic = tt.topic
-		got := getQuestionsFromLevel(tt.lvl, &tt.config)
-		if !Equal(got, tt.questions) {
+		if got := getQuestionsFromLevel(tt.lvl, &tt.config); !Equal(got, tt.questions) {
 			t.Errorf("got=[%s], want=[%s]", got, tt.questions)
 		}
 	}

@@ -27,6 +27,10 @@ const (
 )
 
 const (
+	requiredNumberOfFieldsInInterviewHeaderRecord = 2
+)
+
+const (
 	// AssociateOrProgrammer ...
 	AssociateOrProgrammer Level = 1
 	// ProgrammerAnalyst ...

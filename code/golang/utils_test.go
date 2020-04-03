@@ -26,8 +26,7 @@ func Test_sanitizeUserInput(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		got := sanitizeUserInput(tc.input)
-		if got != tc.want {
+		if got := sanitizeUserInput(tc.input); got != tc.want {
 			t.Errorf("got=[%s], want=[%s]", got, tc.want)
 		}
 	}
@@ -75,8 +74,7 @@ func Test_userInputToCmd(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		got, _ := userInputToCmd(tc.input)
-		if got != tc.want {
+		if got, _ := userInputToCmd(tc.input); got != tc.want {
 			t.Errorf("got=[%s], want=[%s]", got, tc.want)
 		}
 	}
@@ -97,8 +95,7 @@ func Test_questionHasValidFormat(t *testing.T) {
 		{input: "1@@2", match: false},
 	}
 	for _, tc := range tests {
-		match := isQuestionFormatValid(tc.input, rgx)
-		if match != tc.match {
+		if match := isQuestionFormatValid(tc.input, rgx); match != tc.match {
 			t.Errorf("got=[%t], want=[%t]", match, tc.match)
 		}
 	}
@@ -122,8 +119,7 @@ func Test_toQuestion(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		got := toQuestion(tc.input)
-		if got != tc.question {
+		if got := toQuestion(tc.input); got != tc.question {
 			t.Errorf("got=[%s], want=[%s]", got, tc.question)
 		}
 	}
@@ -185,8 +181,7 @@ func Test_shortIntervieweeName(t *testing.T) {
 		{"", "(who?)"},
 	}
 	for _, tt := range tests {
-		got := shortIntervieweeName(tt.name, minNumberOfCharsInIntervieweeName)
-		if got != tt.want {
+		if got := shortIntervieweeName(tt.name, minNumberOfCharsInIntervieweeName); got != tt.want {
 			t.Errorf("got=[%s], want=[%s]", got, tt.want)
 		}
 	}
@@ -377,8 +372,7 @@ func Test_perc(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := perc(tt.count, tt.total)
-		if got != tt.want {
+		if got := perc(tt.count, tt.total); got != tt.want {
 			t.Errorf("got=[%f], want=[%f]", got, tt.want)
 		}
 	}
@@ -505,8 +499,7 @@ func Test_extractTopicName(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := extractTopicName(tt.options)
-		if got != tt.want {
+		if got := extractTopicName(tt.options); got != tt.want {
 			t.Errorf("got=[%s], want=[%s]", got, tt.want)
 		}
 	}
@@ -685,8 +678,7 @@ func Test_shouldIgnoreLine(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := shouldIgnoreLine(tt.line)
-		if got != tt.want {
+		if got := shouldIgnoreLine(tt.line); got != tt.want {
 			t.Errorf("got=[%t], want=[%t]", got, tt.want)
 		}
 	}

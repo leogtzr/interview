@@ -41,8 +41,7 @@ func TestEqual(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := Equal(tt.a, tt.b)
-		if got != tt.result {
+		if got := Equal(tt.a, tt.b); got != tt.result {
 			t.Errorf("[%s] and [%s] should be equal", tt.a, tt.b)
 		}
 	}
@@ -62,8 +61,7 @@ func TestEqualTopics(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := EqualTopics(tt.a, tt.b)
-		if got != tt.result {
+		if got := EqualTopics(tt.a, tt.b); got != tt.result {
 			t.Errorf("got=[%t], should be [%t]", got, tt.result)
 		}
 	}
@@ -83,8 +81,7 @@ func TestEqualLineNumbers(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := EqualNumbers(tt.a, tt.b)
-		if got != tt.result {
+		if got := EqualNumbers(tt.a, tt.b); got != tt.result {
 			t.Errorf("got=[%t], should be [%t]", got, tt.result)
 		}
 	}

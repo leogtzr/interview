@@ -326,7 +326,9 @@ func ps1String(ps1, selectedTopic, intervieweeName string) string {
 	if selectedTopic == "" {
 		return "$ "
 	}
-	return fmt.Sprintf("/%s %s $ ", termenv.String(selectedTopic).Faint(), shortIntervieweeName(intervieweeName, minNumberOfCharsInIntervieweeName))
+	return fmt.Sprintf(
+		"/%s %s $ ",
+		termenv.String(selectedTopic).Faint(), shortIntervieweeName(intervieweeName, minNumberOfCharsInIntervieweeName))
 }
 
 func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
@@ -414,8 +416,7 @@ func saveInterview(config *Config) error {
 		randDirName := stringWithCharset(2, charset, seededRand)
 		savedInterviewName = fmt.Sprintf("%s-%s", savedInterviewName, randDirName)
 	}
-	err := os.MkdirAll(savedInterviewName, os.ModePerm)
-	if err != nil {
+	if err := os.MkdirAll(savedInterviewName, os.ModePerm); err != nil {
 		return err
 	}
 	return saveData(filepath.Join(savedInterviewName, "interview"), config.interview)
@@ -486,7 +487,7 @@ func loadInterview(options []string, config *Config) (Interview, error) {
 
 func extractNameFromInterviewHeaderRecord(header string) (string, error) {
 	fields := strings.Split(strings.TrimSpace(header), "@")
-	if len(fields) != 2 {
+	if len(fields) != requiredNumberOfFieldsInInterviewHeaderRecord {
 		return "", fmt.Errorf("'%s' wrong header format", header)
 	}
 	return fields[0], nil
@@ -494,7 +495,7 @@ func extractNameFromInterviewHeaderRecord(header string) (string, error) {
 
 func extractDateFromInterviewHeaderRecord(header string) (time.Time, error) {
 	fields := strings.Split(strings.TrimSpace(header), "@")
-	if len(fields) != 2 {
+	if len(fields) != requiredNumberOfFieldsInInterviewHeaderRecord {
 		return time.Time{}, fmt.Errorf("'%s' wrong header format", header)
 	}
 	interviewDate, err := time.Parse(interviewFormatLayout, fields[1])
