@@ -70,6 +70,7 @@ func Test_userInputToCmd(t *testing.T) {
 		{input: "use", want: noCmd},
 		{input: "validate", want: validateQuestionsCmd},
 		{input: "c", want: countCmd},
+		{input: "nt", want: notesCmd},
 		{input: "", want: noCmd},
 	}
 
