@@ -77,12 +77,12 @@ ENGINE = InnoDB;
 SHOW WARNINGS;
 
 -- -----------------------------------------------------
--- Table `recruitment_interviews`.`user_question`
+-- Table `recruitment_interviews`.`answer`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `recruitment_interviews`.`user_question` ;
+DROP TABLE IF EXISTS `recruitment_interviews`.`answer` ;
 
 SHOW WARNINGS;
-CREATE TABLE IF NOT EXISTS `recruitment_interviews`.`user_question` (
+CREATE TABLE IF NOT EXISTS `recruitment_interviews`.`answer` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `result` INT NOT NULL,
   `comment` VARCHAR(1000) NULL,

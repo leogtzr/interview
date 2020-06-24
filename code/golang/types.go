@@ -36,6 +36,14 @@ type Question struct {
 	Level  Level
 }
 
+// UserAnswer ...
+type UserAnswer struct {
+	ID         int    `json:"id"`
+	Result     int    `json:"result"`
+	Comment    string `json:"comment"`
+	QuestionID int    `json:"question_id"`
+}
+
 // Answer ...
 type Answer int
 
