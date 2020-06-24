@@ -14,10 +14,21 @@ type Level struct {
 	Title string `json:"title"`
 }
 
-// Topic ...
-type Topic struct {
-	ID    int    `json:"id"`
-	Topic string `json:"topic"`
+// Question ...
+type Question struct {
+	ID       int    `json:"id"`
+	Question string `json:"question"`
+	Answer   string `json:"answer"`
+	TopicID  int    `json:"topic_id"`
+	LevelID  int    `json:"level_id"`
+}
+
+// UserQuestionAnswer ...
+type UserQuestionAnswer struct {
+	ID         int    `json:"id"`
+	Result     int    `json:"result"`
+	Comment    string `json:"comment"`
+	QuestionID int    `json:"question_id"`
 }
 
 func getLevels(db *sql.DB) ([]Level, error) {

@@ -2,22 +2,44 @@ package main
 
 import (
 	"bufio"
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/muesli/termenv"
 )
 
 func main() {
 
 	config := NewConfig()
+	// TODO: to be removed:
 	config.interviewTopicsDir = os.Getenv("INTERVIEW_DIR")
 	if config.interviewTopicsDir == "" {
 		log.Fatal("INTERVIEW_DIR environment variable not defined.")
 	}
+
+	dbConfig, err := readConfig("interviews.env", os.Getenv("HOME"), map[string]interface{}{
+		"db_user":     os.Getenv("DB_INTERVIEW_USER"),
+		"db_password": os.Getenv("DB_INTERVIEW_PASSWORD"),
+		"db_name":     os.Getenv("DB_INTERVIEW_NAME"),
+		"db_driver":   os.Getenv("DB_DRIVER"),
+	})
+	if err != nil { // Handle errors reading the config file
+		panic(fmt.Errorf("fatal error config file: %s", err))
+	}
+	// DB setup ...
+	fmt.Println(dbConfig)
+	jdbcURL := fmt.Sprintf("%s:%s@/%s", dbConfig.GetString("db_user"), dbConfig.GetString("db_password"), dbConfig.GetString("db_name"))
+	db, err := sql.Open(dbConfig.GetString("db_driver"), jdbcURL)
+	if err != nil {
+		panic(err)
+	}
+	db.SetConnMaxLifetime(time.Hour * 3)
+	defer db.Close()
 
 	userInput := bufio.NewReader(os.Stdin)
 
@@ -39,11 +61,14 @@ func main() {
 			resetStatus(&config)
 			break
 		case topicsCmd:
-			if config.usingInterviewFile {
-				listTopicsFromInterviewFile(&config.interview.Topics, &config)
-				break
+			// if config.usingInterviewFile {
+			// 	listTopicsFromInterviewFile(&config.interview.Topics, &config)
+			// 	break
+			// }
+			err = listTopics(db)
+			if err != nil {
+				panic(err)
 			}
-			listTopics(config.interviewTopicsDir)
 		case helpCmd:
 			printHelp()
 		case clearScreenCmd:
@@ -51,11 +76,14 @@ func main() {
 		case pwdCmd:
 			fmt.Println(termenv.String(config.selectedTopic).Bold())
 		case useCmd:
-			if config.usingInterviewFile {
-				setTopicFrom(options, &config.interview.Topics, &config)
-				break
+			// if config.usingInterviewFile {
+			// 	setTopicFrom(options, &config.interview.Topics, &config)
+			// 	break
+			// }
+			err = setTopic(options, &config, db)
+			if err != nil {
+				panic(err)
 			}
-			setTopicFromFileSystem(options, &config)
 		case startCmd:
 			if config.hasStarted {
 				printWithColorln("Interview has already started.", yellow, &config)
@@ -130,24 +158,26 @@ func main() {
 			printWithColorln(fmt.Sprintf("Interview for '%s' has been saved.\n\n\tBye ...", config.interview.Interviewee), green, &config)
 			os.Exit(1)
 
-		case loadCmd:
-			interviewFromFile, err := loadInterview(options, &config)
-			if err != nil {
-				printWithColorln(err.Error(), red, &config)
-				break
-			}
+			/*
+				case loadCmd:
+					interviewFromFile, err := loadInterview(options, &config)
+					if err != nil {
+						printWithColorln(err.Error(), red, &config)
+						break
+					}
 
-			config.usingInterviewFile = true
-			printWithColorln("You will now be navigating through an interview file.", green, &config)
+					config.usingInterviewFile = true
+					printWithColorln("You will now be navigating through an interview file.", green, &config)
 
-			config.interview = interviewFromFile
+					config.interview = interviewFromFile
 
-			for topic, questions := range interviewFromFile.Topics {
-				fmt.Printf("[%s]\n", topic)
-				for _, q := range questions {
-					fmt.Println(q.String())
-				}
-			}
+					for topic, questions := range interviewFromFile.Topics {
+						fmt.Printf("[%s]\n", topic)
+						for _, q := range questions {
+							fmt.Println(q.String())
+						}
+					}
+			*/
 
 		case increaseLevelCmd:
 			increaseLevel(&config)

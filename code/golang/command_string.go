@@ -25,23 +25,22 @@ func _() {
 	_ = x[wrongAnswerCmd-14]
 	_ = x[mehAnswerCmd-15]
 	_ = x[finishCmd-16]
-	_ = x[loadCmd-17]
-	_ = x[increaseLevelCmd-18]
-	_ = x[decreaseLevelCmd-19]
-	_ = x[ignoreLevelCmd-20]
-	_ = x[showLevelCmd-21]
-	_ = x[showStatsCmd-22]
-	_ = x[setAssociateProgrammerLevelCmd-23]
-	_ = x[setProgrammerAnalystLevelCmd-24]
-	_ = x[setSRProgrammerLevelCmd-25]
-	_ = x[validateQuestionsCmd-26]
-	_ = x[countCmd-27]
-	_ = x[notesCmd-28]
+	_ = x[increaseLevelCmd-17]
+	_ = x[decreaseLevelCmd-18]
+	_ = x[ignoreLevelCmd-19]
+	_ = x[showLevelCmd-20]
+	_ = x[showStatsCmd-21]
+	_ = x[setAssociateProgrammerLevelCmd-22]
+	_ = x[setProgrammerAnalystLevelCmd-23]
+	_ = x[setSRProgrammerLevelCmd-24]
+	_ = x[validateQuestionsCmd-25]
+	_ = x[countCmd-26]
+	_ = x[notesCmd-27]
 }
 
-const _Command_name = "exitCmdexitInterviewFileCmdtopicsCmdhelpCmduseCmdclearScreenCmdpwdCmdnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdloadCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmdshowStatsCmdsetAssociateProgrammerLevelCmdsetProgrammerAnalystLevelCmdsetSRProgrammerLevelCmdvalidateQuestionsCmdcountCmdnotesCmd"
+const _Command_name = "exitCmdexitInterviewFileCmdtopicsCmdhelpCmduseCmdclearScreenCmdpwdCmdnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmdshowStatsCmdsetAssociateProgrammerLevelCmdsetProgrammerAnalystLevelCmdsetSRProgrammerLevelCmdvalidateQuestionsCmdcountCmdnotesCmd"
 
-var _Command_index = [...]uint16{0, 7, 27, 36, 43, 49, 63, 69, 74, 82, 90, 105, 124, 131, 145, 159, 171, 180, 187, 203, 219, 233, 245, 257, 287, 315, 338, 358, 366, 374}
+var _Command_index = [...]uint16{0, 7, 27, 36, 43, 49, 63, 69, 74, 82, 90, 105, 124, 131, 145, 159, 171, 180, 196, 212, 226, 238, 250, 280, 308, 331, 351, 359, 367}
 
 func (i Command) String() string {
 	if i < 0 || i >= Command(len(_Command_index)-1) {

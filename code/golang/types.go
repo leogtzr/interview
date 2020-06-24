@@ -9,12 +9,12 @@ import (
 
 // Config ...
 type Config struct {
-	selectedTopic          string
-	ps1                    string
-	interviewTopicsDir     string
-	hasStarted             bool
-	questionIndex          int
-	usingInterviewFile     bool
+	selectedTopic      string
+	ps1                string
+	interviewTopicsDir string
+	hasStarted         bool
+	questionIndex      int
+	// usingInterviewFile     bool
 	topicQuestionsLevel    Level
 	levelIndex             int
 	ignoreLevelChecking    bool
@@ -47,4 +47,10 @@ type Interview struct {
 	Interviewee string
 	Date        time.Time
 	Topics      map[string][]Question
+}
+
+// Topic ...
+type Topic struct {
+	ID    int    `json:"id"`
+	Topic string `json:"topic"`
 }
