@@ -151,15 +151,6 @@ func retrieveTopicsFromInterview(topics *map[string][]Question) []string {
 	return tps
 }
 
-// func listTopicsFromInterviewFile(topics *map[string][]Question, config *Config) {
-// 	if config.usingInterviewFile {
-// 		topics := retrieveTopicsFromInterview(&config.interview.Topics)
-// 		for _, topic := range topics {
-// 			fmt.Println(termenv.String(topic).Underline().Bold())
-// 		}
-// 	}
-// }
-
 func getTopics(db *sql.DB) ([]Topic, error) {
 	var topics []Topic
 	results, err := db.Query("SELECT * FROM topic")
@@ -266,7 +257,6 @@ func extractTopicName(options []string) string {
 
 func setTopic(options []string, config *Config, db *sql.DB) error {
 	topicName := extractTopicName(options)
-	// TODO: fix the following ...
 	topics, err := getTopicsWithQuestions(db)
 	if err != nil {
 		return err
@@ -274,14 +264,75 @@ func setTopic(options []string, config *Config, db *sql.DB) error {
 
 	if topicExist(topicName, &topics) {
 		config.selectedTopic = topicName
-		// TODO: fix the following ...
-		questionsPerTopic := loadQuestionsFromTopic(config)
+		questionsPerTopic, err := loadQuestionsFromTopic(config, db)
+		if err != nil {
+			return err
+		}
 		config.interview.Topics[config.selectedTopic] = questionsPerTopic
 	} else {
 		fmt.Println(
 			termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(config.colorProfile.Color(red)))
 	}
 	return nil
+}
+
+func saveIntervieweeName(interviewee string, db *sql.DB) error {
+	stmt, err := db.Prepare("insert into candidate(name) values(?)")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(interviewee)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func getQuestionsByTopic(topic string, db *sql.DB) ([]Question, error) {
+	questionsPerTopic := make([]Question, 0)
+
+	results, err :=
+		db.Query(
+			`select q.id, question, q.level_id from question q, topic t where t.topic = ? and t.id = q.topic_id`,
+			topic)
+	if err != nil {
+		return []Question{}, err
+	}
+	defer results.Close()
+
+	for results.Next() {
+		var question Question
+		err = results.Scan(&question.ID, &question.Q, &question.Level)
+		if err != nil {
+			return []Question{}, err
+		}
+		questionsPerTopic = append(questionsPerTopic, question)
+	}
+
+	return questionsPerTopic, nil
+}
+
+func loadQuestionsFromTopic(config *Config, db *sql.DB) ([]Question, error) {
+	// Clear previous questions ...
+	questionsPerTopic, err := getQuestionsByTopic(config.selectedTopic, db)
+	if err != nil {
+		return []Question{}, err
+	}
+
+	levelFound := findLevel(&questionsPerTopic, AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer)
+	fmt.Printf("Loaded -> '%d' questions, starting with: %s level.\n", len(questionsPerTopic), levelFound)
+
+	levelQCounts := levelQuestionCounts(&questionsPerTopic)
+	fmt.Printf("Associate Programmer = ")
+	printWithColorf(config, "%d\n", green, levelQCounts[AssociateOrProgrammer])
+	fmt.Printf("Programmer Analyst = ")
+	printWithColorf(config, "%d\n", green, levelQCounts[ProgrammerAnalyst])
+	fmt.Printf("Sr. Programmer  = ")
+	printWithColorf(config, "%d\n", green, levelQCounts[SrProgrammer])
+
+	return questionsPerTopic, nil
 }
 
 func setTopicFrom(inputOptions []string, topicsFromInterviewFile *map[string][]Question, config *Config) {
@@ -298,44 +349,6 @@ func setTopicFrom(inputOptions []string, topicsFromInterviewFile *map[string][]Q
 
 func shouldIgnoreLine(line string) bool {
 	return strings.HasPrefix(line, "#") || len(strings.TrimSpace(line)) == 0
-}
-
-func loadQuestionsFromTopic(config *Config) []Question {
-	// Clear previous questions ...
-	questionsPerTopic := make([]Question, 0)
-
-	questionFilePath := filepath.Join(config.interviewTopicsDir, "topics", config.selectedTopic, "questions")
-
-	file, err := os.Open(questionFilePath)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		questionText := scanner.Text()
-		if shouldIgnoreLine(questionText) {
-			continue
-		}
-		if isQuestionFormatValid(questionText, &config.rgxQuestions) {
-			question := toQuestion(questionText)
-			questionsPerTopic = append(questionsPerTopic, question)
-		}
-	}
-
-	levelFound := findLevel(&questionsPerTopic, AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer)
-	fmt.Printf("Loaded -> '%d' questions, starting with: %s level.\n", len(questionsPerTopic), levelFound)
-
-	levelQCounts := levelQuestionCounts(&questionsPerTopic)
-	fmt.Printf("Associate Programmer = ")
-	printWithColorf(config, "%d\n", green, levelQCounts[AssociateOrProgrammer])
-	fmt.Printf("Programmer Analyst = ")
-	printWithColorf(config, "%d\n", green, levelQCounts[ProgrammerAnalyst])
-	fmt.Printf("Sr. Programmer  = ")
-	printWithColorf(config, "%d\n", green, levelQCounts[SrProgrammer])
-
-	return questionsPerTopic
 }
 
 func levelQuestionCounts(qs *[]Question) map[Level]int {

@@ -93,6 +93,8 @@ func main() {
 			if name, ok := readIntervieweeName(os.Stdin); !ok {
 				break
 			} else {
+				// Persist the info in the DB ...
+				saveIntervieweeName(name, db)
 				config.interview.Interviewee = name
 				config.interview.Date = time.Now()
 			}
