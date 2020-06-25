@@ -61,10 +61,6 @@ func main() {
 			resetStatus(&config)
 			break
 		case topicsCmd:
-			// if config.usingInterviewFile {
-			// 	listTopicsFromInterviewFile(&config.interview.Topics, &config)
-			// 	break
-			// }
 			err = listTopics(db)
 			if err != nil {
 				panic(err)
@@ -76,10 +72,6 @@ func main() {
 		case pwdCmd:
 			fmt.Println(termenv.String(config.selectedTopic).Bold())
 		case useCmd:
-			// if config.usingInterviewFile {
-			// 	setTopicFrom(options, &config.interview.Topics, &config)
-			// 	break
-			// }
 			err = setTopic(options, &config, db)
 			if err != nil {
 				panic(err)
