@@ -2,7 +2,7 @@
 
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
 -- -----------------------------------------------------
 -- Schema recruitment_interviews
@@ -60,8 +60,8 @@ CREATE TABLE IF NOT EXISTS `recruitment_interviews`.`question` (
   `topic_id` INT NOT NULL,
   `level_id` INT NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `fk_question_topic_idx` (`topic_id` ASC) VISIBLE,
-  INDEX `fk_question_level1_idx` (`level_id` ASC) VISIBLE,
+  INDEX `fk_question_topic_idx` (`topic_id` ASC),
+  INDEX `fk_question_level1_idx` (`level_id` ASC),
   CONSTRAINT `fk_question_topic`
     FOREIGN KEY (`topic_id`)
     REFERENCES `recruitment_interviews`.`topic` (`id`)
@@ -103,8 +103,8 @@ CREATE TABLE IF NOT EXISTS `recruitment_interviews`.`answer` (
   `question_id` INT NOT NULL,
   `candidate_id` INT NOT NULL,
   PRIMARY KEY (`id`, `candidate_id`),
-  INDEX `fk_user_question_question1_idx` (`question_id` ASC) VISIBLE,
-  INDEX `fk_answer_candidate1_idx` (`candidate_id` ASC) VISIBLE,
+  INDEX `fk_user_question_question1_idx` (`question_id` ASC),
+  INDEX `fk_answer_candidate1_idx` (`candidate_id` ASC),
   CONSTRAINT `fk_user_question_question1`
     FOREIGN KEY (`question_id`)
     REFERENCES `recruitment_interviews`.`question` (`id`)
@@ -122,3 +122,4 @@ SHOW WARNINGS;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
