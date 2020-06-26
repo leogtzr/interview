@@ -87,9 +87,6 @@ func userInputToCmd(input string) (Command, []string) {
 		return setProgrammerAnalystLevelCmd, []string{}
 	case "sr":
 		return setSRProgrammerLevelCmd, []string{}
-		// TODO: this is not relevant anymore
-	//case "validate", "val", "check":
-	//return validateQuestionsCmd, []string{}
 	case "count", "cnt", "c":
 		return countCmd, []string{}
 	case "nt", "notes":
