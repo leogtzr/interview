@@ -1,4 +1,5 @@
 // TODO: save date in the DB
+// TODO: code to save comments ... (open a dialog to write up the comment or read it from stdin)
 package main
 
 import (
