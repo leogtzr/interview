@@ -1,3 +1,4 @@
+// TODO: save date in the DB
 package main
 
 import (
@@ -32,7 +33,6 @@ func main() {
 		panic(fmt.Errorf("fatal error config file: %s", err))
 	}
 	// DB setup ...
-	fmt.Println(dbConfig)
 	jdbcURL := fmt.Sprintf("%s:%s@/%s", dbConfig.GetString("db_user"), dbConfig.GetString("db_password"), dbConfig.GetString("db_name"))
 	db, err := sql.Open(dbConfig.GetString("db_driver"), jdbcURL)
 	if err != nil {
@@ -86,7 +86,11 @@ func main() {
 				break
 			} else {
 				// Persist the info in the DB ...
-				saveIntervieweeName(name, db)
+				id, err := saveIntervieweeName(name, db)
+				if err != nil {
+					panic(err)
+				}
+				config.intervieweeID = id
 				config.interview.Interviewee = name
 				config.interview.Date = time.Now()
 			}
@@ -113,7 +117,7 @@ func main() {
 			}
 			if config.ignoreLevelChecking {
 				qs := config.interview.Topics[config.selectedTopic]
-				setAnswerAsOK(&qs, &config)
+				setAnswerAsOK(&qs, &config, db)
 			} else {
 				answerAs(&config, OK, green)
 			}

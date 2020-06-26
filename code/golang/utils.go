@@ -148,26 +148,6 @@ func retrieveTopicsFromInterview(topics *map[string][]Question) []string {
 	return tps
 }
 
-func getTopics(db *sql.DB) ([]Topic, error) {
-	var topics []Topic
-	results, err := db.Query("SELECT * FROM topic")
-	if err != nil {
-		return []Topic{}, err
-	}
-	defer results.Close()
-
-	for results.Next() {
-		var topic Topic
-		err = results.Scan(&topic.ID, &topic.Topic)
-		if err != nil {
-			return []Topic{}, err
-		}
-		topics = append(topics, topic)
-	}
-
-	return topics, nil
-}
-
 func listTopics(db *sql.DB) error {
 	topics, err := getTopics(db)
 	if err != nil {
@@ -273,18 +253,16 @@ func setTopic(options []string, config *Config, db *sql.DB) error {
 	return nil
 }
 
-func saveIntervieweeName(interviewee string, db *sql.DB) error {
-	stmt, err := db.Prepare("insert into candidate(name) values(?)")
+func saveIntervieweeName(interviewee string, db *sql.DB) (int, error) {
+	stmt, err := db.Exec("insert into candidate(name) values(?)", interviewee)
 	if err != nil {
-		return err
+		return -1, err
 	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(interviewee)
+	id, err := stmt.LastInsertId()
 	if err != nil {
-		return err
+		return -1, err
 	}
-	return nil
+	return int(id), nil
 }
 
 func getQuestionsByTopic(topic string, db *sql.DB) ([]Question, error) {
@@ -580,9 +558,18 @@ func setAnswerAsNeutral(questions *[]Question, config *Config) {
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta, config)
 }
 
-func setAnswerAsOK(questions *[]Question, config *Config) {
-	(*questions)[config.questionIndex].Answer = OK
+func setAnswerAsOK(questions *[]Question, config *Config, db *sql.DB) error {
+	// persist ...
+	q := &((*questions)[config.questionIndex])
+	q.Answer = OK
+
+	err := saveAnswer(q, OK, config.intervieweeID, db)
+	if err != nil {
+		return err
+	}
+
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green, config)
+	return nil
 }
 
 func answerAs(config *Config, ans Answer, messageColorCode string) {

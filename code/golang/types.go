@@ -23,6 +23,7 @@ type Config struct {
 	colorProfile           termenv.Profile
 	rgxQuestions           regexp.Regexp
 	interview              Interview
+	intervieweeID          int
 }
 
 // Command ...
