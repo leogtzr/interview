@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -18,11 +17,6 @@ import (
 func main() {
 
 	config := NewConfig()
-	// TODO: to be removed:
-	config.interviewTopicsDir = os.Getenv("INTERVIEW_DIR")
-	if config.interviewTopicsDir == "" {
-		log.Fatal("INTERVIEW_DIR environment variable not defined.")
-	}
 
 	dbConfig, err := readConfig("interviews.env", os.Getenv("HOME"), map[string]interface{}{
 		"db_user":     os.Getenv("DB_INTERVIEW_USER"),
@@ -30,7 +24,7 @@ func main() {
 		"db_name":     os.Getenv("DB_INTERVIEW_NAME"),
 		"db_driver":   os.Getenv("DB_DRIVER"),
 	})
-	if err != nil { // Handle errors reading the config file
+	if err != nil {
 		panic(fmt.Errorf("fatal error config file: %s", err))
 	}
 	// DB setup ...
@@ -57,10 +51,6 @@ func main() {
 		case exitCmd:
 			printWithColorln("Bye", magenta, &config)
 			os.Exit(0)
-		case exitInterviewFileCmd:
-			printWithColorln("Exiting from interview file ... ", gray, &config)
-			resetStatus(&config)
-			break
 		case topicsCmd:
 			err = listTopics(db)
 			if err != nil {
@@ -117,13 +107,15 @@ func main() {
 				break
 			}
 			if config.ignoreLevelChecking {
-				qs := config.interview.Topics[config.selectedTopic]
-				err := setAnswerAsOK(&qs, &config, db)
+				err := setAnswerAsOK(&config, db)
 				if err != nil {
 					panic(err)
 				}
 			} else {
-				answerAs(&config, OK, green)
+				err := answerAs(&config, OK, green, db)
+				if err != nil {
+					panic(err)
+				}
 			}
 
 		case wrongAnswerCmd:
@@ -133,13 +125,15 @@ func main() {
 			}
 
 			if config.ignoreLevelChecking {
-				qs := config.interview.Topics[config.selectedTopic]
-				err := setAnswerAsWrong(&qs, &config, db)
+				err := setAnswerAsWrong(&config, db)
 				if err != nil {
 					panic(err)
 				}
 			} else {
-				answerAs(&config, Wrong, red)
+				err := answerAs(&config, Wrong, red, db)
+				if err != nil {
+					panic(err)
+				}
 			}
 
 		case mehAnswerCmd:
@@ -149,44 +143,20 @@ func main() {
 			}
 
 			if config.ignoreLevelChecking {
-				qs := config.interview.Topics[config.selectedTopic]
-				err := setAnswerAsNeutral(&qs, &config, db)
+				err := setAnswerAsNeutral(&config, db)
 				if err != nil {
 					panic(err)
 				}
 			} else {
-				answerAs(&config, Neutral, yellow)
+				err := answerAs(&config, Neutral, yellow, db)
+				if err != nil {
+					panic(err)
+				}
 			}
 
 		case finishCmd:
-			err := saveInterview(&config)
-			if err != nil {
-				panic(err)
-			}
 			printWithColorln(fmt.Sprintf("Interview for '%s' has been saved.\n\n\tBye ...", config.interview.Interviewee), green, &config)
-			os.Exit(1)
-
-			/*
-				case loadCmd:
-					interviewFromFile, err := loadInterview(options, &config)
-					if err != nil {
-						printWithColorln(err.Error(), red, &config)
-						break
-					}
-
-					config.usingInterviewFile = true
-					printWithColorln("You will now be navigating through an interview file.", green, &config)
-
-					config.interview = interviewFromFile
-
-					for topic, questions := range interviewFromFile.Topics {
-						fmt.Printf("[%s]\n", topic)
-						for _, q := range questions {
-							fmt.Println(q.String())
-						}
-					}
-			*/
-
+			os.Exit(0)
 		case increaseLevelCmd:
 			increaseLevel(&config)
 		case decreaseLevelCmd:
@@ -203,15 +173,8 @@ func main() {
 			setLevel(ProgrammerAnalyst, &config)
 		case setSRProgrammerLevelCmd:
 			setLevel(SrProgrammer, &config)
-		case validateQuestionsCmd:
-			validateQuestions(&config)
 		case countCmd:
 			showCounts(&config)
-		case notesCmd:
-			err := createNotes(&config)
-			if err != nil {
-				printWithColorln(err.Error(), yellow, &config)
-			}
 		}
 	}
 

@@ -1,13 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"math/rand"
-	"os"
-	"path/filepath"
-	"regexp"
-	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -57,7 +51,6 @@ func Test_userInputToCmd(t *testing.T) {
 		//{input: "load", want: loadCmd},
 		{input: "topics", want: topicsCmd},
 		{input: "help", want: helpCmd},
-		{input: "exf", want: exitInterviewFileCmd},
 		{input: "+", want: increaseLevelCmd},
 		{input: "-", want: decreaseLevelCmd},
 		{input: "=", want: ignoreLevelCmd},
@@ -67,9 +60,7 @@ func Test_userInputToCmd(t *testing.T) {
 		{input: "pa", want: setProgrammerAnalystLevelCmd},
 		{input: "sr", want: setSRProgrammerLevelCmd},
 		{input: "use", want: noCmd},
-		//{input: "validate", want: validateQuestionsCmd},
 		{input: "c", want: countCmd},
-		{input: "nt", want: notesCmd},
 		{input: "", want: noCmd},
 	}
 
@@ -79,82 +70,6 @@ func Test_userInputToCmd(t *testing.T) {
 		}
 	}
 }
-
-func Test_questionHasValidFormat(t *testing.T) {
-	rgx := regexp.MustCompile("^\\d+@.+@(\\d+)?$")
-	type test struct {
-		input string
-		match bool
-	}
-
-	tests := []test{
-		{input: "1@Cómo puedes sortear un archivo?@2", match: true},
-		{input: "1@Cómo puedes sortear un archivo?@s", match: false},
-		{input: "@Cómo puedes sortear un archivo?@s", match: false},
-		{input: "1@x@2", match: true},
-		{input: "1@@2", match: false},
-	}
-	for _, tc := range tests {
-		if match := isQuestionFormatValid(tc.input, rgx); match != tc.match {
-			t.Errorf("got=[%t], want=[%t]", match, tc.match)
-		}
-	}
-}
-
-func Test_toQuestion(t *testing.T) {
-	type test struct {
-		input    string
-		question Question
-	}
-
-	tests := []test{
-		{
-			input:    "1@Cómo puedes sortear un archivo?@2",
-			question: Question{ID: 1, Q: "Cómo puedes sortear un archivo?", Answer: NotAnsweredYet, Level: ProgrammerAnalyst},
-		},
-		{
-			input:    "2@Cómo puedes obtener las ultimas 3 líneas de un archivo?@3",
-			question: Question{ID: 2, Q: "Cómo puedes obtener las ultimas 3 líneas de un archivo?", Answer: NotAnsweredYet, Level: SrProgrammer},
-		},
-	}
-
-	for _, tc := range tests {
-		if got := toQuestion(tc.input); got != tc.question {
-			t.Errorf("got=[%s], want=[%s]", got, tc.question)
-		}
-	}
-}
-
-// TODO: fix this test to check against DB
-// func Test_retrieveTopics(t *testing.T) {
-// 	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
-// 	randDirName := stringWithCharset(5, charset, seededRand)
-// 	tmpPath := filepath.Join("/tmp", randDirName, "topics", "linux")
-
-// 	err := os.MkdirAll(tmpPath, os.ModePerm)
-// 	if err != nil {
-// 		t.Errorf("Error creating directory (%s)", err)
-// 	}
-// 	_, err = os.Create(filepath.Join(tmpPath, "questions"))
-// 	if err != nil {
-// 		t.Errorf("Error creating questions file (%s)", err)
-// 	}
-
-// 	topics := retrieveTopicsFromFileSystem(filepath.Join("/tmp", randDirName))
-// 	if topics == nil || len(topics) != 1 {
-// 		t.Errorf("Not able to get topics ... ")
-// 	}
-
-// 	topicExpectedName := "linux"
-// 	if topics[0] != topicExpectedName {
-// 		t.Errorf("got=[%s], want=[%s]", topics[0], topicExpectedName)
-// 	}
-
-// 	err = os.RemoveAll(tmpPath)
-// 	if err != nil {
-// 		t.Errorf("unexpedted error: [%s]", err)
-// 	}
-// }
 
 func Test_topicExist(t *testing.T) {
 	topics := []string{"linux", "sql", "java", "go", "c", "c++"}
@@ -261,77 +176,6 @@ func Test_ps1String(t *testing.T) {
 	}
 }
 
-func Test_extractQuestionInfo(t *testing.T) {
-	type test struct {
-		record   string
-		topic    string
-		question Question
-	}
-
-	tests := []test{
-		{record: "linux@1@Cómo puedes sortear un archivo?@2@1",
-			topic: "linux", question: Question{ID: 1, Q: "Cómo puedes sortear un archivo?", Answer: NotAnsweredYet}},
-	}
-
-	for _, tt := range tests {
-		gotTopic, gotQuestion := extractQuestionInfo(tt.record)
-		if gotTopic != tt.topic {
-			t.Errorf("got=[%s], want=[%s]", gotTopic, tt.topic)
-		}
-		if gotQuestion != tt.question {
-			t.Errorf("got=[%s], want=[%s]", gotQuestion, tt.question)
-		}
-	}
-
-}
-
-func Test_extractDateFromInterviewHeaderRecord(t *testing.T) {
-	type test struct {
-		header     string
-		want       time.Time
-		shouldFail bool
-	}
-
-	want, _ := time.Parse(interviewFormatLayout, "2020-02-11 22:32:28")
-	tests := []test{
-		{header: "Leo Gtz@2020-02-11 22:32:28", want: want, shouldFail: false},
-		{header: "abc", want: want, shouldFail: true},
-	}
-
-	for _, tt := range tests {
-		got, err := extractDateFromInterviewHeaderRecord(tt.header)
-		if err != nil && !tt.shouldFail {
-			t.Errorf("It should have failed for -> [%s]", tt.header)
-		}
-
-		if got != tt.want && !tt.shouldFail {
-			t.Errorf("got=[%s], want=[%s]", got, tt.want)
-		}
-	}
-}
-
-// func Test_extractNameFromInterviewHeaderRecord(t *testing.T) {
-// 	type test struct {
-// 		header     string
-// 		want       string
-// 		shouldFail bool
-// 	}
-// 	tests := []test{
-// 		{header: "Leo Gtz@2020-02-11 22:32:28", want: "Leo Gtz", shouldFail: false},
-// 		{header: "Leo Gtz", want: "", shouldFail: true},
-// 	}
-// 	for _, tt := range tests {
-// 		got, err := extractNameFromInterviewHeaderRecord(tt.header)
-// 		if !tt.shouldFail && err != nil {
-// 			t.Errorf("it should have failed with: [%s]", tt.header)
-// 		}
-
-// 		if tt.shouldFail && err == nil {
-// 			t.Errorf("got=[%s], want=[%s]", got, tt.want)
-// 		}
-// 	}
-// }
-
 func Test_setLevel(t *testing.T) {
 
 	colorProfile := termenv.ColorProfile()
@@ -420,28 +264,6 @@ func Test_countGeneral(t *testing.T) {
 
 }
 
-func Test_setAnswerAsNeutral(t *testing.T) {
-	qs := []Question{
-		Question{ID: 1, Answer: OK},
-		Question{ID: 2, Answer: OK},
-		Question{ID: 3, Answer: Wrong},
-		Question{ID: 4, Answer: NotAnsweredYet},
-	}
-
-	colorProfile := termenv.ColorProfile()
-	config := Config{colorProfile: colorProfile}
-
-	for i := 0; i < len(qs); i++ {
-		setAnswerAsNeutral(&qs, &config)
-		config.questionIndex++
-	}
-
-	for _, q := range qs {
-		if q.Answer != Neutral {
-			t.Errorf("%s should have been marked as Neutral.", q)
-		}
-	}
-}
 func Test_extractTopicName(t *testing.T) {
 	type test struct {
 		options []string
@@ -456,83 +278,6 @@ func Test_extractTopicName(t *testing.T) {
 		if got := extractTopicName(tt.options); got != tt.want {
 			t.Errorf("got=[%s], want=[%s]", got, tt.want)
 		}
-	}
-}
-
-func Test_retrieveTopicsFromInterview(t *testing.T) {
-	type test struct {
-		topics map[string][]Question
-		want   []string
-	}
-	tests := []test{
-		{
-			topics: map[string][]Question{
-				"java":  []Question{},
-				"linux": []Question{},
-				"bash":  []Question{},
-			},
-			want: []string{"bash", "java", "linux"},
-		},
-	}
-
-	for _, tt := range tests {
-		got := retrieveTopicsFromInterview(&tt.topics)
-		sort.Strings(got)
-		if !EqualTopics(got, tt.want) {
-			t.Errorf("got=[%s], want=[%s]", got, tt.want)
-		}
-	}
-
-}
-
-func Test_hasErrors(t *testing.T) {
-	seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
-	randDirName := stringWithCharset(5, charset, seededRand)
-	tmpPath := filepath.Join("/tmp", randDirName, "topics", "linux")
-
-	err := os.MkdirAll(tmpPath, os.ModePerm)
-	if err != nil {
-		t.Errorf("Error creating directory (%s)", err)
-	}
-	questionFileNoErrors, err := os.Create(filepath.Join(tmpPath, "questions"))
-	if err != nil {
-		t.Errorf("Error creating questions file (%s)", err)
-	}
-	defer questionFileNoErrors.Close()
-
-	w := bufio.NewWriter(questionFileNoErrors)
-	fmt.Fprintln(w, "3@Hello@4")
-	fmt.Fprintln(w, "5@Hello")
-	fmt.Fprintln(w, "4@Hello")
-	w.Flush()
-
-	type test struct {
-		wantHas         bool
-		wantLineNumbers []int
-	}
-
-	tests := []test{
-		{wantHas: true, wantLineNumbers: []int{2, 3}},
-	}
-
-	config := Config{rgxQuestions: *regexp.MustCompile("^\\d+@.+@(\\d+)?$")}
-
-	for _, tt := range tests {
-		has, lineNumbers := hasErrors(filepath.Join(tmpPath, "questions"), &config)
-		if has != tt.wantHas {
-			t.Errorf("got=[%t], want=[%t]", has, tt.wantHas)
-		}
-		if !EqualNumbers(lineNumbers, tt.wantLineNumbers) {
-			t.Errorf("got=[%s], want=[%s]",
-				strings.Trim(strings.Replace(fmt.Sprint(lineNumbers), " ", ",", -1), "[]"),
-				strings.Trim(strings.Replace(fmt.Sprint(tt.wantLineNumbers), " ", ",", -1), "[]"),
-			)
-		}
-	}
-
-	err = os.RemoveAll(tmpPath)
-	if err != nil {
-		t.Errorf("unexpedted error: [%s]", err)
 	}
 }
 
@@ -619,25 +364,6 @@ func Test_levelQuestionCounts(t *testing.T) {
 	}
 }
 
-func Test_shouldIgnoreLine(t *testing.T) {
-	type test struct {
-		line string
-		want bool
-	}
-
-	tests := []test{
-		{line: "hola", want: false},
-		{line: "# comment", want: true},
-		{line: "", want: true},
-	}
-
-	for _, tt := range tests {
-		if got := shouldIgnoreLine(tt.line); got != tt.want {
-			t.Errorf("got=[%t], want=[%t]", got, tt.want)
-		}
-	}
-}
-
 func Test_markQuestionAs(t *testing.T) {
 	type test struct {
 		id  int
@@ -707,92 +433,5 @@ func TestNewConfig(t *testing.T) {
 
 	if config.levels != expectedLevels {
 		t.Errorf("got=[%s], want=[%s]", config.levels, expectedLevels)
-	}
-}
-
-func Test_showCounts(t *testing.T) {
-
-}
-
-func Test_answerAs(t *testing.T) {
-	topics := make(map[string][]Question)
-	linuxQuestions := []Question{
-		Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 3, Q: "lx3", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 4, Q: "lx4", Level: SrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 5, Q: "lx5", Level: SrProgrammer, Answer: NotAnsweredYet},
-	}
-
-	javaQuestions := []Question{
-		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
-	}
-
-	randomQuestions := []Question{}
-
-	topics["linux"] = linuxQuestions
-	topics["java"] = javaQuestions
-	topics["random"] = randomQuestions
-
-	config := Config{}
-	config.levels = [3]Level{
-		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
-	}
-	config.selectedTopic = "linux"
-	config.interview = Interview{Interviewee: "Hello", Date: time.Now(), Topics: topics}
-	config.individualLevelIndexes = []int{0, 0, 0}
-
-	answerAs(&config, OK, green)
-	config.individualLevelIndexes[int(AssociateOrProgrammer)-1]++
-
-	config.topicQuestionsLevel = SrProgrammer
-	config.levelIndex = int(SrProgrammer) - 1
-	answerAs(&config, OK, green)
-
-	config.individualLevelIndexes[int(SrProgrammer)-1]++
-
-	if config.interview.Topics["linux"][0].Answer != OK {
-		t.Errorf("got=[%s], want=[%s]", config.interview.Topics["linux"][0], OK)
-	}
-
-	if config.interview.Topics["linux"][3].Answer != OK {
-		t.Errorf("got=[%s], want=[%s]", config.interview.Topics["linux"][0], OK)
-	}
-
-}
-
-func Test_setTopicFrom(t *testing.T) {
-	topics := map[string][]Question{
-		"linux":  []Question{},
-		"java":   []Question{},
-		"spring": []Question{},
-	}
-
-	type test struct {
-		topics       map[string][]Question
-		inputOptions []string
-		want         string
-	}
-
-	tests := []test{
-		{
-			topics:       topics,
-			inputOptions: []string{"java"},
-			want:         "java",
-		},
-		{
-			topics:       topics,
-			inputOptions: []string{"c++"},
-			want:         "",
-		},
-	}
-
-	for _, tt := range tests {
-		config := Config{}
-		setTopicFrom(tt.inputOptions, &tt.topics, &config)
-		if config.selectedTopic != tt.want {
-			t.Errorf("got=[%s], want=[%s]", config.selectedTopic, tt.want)
-		}
 	}
 }

@@ -79,3 +79,35 @@ func getQuestionsByTopicWithLevel(topic string, level Level, db *sql.DB) ([]Ques
 
 	return questionsPerTopic, nil
 }
+
+func getTopicsWithQuestions(db *sql.DB) ([]string, error) {
+	var topics []string
+	results, err := db.Query("select distinct(t.topic) from topic t inner join question q on t.id = q.topic_id")
+	if err != nil {
+		return []string{}, err
+	}
+	defer results.Close()
+
+	for results.Next() {
+		var topic string
+		err = results.Scan(&topic)
+		if err != nil {
+			return []string{}, err
+		}
+		topics = append(topics, topic)
+	}
+
+	return topics, nil
+}
+
+func saveIntervieweeName(interviewee string, db *sql.DB) (int, error) {
+	stmt, err := db.Exec("insert into candidate(name) values(?)", interviewee)
+	if err != nil {
+		return -1, err
+	}
+	id, err := stmt.LastInsertId()
+	if err != nil {
+		return -1, err
+	}
+	return int(id), nil
+}

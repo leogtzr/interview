@@ -5,16 +5,9 @@ import (
 	"database/sql"
 	"fmt"
 	"io"
-	"log"
-	"math/rand"
 	"os"
 	"os/exec"
-	"path/filepath"
-	"regexp"
-	"runtime"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/muesli/termenv"
 	"github.com/spf13/viper"
@@ -67,10 +60,6 @@ func userInputToCmd(input string) (Command, []string) {
 		return mehAnswerCmd, []string{}
 	case "finish", "done", "bye":
 		return finishCmd, []string{}
-	// case "load":
-	// 	return loadCmd, fullCommand[1:]
-	case "exf":
-		return exitInterviewFileCmd, []string{}
 	case "+":
 		return increaseLevelCmd, []string{}
 	case "-":
@@ -89,63 +78,8 @@ func userInputToCmd(input string) (Command, []string) {
 		return setSRProgrammerLevelCmd, []string{}
 	case "count", "cnt", "c":
 		return countCmd, []string{}
-	case "nt", "notes":
-		return notesCmd, []string{}
 	}
 	return noCmd, []string{}
-}
-
-func dirExists(dirPath string) bool {
-	if _, err := os.Stat(dirPath); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-		return false
-	}
-	return true
-}
-
-func exists(name string) bool {
-	if _, err := os.Stat(name); os.IsNotExist(err) {
-		return false
-	}
-	return true
-}
-
-func getTopicsWithQuestions(db *sql.DB) ([]string, error) {
-	var topics []string
-	results, err := db.Query("select distinct(t.topic) from topic t inner join question q on t.id = q.topic_id")
-	if err != nil {
-		return []string{}, err
-	}
-	defer results.Close()
-
-	for results.Next() {
-		var topic string
-		err = results.Scan(&topic)
-		if err != nil {
-			return []string{}, err
-		}
-		topics = append(topics, topic)
-	}
-
-	return topics, nil
-}
-
-func retrieveTopicsFromFileSystem(db *sql.DB) ([]string, error) {
-	topics, err := getTopicsWithQuestions(db)
-	if err != nil {
-		return []string{}, err
-	}
-	return topics, err
-}
-
-func retrieveTopicsFromInterview(topics *map[string][]Question) []string {
-	tps := make([]string, 0)
-	for t := range *topics {
-		tps = append(tps, t)
-	}
-	return tps
 }
 
 func listTopics(db *sql.DB) error {
@@ -165,7 +99,7 @@ func printHelp() {
 commands:
 
 	exit|quit|:q|/q|q 			exits from this application.
-	topics|tps|t|/t|:t 			list current available topics from file system or a loaded interview.
+	topics|tps|t|/t|:t 			list current available topics from the DB
 	help|:h|/h|--h|-h 			shows this message.
 	use|u|/u|:u|-u|--u|set 			sets an available topic.
 	cls|clear 				clears the screen.
@@ -218,14 +152,6 @@ func topicExist(topic string, topics *[]string) bool {
 	return r
 }
 
-func toQuestion(question string) Question {
-	questionFields := strings.Split(question, "@")
-	id, _ := strconv.ParseInt(questionFields[0], 10, 64)
-	q := questionFields[1]
-	level, _ := strconv.ParseInt(questionFields[2], 10, 64)
-	return Question{ID: int(id), Q: q, Answer: NotAnsweredYet, Level: Level(level)}
-}
-
 func extractTopicName(options []string) string {
 	topicName := options[0]
 	topicName = strings.ToLower(topicName)
@@ -253,18 +179,6 @@ func setTopic(options []string, config *Config, db *sql.DB) error {
 	return nil
 }
 
-func saveIntervieweeName(interviewee string, db *sql.DB) (int, error) {
-	stmt, err := db.Exec("insert into candidate(name) values(?)", interviewee)
-	if err != nil {
-		return -1, err
-	}
-	id, err := stmt.LastInsertId()
-	if err != nil {
-		return -1, err
-	}
-	return int(id), nil
-}
-
 func loadQuestionsFromTopic(config *Config, db *sql.DB) ([]Question, error) {
 	// Clear previous questions ...
 	questionsPerTopic, err := getQuestionsByTopic(config.selectedTopic, db)
@@ -284,22 +198,6 @@ func loadQuestionsFromTopic(config *Config, db *sql.DB) ([]Question, error) {
 	printWithColorf(config, "%d\n", green, levelQCounts[SrProgrammer])
 
 	return questionsPerTopic, nil
-}
-
-func setTopicFrom(inputOptions []string, topicsFromInterviewFile *map[string][]Question, config *Config) {
-	topicName := extractTopicName(inputOptions)
-	topics := retrieveTopicsFromInterview(topicsFromInterviewFile)
-	if topicExist(topicName, &topics) {
-		config.selectedTopic = topicName
-		return
-	}
-
-	fmt.Println(
-		termenv.String(fmt.Sprintf("topic '%s' not found or the topic selected doesn't have questions.", topicName)).Foreground(config.colorProfile.Color(red)))
-}
-
-func shouldIgnoreLine(line string) bool {
-	return strings.HasPrefix(line, "#") || len(strings.TrimSpace(line)) == 0
 }
 
 func levelQuestionCounts(qs *[]Question) map[Level]int {
@@ -327,10 +225,6 @@ func ps1String(ps1, selectedTopic, intervieweeName string) string {
 	return fmt.Sprintf(
 		"/%s %s $ ",
 		termenv.String(selectedTopic).Faint(), shortIntervieweeName(intervieweeName, minNumberOfCharsInIntervieweeName))
-}
-
-func isQuestionFormatValid(question string, rgx *regexp.Regexp) bool {
-	return rgx.MatchString(question)
 }
 
 func (q Question) String() string {
@@ -400,121 +294,6 @@ func printWithColorf(config *Config, msg, colorCode string, a ...interface{}) {
 	fmt.Printf(termenv.String(msg).Foreground(config.colorProfile.Color(colorCode)).String(), a...)
 }
 
-func saveInterview(config *Config) error {
-	intervieweeName := config.interview.Interviewee
-	savedDir := filepath.Join(config.interviewTopicsDir, "saved")
-	if !dirExists(savedDir) {
-		return fmt.Errorf("[%s] does not exist", savedDir)
-	}
-
-	savedInterviewName := filepath.Join(savedDir, intervieweeName)
-	if dirExists(savedInterviewName) {
-		printWithColorln(fmt.Sprintf("[%s] already exists, we will generate another name.", savedInterviewName), red, config)
-		seededRand := rand.New(rand.NewSource(time.Now().UnixNano()))
-		randDirName := stringWithCharset(2, charset, seededRand)
-		savedInterviewName = fmt.Sprintf("%s-%s", savedInterviewName, randDirName)
-	}
-	if err := os.MkdirAll(savedInterviewName, os.ModePerm); err != nil {
-		return err
-	}
-	return saveData(filepath.Join(savedInterviewName, "interview"), config.interview)
-}
-
-func saveData(savedInterviewNamePath string, interview Interview) error {
-	file, err := os.Create(savedInterviewNamePath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	w := bufio.NewWriter(file)
-
-	fmt.Fprintf(w, "%s@%s\n", interview.Interviewee, interview.Date.Format(interviewFormatLayout))
-
-	for topicName, questions := range interview.Topics {
-		for _, q := range questions {
-			if q.Answer != NotAnsweredYet {
-				fmt.Fprintf(w, "%s@%d@%s@%d\n", topicName, q.ID, q.Q, int(q.Answer))
-			}
-		}
-	}
-	return w.Flush()
-}
-
-/*
-func loadInterview(options []string, config *Config) (Interview, error) {
-	interviewName := strings.Join(options, " ")
-	interviewFile := filepath.Join(config.interviewTopicsDir, "saved", interviewName, "interview")
-	if !dirExists(interviewFile) {
-		return Interview{}, fmt.Errorf("'%s' does not exist", interviewFile)
-	}
-	file, err := os.Open(interviewFile)
-	if err != nil {
-		return Interview{}, err
-	}
-	defer file.Close()
-
-	interview := Interview{}
-
-	scanner := bufio.NewScanner(file)
-	if scanner.Scan() {
-		header := scanner.Text()
-		intervieweeName, err := extractNameFromInterviewHeaderRecord(header)
-		if err != nil {
-			return Interview{}, err
-		}
-		interview.Interviewee = intervieweeName
-
-		interviewDate, err := extractDateFromInterviewHeaderRecord(header)
-		if err != nil {
-			return Interview{}, err
-		}
-		interview.Date = interviewDate
-	}
-
-	interview.Topics = make(map[string][]Question)
-
-	// Load questions:
-	for scanner.Scan() {
-		questionFileRecord := scanner.Text()
-		topic, question := extractQuestionInfo(questionFileRecord)
-		interview.Topics[topic] = append(interview.Topics[topic], question)
-	}
-
-	return interview, nil
-}
-*/
-
-// func extractNameFromInterviewHeaderRecord(header string) (string, error) {
-// 	fields := strings.Split(strings.TrimSpace(header), "@")
-// 	if len(fields) != requiredNumberOfFieldsInInterviewHeaderRecord {
-// 		return "", fmt.Errorf("'%s' wrong header format", header)
-// 	}
-// 	return fields[0], nil
-// }
-
-func extractDateFromInterviewHeaderRecord(header string) (time.Time, error) {
-	fields := strings.Split(strings.TrimSpace(header), "@")
-	if len(fields) != requiredNumberOfFieldsInInterviewHeaderRecord {
-		return time.Time{}, fmt.Errorf("'%s' wrong header format", header)
-	}
-	interviewDate, err := time.Parse(interviewFormatLayout, fields[1])
-	return interviewDate, err
-}
-
-func extractQuestionInfo(questionFileRecord string) (string, Question) {
-	fields := strings.Split(questionFileRecord, "@")
-	topic := fields[0]
-	id, _ := strconv.ParseInt(fields[1], 10, 64)
-	question := fields[2]
-
-	q := Question{ID: int(id), Q: question}
-	x, _ := strconv.ParseInt(fields[4], 10, 64)
-	q.Answer = Answer(int(x))
-
-	return topic, q
-}
-
 func resetStatus(config *Config) {
 	config.interview = Interview{Topics: make(map[string][]Question)}
 	//config.usingInterviewFile = false
@@ -529,13 +308,12 @@ func showLevel(config *Config) {
 	printWithColorln(currentLevel.String(), cyan, config)
 }
 
-func setAnswerAsNeutral(questions *[]Question, config *Config, db *sql.DB) error {
-	//(*questions)[config.questionIndex].Answer = Neutral
-
-	q := &((*questions)[config.questionIndex])
+func setAnswerAsNeutral(config *Config, db *sql.DB) error {
+	questions := config.interview.Topics[config.selectedTopic]
+	q := questions[config.questionIndex]
 	q.Answer = Neutral
 
-	err := saveAnswer(q, Neutral, config.intervieweeID, db)
+	err := saveAnswer(&q, Neutral, config.intervieweeID, db)
 	if err != nil {
 		return err
 	}
@@ -544,11 +322,12 @@ func setAnswerAsNeutral(questions *[]Question, config *Config, db *sql.DB) error
 	return nil
 }
 
-func setAnswerAsOK(questions *[]Question, config *Config, db *sql.DB) error {
-	q := &((*questions)[config.questionIndex])
+func setAnswerAsOK(config *Config, db *sql.DB) error {
+	questions := config.interview.Topics[config.selectedTopic]
+	q := questions[config.questionIndex]
 	q.Answer = OK
 
-	err := saveAnswer(q, OK, config.intervieweeID, db)
+	err := saveAnswer(&q, OK, config.intervieweeID, db)
 	if err != nil {
 		return err
 	}
@@ -557,26 +336,33 @@ func setAnswerAsOK(questions *[]Question, config *Config, db *sql.DB) error {
 	return nil
 }
 
-func answerAs(config *Config, ans Answer, messageColorCode string) {
-	currentLevel := config.levels[config.levelIndex]
-	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
-	index := config.individualLevelIndexes[int(currentLevel)-1]
-	id := currentLevelQuestions[index].ID
-	qs := config.interview.Topics[config.selectedTopic]
-	markQuestionAs(id, ans, &qs)
-	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", ans), messageColorCode, config)
-}
-
-func setAnswerAsWrong(questions *[]Question, config *Config, db *sql.DB) error {
-	q := &((*questions)[config.questionIndex])
+func setAnswerAsWrong(config *Config, db *sql.DB) error {
+	questions := config.interview.Topics[config.selectedTopic]
+	q := questions[config.questionIndex]
 	q.Answer = Wrong
 
-	err := saveAnswer(q, Wrong, config.intervieweeID, db)
+	err := saveAnswer(&q, Wrong, config.intervieweeID, db)
 	if err != nil {
 		return err
 	}
 
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red, config)
+	return nil
+}
+
+func answerAs(config *Config, ans Answer, messageColorCode string, db *sql.DB) error {
+	currentLevel := config.levels[config.levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
+	index := config.individualLevelIndexes[int(currentLevel)-1]
+	id := currentLevelQuestions[index].ID
+	q := currentLevelQuestions[index]
+	qs := config.interview.Topics[config.selectedTopic]
+	markQuestionAs(id, ans, &qs)
+	err := saveAnswer(&q, ans, config.intervieweeID, db)
+	if err != nil {
+		return err
+	}
+	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", ans), messageColorCode, config)
 	return nil
 }
 
@@ -672,59 +458,6 @@ func setLevel(lvl Level, config *Config) {
 	printWithColorln(fmt.Sprintf("%s", currentLevel), green, config)
 }
 
-func validateQuestions(config *Config) {
-	topicsDir := filepath.Join(config.interviewTopicsDir, "topics")
-
-	if !dirExists(topicsDir) {
-		log.Fatalf("'%s' does not exist", topicsDir)
-	}
-	err := filepath.Walk(topicsDir, func(path string, info os.FileInfo, err error) error {
-		if !exists(filepath.Join(path, "questions")) {
-			return nil
-		}
-		path = filepath.Base(path)
-		if path == "topics" || path == "questions" {
-			return nil
-		}
-		questionFile := filepath.Join(topicsDir, path, "questions")
-		if has, lineNumbers := hasErrors(questionFile, config); has {
-			fmt.Printf("%s has errors, lines:\n", questionFile)
-			for _, line := range lineNumbers {
-				fmt.Printf("\t%d\n", line)
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		panic(err)
-	}
-}
-
-func hasErrors(interviewFilePath string, config *Config) (bool, []int) {
-	has := false
-	lineNumbers := []int{}
-	file, err := os.Open(interviewFilePath)
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	questionIndex := 0
-	for scanner.Scan() {
-		questionIndex++
-		questionText := scanner.Text()
-		if shouldIgnoreLine(questionText) {
-			continue
-		}
-		if !isQuestionFormatValid(questionText, &config.rgxQuestions) {
-			has = true
-			lineNumbers = append(lineNumbers, questionIndex)
-		}
-	}
-	return has, lineNumbers
-}
-
 func showCounts(config *Config) {
 	qs := config.interview.Topics[config.selectedTopic]
 	levelQCounts := levelQuestionCounts(&qs)
@@ -739,7 +472,6 @@ func showCounts(config *Config) {
 // NewConfig Creates a new Configuration object.
 func NewConfig() Config {
 	cfg := Config{}
-	cfg.rgxQuestions = *regexp.MustCompile("^\\d+@.+@(\\d+)?$")
 	cfg.selectedTopic = ""
 	cfg.ps1 = "$ "
 	cfg.colorProfile = termenv.ColorProfile()
@@ -748,57 +480,11 @@ func NewConfig() Config {
 	cfg.levelIndex = 0
 	cfg.ignoreLevelChecking = false
 	cfg.individualLevelIndexes = []int{0, 0, 0}
-	// cfg.usingInterviewFile = false
 	cfg.questionIndex = 0
 	cfg.levels = [3]Level{
 		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
 	}
 	return cfg
-}
-
-func createNotes(config *Config) error {
-	if !config.hasStarted {
-		return fmt.Errorf("Interview hasn't started")
-	}
-	intervieweeName := config.interview.Interviewee
-	savedDir := filepath.Join(config.interviewTopicsDir, "saved")
-	if !dirExists(savedDir) {
-		return fmt.Errorf("[%s] does not exist", savedDir)
-	}
-	savedInterviewName := filepath.Join(savedDir, intervieweeName)
-	if !dirExists(savedInterviewName) {
-		err := os.MkdirAll(savedInterviewName, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	}
-
-	notesFilePath := filepath.Join(savedInterviewName, "notes.txt")
-	file, err := os.OpenFile(notesFilePath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0660)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	w := bufio.NewWriter(file)
-	fmt.Fprintf(w, "Notes:\n\n")
-	w.Flush()
-
-	return openOSEditor(runtime.GOOS, notesFilePath)
-}
-
-func openOSEditor(osVersion, notesFile string) error {
-	var cmd *exec.Cmd
-	oldStdout, oldStdin, oldSterr := os.Stdout, os.Stdin, os.Stderr
-	if osVersion == "windows" {
-		cmd = exec.Command("notepad", notesFile)
-	} else {
-		cmd = exec.Command("/usr/bin/xterm", "-fa", "Monospace", "-fs", "14", "-e", "/usr/bin/vim", "+$", notesFile)
-	}
-	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr
-	err := cmd.Run()
-	os.Stdout, os.Stdin, os.Stderr = oldStdout, oldStdin, oldSterr
-	return err
 }
 
 func readConfig(filename, configPath string, defaults map[string]interface{}) (*viper.Viper, error) {

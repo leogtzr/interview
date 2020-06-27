@@ -124,3 +124,78 @@ func Test_setAnswerAsWrong(t *testing.T) {
 	}
 }
 */
+
+/*
+func Test_setAnswerAsNeutral(t *testing.T) {
+	qs := []Question{
+		Question{ID: 1, Answer: OK},
+		Question{ID: 2, Answer: OK},
+		Question{ID: 3, Answer: Wrong},
+		Question{ID: 4, Answer: NotAnsweredYet},
+	}
+
+	colorProfile := termenv.ColorProfile()
+	config := Config{colorProfile: colorProfile}
+
+	for i := 0; i < len(qs); i++ {
+		setAnswerAsNeutral(&qs, &config)
+		config.questionIndex++
+	}
+
+	for _, q := range qs {
+		if q.Answer != Neutral {
+			t.Errorf("%s should have been marked as Neutral.", q)
+		}
+	}
+}
+*/
+
+/*
+func Test_answerAs(t *testing.T) {
+	topics := make(map[string][]Question)
+	linuxQuestions := []Question{
+		Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 3, Q: "lx3", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 4, Q: "lx4", Level: SrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 5, Q: "lx5", Level: SrProgrammer, Answer: NotAnsweredYet},
+	}
+
+	javaQuestions := []Question{
+		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+		Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
+	}
+
+	randomQuestions := []Question{}
+
+	topics["linux"] = linuxQuestions
+	topics["java"] = javaQuestions
+	topics["random"] = randomQuestions
+
+	config := Config{}
+	config.levels = [3]Level{
+		AssociateOrProgrammer, ProgrammerAnalyst, SrProgrammer,
+	}
+	config.selectedTopic = "linux"
+	config.interview = Interview{Interviewee: "Hello", Date: time.Now(), Topics: topics}
+	config.individualLevelIndexes = []int{0, 0, 0}
+
+	answerAs(&config, OK, green)
+	config.individualLevelIndexes[int(AssociateOrProgrammer)-1]++
+
+	config.topicQuestionsLevel = SrProgrammer
+	config.levelIndex = int(SrProgrammer) - 1
+	answerAs(&config, OK, green)
+
+	config.individualLevelIndexes[int(SrProgrammer)-1]++
+
+	if config.interview.Topics["linux"][0].Answer != OK {
+		t.Errorf("got=[%s], want=[%s]", config.interview.Topics["linux"][0], OK)
+	}
+
+	if config.interview.Topics["linux"][3].Answer != OK {
+		t.Errorf("got=[%s], want=[%s]", config.interview.Topics["linux"][0], OK)
+	}
+
+}
+*/

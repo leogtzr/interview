@@ -9,38 +9,36 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[exitCmd-0]
-	_ = x[exitInterviewFileCmd-1]
-	_ = x[topicsCmd-2]
-	_ = x[helpCmd-3]
-	_ = x[useCmd-4]
-	_ = x[clearScreenCmd-5]
-	_ = x[pwdCmd-6]
-	_ = x[noCmd-7]
-	_ = x[startCmd-8]
-	_ = x[printCmd-9]
-	_ = x[nextQuestionCmd-10]
-	_ = x[previousQuestionCmd-11]
-	_ = x[viewCmd-12]
-	_ = x[rightAnswerCmd-13]
-	_ = x[wrongAnswerCmd-14]
-	_ = x[mehAnswerCmd-15]
-	_ = x[finishCmd-16]
-	_ = x[increaseLevelCmd-17]
-	_ = x[decreaseLevelCmd-18]
-	_ = x[ignoreLevelCmd-19]
-	_ = x[showLevelCmd-20]
-	_ = x[showStatsCmd-21]
-	_ = x[setAssociateProgrammerLevelCmd-22]
-	_ = x[setProgrammerAnalystLevelCmd-23]
-	_ = x[setSRProgrammerLevelCmd-24]
-	_ = x[validateQuestionsCmd-25]
-	_ = x[countCmd-26]
-	_ = x[notesCmd-27]
+	_ = x[topicsCmd-1]
+	_ = x[helpCmd-2]
+	_ = x[useCmd-3]
+	_ = x[clearScreenCmd-4]
+	_ = x[pwdCmd-5]
+	_ = x[noCmd-6]
+	_ = x[startCmd-7]
+	_ = x[printCmd-8]
+	_ = x[nextQuestionCmd-9]
+	_ = x[previousQuestionCmd-10]
+	_ = x[viewCmd-11]
+	_ = x[rightAnswerCmd-12]
+	_ = x[wrongAnswerCmd-13]
+	_ = x[mehAnswerCmd-14]
+	_ = x[finishCmd-15]
+	_ = x[increaseLevelCmd-16]
+	_ = x[decreaseLevelCmd-17]
+	_ = x[ignoreLevelCmd-18]
+	_ = x[showLevelCmd-19]
+	_ = x[showStatsCmd-20]
+	_ = x[setAssociateProgrammerLevelCmd-21]
+	_ = x[setProgrammerAnalystLevelCmd-22]
+	_ = x[setSRProgrammerLevelCmd-23]
+	_ = x[validateQuestionsCmd-24]
+	_ = x[countCmd-25]
 }
 
-const _Command_name = "exitCmdexitInterviewFileCmdtopicsCmdhelpCmduseCmdclearScreenCmdpwdCmdnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmdshowStatsCmdsetAssociateProgrammerLevelCmdsetProgrammerAnalystLevelCmdsetSRProgrammerLevelCmdvalidateQuestionsCmdcountCmdnotesCmd"
+const _Command_name = "exitCmdtopicsCmdhelpCmduseCmdclearScreenCmdpwdCmdnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmdshowStatsCmdsetAssociateProgrammerLevelCmdsetProgrammerAnalystLevelCmdsetSRProgrammerLevelCmdvalidateQuestionsCmdcountCmd"
 
-var _Command_index = [...]uint16{0, 7, 27, 36, 43, 49, 63, 69, 74, 82, 90, 105, 124, 131, 145, 159, 171, 180, 196, 212, 226, 238, 250, 280, 308, 331, 351, 359, 367}
+var _Command_index = [...]uint16{0, 7, 16, 23, 29, 43, 49, 54, 62, 70, 85, 104, 111, 125, 139, 151, 160, 176, 192, 206, 218, 230, 260, 288, 311, 331, 339}
 
 func (i Command) String() string {
 	if i < 0 || i >= Command(len(_Command_index)-1) {
