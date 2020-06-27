@@ -1,6 +1,6 @@
 #!/bin/bash
 #: name: create_PROD_db.sh
-set -o xtrace
+# set -o xtrace
 set -o nounset
 set -o pipefail
 

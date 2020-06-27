@@ -89,13 +89,6 @@ insert into question (question, answer, topic_id, level_id) values(
 );
 
 insert into question (question, answer, topic_id, level_id) values(
-"What are the collection views in the Map interface?",
-"Set<K> keySet(), Collection<V> values, Set<Map.Entry<K, V>> entrySet()", 
-1, 
-3
-);
-
-insert into question (question, answer, topic_id, level_id) values(
 "What are the differences between a HashMap and a Hashtable?",
 "HMap allows null keys and null values. Htable doesn't allow null keys and null values. Htable is synchronized. Htable is kind of legacy.", 
 1, 
