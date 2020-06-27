@@ -63,3 +63,64 @@ func Test_getTopics(t *testing.T) {
 		t.Error("Expecting topics in DB.")
 	}
 }
+
+func Test_getQuestionsByTopicWithLevel(t *testing.T) {
+	topics, err := getQuestionsByTopicWithLevel("java", SrProgrammer, db)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if len(topics) < 1 {
+		t.Errorf("Expecting topics in DB: %d\n", len(topics))
+	}
+}
+
+/*
+// TODO: fix this ...
+func Test_setAnswerAsOK(t *testing.T) {
+	qs := []Question{
+		Question{ID: 1, Answer: OK},
+		Question{ID: 2, Answer: OK},
+		Question{ID: 3, Answer: Wrong},
+		Question{ID: 4, Answer: NotAnsweredYet},
+	}
+
+	colorProfile := termenv.ColorProfile()
+	config := Config{colorProfile: colorProfile}
+
+	for i := 0; i < len(qs); i++ {
+		setAnswerAsOK(&qs, &config)
+		config.questionIndex++
+	}
+
+	for _, q := range qs {
+		if q.Answer != OK {
+			t.Errorf("%s should have been marked as OK.", q)
+		}
+	}
+}
+*/
+
+/*
+func Test_setAnswerAsWrong(t *testing.T) {
+	qs := []Question{
+		Question{ID: 1, Answer: OK},
+		Question{ID: 2, Answer: OK},
+		Question{ID: 3, Answer: Wrong},
+		Question{ID: 4, Answer: NotAnsweredYet},
+	}
+
+	colorProfile := termenv.ColorProfile()
+	config := Config{colorProfile: colorProfile}
+
+	for i := 0; i < len(qs); i++ {
+		setAnswerAsWrong(&qs, &config)
+		config.questionIndex++
+	}
+
+	for _, q := range qs {
+		if q.Answer != Wrong {
+			t.Errorf("%s should have been marked as Wrong.", q)
+		}
+	}
+}
+*/

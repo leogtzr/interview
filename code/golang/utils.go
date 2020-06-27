@@ -265,30 +265,6 @@ func saveIntervieweeName(interviewee string, db *sql.DB) (int, error) {
 	return int(id), nil
 }
 
-func getQuestionsByTopic(topic string, db *sql.DB) ([]Question, error) {
-	questionsPerTopic := make([]Question, 0)
-
-	results, err :=
-		db.Query(
-			`select q.id, question, q.level_id from question q, topic t where t.topic = ? and t.id = q.topic_id`,
-			topic)
-	if err != nil {
-		return []Question{}, err
-	}
-	defer results.Close()
-
-	for results.Next() {
-		var question Question
-		err = results.Scan(&question.ID, &question.Q, &question.Level)
-		if err != nil {
-			return []Question{}, err
-		}
-		questionsPerTopic = append(questionsPerTopic, question)
-	}
-
-	return questionsPerTopic, nil
-}
-
 func loadQuestionsFromTopic(config *Config, db *sql.DB) ([]Question, error) {
 	// Clear previous questions ...
 	questionsPerTopic, err := getQuestionsByTopic(config.selectedTopic, db)
@@ -553,13 +529,22 @@ func showLevel(config *Config) {
 	printWithColorln(currentLevel.String(), cyan, config)
 }
 
-func setAnswerAsNeutral(questions *[]Question, config *Config) {
-	(*questions)[config.questionIndex].Answer = Neutral
+func setAnswerAsNeutral(questions *[]Question, config *Config, db *sql.DB) error {
+	//(*questions)[config.questionIndex].Answer = Neutral
+
+	q := &((*questions)[config.questionIndex])
+	q.Answer = Neutral
+
+	err := saveAnswer(q, Neutral, config.intervieweeID, db)
+	if err != nil {
+		return err
+	}
+
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta, config)
+	return nil
 }
 
 func setAnswerAsOK(questions *[]Question, config *Config, db *sql.DB) error {
-	// persist ...
 	q := &((*questions)[config.questionIndex])
 	q.Answer = OK
 
@@ -582,9 +567,17 @@ func answerAs(config *Config, ans Answer, messageColorCode string) {
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", ans), messageColorCode, config)
 }
 
-func setAnswerAsWrong(questions *[]Question, config *Config) {
-	(*questions)[config.questionIndex].Answer = Wrong
+func setAnswerAsWrong(questions *[]Question, config *Config, db *sql.DB) error {
+	q := &((*questions)[config.questionIndex])
+	q.Answer = Wrong
+
+	err := saveAnswer(q, Wrong, config.intervieweeID, db)
+	if err != nil {
+		return err
+	}
+
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red, config)
+	return nil
 }
 
 func markQuestionAs(id int, ans Answer, qs *[]Question) {

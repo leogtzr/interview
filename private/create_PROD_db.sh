@@ -44,6 +44,8 @@ if mysql -u "${DB_INTERVIEW_USER}" --password="${DB_INTERVIEW_PASSWORD}" < "${sc
 	if mysql -u "${DB_INTERVIEW_USER}" --password="${DB_INTERVIEW_PASSWORD}" \
 			"${schema_name}" < "${schema_setup_file}" 2> /dev/null; then
 		echo "Test datadata imported"
+	else
+		echo "error importing initial data." >&2
 	fi
 fi
 

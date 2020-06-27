@@ -31,3 +31,51 @@ func saveAnswer(question *Question, result Answer, intervieweeID int, db *sql.DB
 	defer stmt.Close()
 	return nil
 }
+
+func getQuestionsByTopic(topic string, db *sql.DB) ([]Question, error) {
+	questionsPerTopic := make([]Question, 0)
+
+	results, err :=
+		db.Query(
+			`select q.id, question, q.level_id from question q, topic t where t.topic = ? and t.id = q.topic_id`,
+			topic)
+	if err != nil {
+		return []Question{}, err
+	}
+	defer results.Close()
+
+	for results.Next() {
+		var question Question
+		err = results.Scan(&question.ID, &question.Q, &question.Level)
+		if err != nil {
+			return []Question{}, err
+		}
+		questionsPerTopic = append(questionsPerTopic, question)
+	}
+
+	return questionsPerTopic, nil
+}
+
+func getQuestionsByTopicWithLevel(topic string, level Level, db *sql.DB) ([]Question, error) {
+	questionsPerTopic := make([]Question, 0)
+
+	results, err :=
+		db.Query(
+			`select q.id, question, q.level_id from question q, topic t where t.topic = ? and t.id = q.topic_id and level_id = ?`,
+			topic, level)
+	if err != nil {
+		return []Question{}, err
+	}
+	defer results.Close()
+
+	for results.Next() {
+		var question Question
+		err = results.Scan(&question.ID, &question.Q, &question.Level)
+		if err != nil {
+			return []Question{}, err
+		}
+		questionsPerTopic = append(questionsPerTopic, question)
+	}
+
+	return questionsPerTopic, nil
+}

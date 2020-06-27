@@ -118,7 +118,10 @@ func main() {
 			}
 			if config.ignoreLevelChecking {
 				qs := config.interview.Topics[config.selectedTopic]
-				setAnswerAsOK(&qs, &config, db)
+				err := setAnswerAsOK(&qs, &config, db)
+				if err != nil {
+					panic(err)
+				}
 			} else {
 				answerAs(&config, OK, green)
 			}
@@ -131,7 +134,10 @@ func main() {
 
 			if config.ignoreLevelChecking {
 				qs := config.interview.Topics[config.selectedTopic]
-				setAnswerAsWrong(&qs, &config)
+				err := setAnswerAsWrong(&qs, &config, db)
+				if err != nil {
+					panic(err)
+				}
 			} else {
 				answerAs(&config, Wrong, red)
 			}
@@ -144,7 +150,10 @@ func main() {
 
 			if config.ignoreLevelChecking {
 				qs := config.interview.Topics[config.selectedTopic]
-				setAnswerAsNeutral(&qs, &config)
+				err := setAnswerAsNeutral(&qs, &config, db)
+				if err != nil {
+					panic(err)
+				}
 			} else {
 				answerAs(&config, Neutral, yellow)
 			}

@@ -23,6 +23,3 @@ cover:
 	go test -coverprofile cp.out
 	go tool cover -html=cp.out
 
-testdb:
-	go test -v dao_test.go
-	

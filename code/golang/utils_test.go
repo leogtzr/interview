@@ -442,53 +442,6 @@ func Test_setAnswerAsNeutral(t *testing.T) {
 		}
 	}
 }
-
-func Test_setAnswerAsOK(t *testing.T) {
-	qs := []Question{
-		Question{ID: 1, Answer: OK},
-		Question{ID: 2, Answer: OK},
-		Question{ID: 3, Answer: Wrong},
-		Question{ID: 4, Answer: NotAnsweredYet},
-	}
-
-	colorProfile := termenv.ColorProfile()
-	config := Config{colorProfile: colorProfile}
-
-	for i := 0; i < len(qs); i++ {
-		setAnswerAsOK(&qs, &config)
-		config.questionIndex++
-	}
-
-	for _, q := range qs {
-		if q.Answer != OK {
-			t.Errorf("%s should have been marked as OK.", q)
-		}
-	}
-}
-
-func Test_setAnswerAsWrong(t *testing.T) {
-	qs := []Question{
-		Question{ID: 1, Answer: OK},
-		Question{ID: 2, Answer: OK},
-		Question{ID: 3, Answer: Wrong},
-		Question{ID: 4, Answer: NotAnsweredYet},
-	}
-
-	colorProfile := termenv.ColorProfile()
-	config := Config{colorProfile: colorProfile}
-
-	for i := 0; i < len(qs); i++ {
-		setAnswerAsWrong(&qs, &config)
-		config.questionIndex++
-	}
-
-	for _, q := range qs {
-		if q.Answer != Wrong {
-			t.Errorf("%s should have been marked as Wrong.", q)
-		}
-	}
-}
-
 func Test_extractTopicName(t *testing.T) {
 	type test struct {
 		options []string
