@@ -84,7 +84,8 @@ DROP TABLE IF EXISTS `recruitment_interviews`.`candidate` ;
 SHOW WARNINGS;
 CREATE TABLE IF NOT EXISTS `recruitment_interviews`.`candidate` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(100) NULL,
+  `name` VARCHAR(100) NOT NULL,
+  `date` DATE NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 

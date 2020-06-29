@@ -69,4 +69,6 @@ const (
 	setSRProgrammerLevelCmd        Command = iota
 	validateQuestionsCmd           Command = iota
 	countCmd                       Command = iota
+	createComment                  Command = iota
+	createQuestion                 Command = iota
 )

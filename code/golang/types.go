@@ -20,6 +20,7 @@ type Config struct {
 	colorProfile           termenv.Profile
 	interview              Interview
 	intervieweeID          int
+	comment                string
 }
 
 // Command ...

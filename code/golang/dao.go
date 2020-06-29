@@ -1,6 +1,8 @@
 package main
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 func getTopics(db *sql.DB) ([]Topic, error) {
 	var topics []Topic
@@ -22,13 +24,37 @@ func getTopics(db *sql.DB) ([]Topic, error) {
 	return topics, nil
 }
 
-func saveAnswer(question *Question, result Answer, intervieweeID int, db *sql.DB) error {
-	stmt, err := db.Query(`insert into answer (result, question_id, candidate_id) values(?, ?, ?)`,
-		result, question.ID, intervieweeID)
+func saveAnswer(question *Question, result Answer, config *Config, db *sql.DB) error {
+
+	intervieweeID := config.intervieweeID
+	exists, err := existsAnswer(intervieweeID, question.ID, db)
 	if err != nil {
+		panic(err)
+	}
+	if exists {
+		if err := updateAnswer(question, result, config, db); err != nil {
+			return err
+		}
+	} else {
+		stmt, err := db.Query(`insert into answer (result, question_id, candidate_id) values(?, ?, ?)`,
+			result, question.ID, intervieweeID)
+		if err != nil {
+			return err
+		}
+		defer stmt.Close()
+	}
+
+	return nil
+}
+
+func updateAnswer(q *Question, result Answer, config *Config, db *sql.DB) error {
+	intervieweeID := config.intervieweeID
+	comment := config.comment
+	if _, err :=
+		db.Exec(`update answer set result = ?, comment = ? where question_id = ? and candidate_id = ?`,
+			result, comment, q.ID, intervieweeID); err != nil {
 		return err
 	}
-	defer stmt.Close()
 	return nil
 }
 
@@ -101,7 +127,7 @@ func getTopicsWithQuestions(db *sql.DB) ([]string, error) {
 }
 
 func saveIntervieweeName(interviewee string, db *sql.DB) (int, error) {
-	stmt, err := db.Exec("insert into candidate(name) values(?)", interviewee)
+	stmt, err := db.Exec("insert into candidate(name, date) values(?, now())", interviewee)
 	if err != nil {
 		return -1, err
 	}
@@ -110,4 +136,34 @@ func saveIntervieweeName(interviewee string, db *sql.DB) (int, error) {
 		return -1, err
 	}
 	return int(id), nil
+}
+
+func existsAnswer(candidateID, questionID int, db *sql.DB) (bool, error) {
+	results, err :=
+		db.Query(`select count(*) from answer where candidate_id = ? and question_id = ?`, candidateID, questionID)
+	if err != nil {
+		return false, err
+	}
+	defer results.Close()
+
+	var count int
+	if results.Next() {
+		err = results.Scan(&count)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	return count > 0, err
+}
+
+func saveQuestion(q *Question, topicID int, answer string, db *sql.DB) error {
+	_, err := db.Exec(`insert into question (question, answer, topic_id, level_id) values(?, ?, ?, ?)`, q.Q, answer, topicID, q.Level)
+	if err != nil {
+		return err
+	}
+	if err != nil {
+		return err
+	}
+	return nil
 }

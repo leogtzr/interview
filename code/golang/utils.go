@@ -3,10 +3,12 @@ package main
 import (
 	"bufio"
 	"database/sql"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/muesli/termenv"
@@ -78,6 +80,10 @@ func userInputToCmd(input string) (Command, []string) {
 		return setSRProgrammerLevelCmd, []string{}
 	case "count", "cnt", "c":
 		return countCmd, []string{}
+	case "cmt", "comment", "note", "nt":
+		return createComment, []string{}
+	case "cq":
+		return createQuestion, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -313,7 +319,7 @@ func setAnswerAsNeutral(config *Config, db *sql.DB) error {
 	q := questions[config.questionIndex]
 	q.Answer = Neutral
 
-	err := saveAnswer(&q, Neutral, config.intervieweeID, db)
+	err := saveAnswer(&q, Neutral, config, db)
 	if err != nil {
 		return err
 	}
@@ -327,7 +333,7 @@ func setAnswerAsOK(config *Config, db *sql.DB) error {
 	q := questions[config.questionIndex]
 	q.Answer = OK
 
-	err := saveAnswer(&q, OK, config.intervieweeID, db)
+	err := saveAnswer(&q, OK, config, db)
 	if err != nil {
 		return err
 	}
@@ -341,7 +347,7 @@ func setAnswerAsWrong(config *Config, db *sql.DB) error {
 	q := questions[config.questionIndex]
 	q.Answer = Wrong
 
-	err := saveAnswer(&q, Wrong, config.intervieweeID, db)
+	err := saveAnswer(&q, Wrong, config, db)
 	if err != nil {
 		return err
 	}
@@ -358,7 +364,7 @@ func answerAs(config *Config, ans Answer, messageColorCode string, db *sql.DB) e
 	q := currentLevelQuestions[index]
 	qs := config.interview.Topics[config.selectedTopic]
 	markQuestionAs(id, ans, &qs)
-	err := saveAnswer(&q, ans, config.intervieweeID, db)
+	err := saveAnswer(&q, ans, config, db)
 	if err != nil {
 		return err
 	}
@@ -497,4 +503,88 @@ func readConfig(filename, configPath string, defaults map[string]interface{}) (*
 	v.SetConfigType("env")
 	err := v.ReadInConfig()
 	return v, err
+}
+
+func readComment() (string, error) {
+	scanner := bufio.NewScanner(os.Stdin)
+	var b strings.Builder
+	for scanner.Scan() {
+		b.WriteString(scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		return "", err
+	}
+
+	return b.String(), nil
+}
+
+func makeQuestion(config *Config, db *sql.DB) error {
+	topics, err := getTopics(db)
+	if err != nil {
+		return err
+	}
+
+	for idx, topic := range topics {
+		printWithColorf(config, "%d: %s\n", blue, idx, topic.Topic)
+	}
+	fmt.Println()
+	fmt.Printf("Topic? ")
+
+	reader := bufio.NewReader(os.Stdin)
+	userInput, err := reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+
+	userInput = strings.TrimSpace(userInput)
+	topicIndex, err := strconv.Atoi(userInput)
+	if err != nil {
+		return err
+	}
+
+	if topicIndex < 0 || topicIndex > len(topics) {
+		return errors.New("invalid topic index")
+	}
+
+	printWithColorf(config, "\n1) Programmer\n2) Programmer Analyst\n3) Sr. Programmer Analyst ", blue)
+	fmt.Println()
+	fmt.Printf("Level? ")
+	userInput, err = reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+	userInput = strings.TrimSpace(userInput)
+
+	levelIndex, err := strconv.Atoi(userInput)
+	if err != nil {
+		return err
+	}
+	if levelIndex < 0 || levelIndex > 3 {
+		return errors.New("invalid level index")
+	}
+
+	fmt.Printf("Question? ")
+	userInput, err = reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+	question := strings.TrimSpace(userInput)
+
+	fmt.Println()
+	fmt.Printf("Answer? ")
+	userInput, err = reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+	answer := strings.TrimSpace(userInput)
+
+	q := Question{Q: question, Level: Level(levelIndex), Answer: NotAnsweredYet}
+
+	err = saveQuestion(&q, topicIndex, answer, db)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

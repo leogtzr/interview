@@ -1,5 +1,3 @@
-// TODO: save date in the DB
-// TODO: code to save comments ... (open a dialog to write up the comment or read it from stdin)
 package main
 
 import (
@@ -76,7 +74,6 @@ func main() {
 			if name, ok := readIntervieweeName(os.Stdin); !ok {
 				break
 			} else {
-				// Persist the info in the DB ...
 				id, err := saveIntervieweeName(name, db)
 				if err != nil {
 					panic(err)
@@ -90,9 +87,11 @@ func main() {
 		case printCmd:
 			printQuestion(config.questionIndex, &config)
 		case nextQuestionCmd:
+			config.comment = ""
 			gotoNextQuestion(&config)
 			printQuestion(config.questionIndex, &config)
 		case previousQuestionCmd:
+			config.comment = ""
 			gotoPreviousQuestion(&config)
 			printQuestion(config.questionIndex, &config)
 		case viewCmd:
@@ -175,6 +174,19 @@ func main() {
 			setLevel(SrProgrammer, &config)
 		case countCmd:
 			showCounts(&config)
+		case createComment:
+			fmt.Printf("Comment: ")
+			comment, err := readComment()
+			if err != nil {
+				panic(err)
+			}
+			config.comment = comment
+		case createQuestion:
+			err := makeQuestion(&config, db)
+			if err != nil {
+				panic(err)
+			}
+			printWithColorln("Question created", magenta, &config)
 		}
 	}
 
