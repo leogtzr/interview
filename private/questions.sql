@@ -50,16 +50,6 @@ insert into question (question, answer, topic_id, level_id) values(
 );
 
 -- some Collections framework related questions
-/*
-insert into question (question, answer, topic_id, level_id) values(
-"What is fail-fast in Java Iterators?",
-"Iterator fail-fast property checks for any modification in the structure of the underlying collection everytime we try to get the next element. \n
-If there are any modifications found, it throws ConcurrentModificationException", 
-1, 
-3
-);
-*/
-
 insert into question (question, answer, topic_id, level_id) values(
 "What is the difference between fail-fast VS fail-safe?",
 "", 
