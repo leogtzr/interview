@@ -81,9 +81,11 @@ func userInputToCmd(input string) (Command, []string) {
 	case "count", "cnt", "c":
 		return countCmd, []string{}
 	case "cmt", "comment", "note", "nt":
-		return createComment, []string{}
+		return createCommentCmd, []string{}
 	case "cq":
-		return createQuestion, []string{}
+		return createQuestionCmd, []string{}
+	case "va":
+		return viewAnwswerCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -591,4 +593,25 @@ func makeQuestion(config *Config, db *sql.DB) error {
 	}
 
 	return nil
+}
+
+func viewAnswer(questionIndex int, config *Config) {
+	if !config.hasStarted {
+		return
+	}
+	if config.ignoreLevelChecking && (len(config.interview.Topics[config.selectedTopic]) > 0) {
+		printWithColorln(config.interview.Topics[config.selectedTopic][config.questionIndex].Answer, gray, config)
+		fmt.Println()
+		return
+	}
+	currentLevel := config.levels[config.levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
+	if len(currentLevelQuestions) == 0 {
+		printWithColorln("There are no questions for this level.", yellow, config)
+		fmt.Println()
+		return
+	}
+	index := config.individualLevelIndexes[int(currentLevel)-1]
+	fmt.Println(currentLevelQuestions[index].Answer)
+	fmt.Println()
 }

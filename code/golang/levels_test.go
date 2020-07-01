@@ -18,15 +18,15 @@ func Test_getQuestionsFromLevel(t *testing.T) {
 
 	topics := make(map[string][]Question)
 	linuxQuestions := []Question{
-		Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 3, Q: "lx3", Level: ProgrammerAnalyst, Answer: OK},
-		Question{ID: 4, Q: "lx4", Level: SrProgrammer, Answer: OK},
+		Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+		Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+		Question{ID: 3, Q: "lx3", Level: ProgrammerAnalyst, Result: OK},
+		Question{ID: 4, Q: "lx4", Level: SrProgrammer, Result: OK},
 	}
 
 	javaQuestions := []Question{
-		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
+		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+		Question{ID: 2, Q: "j2", Level: SrProgrammer, Result: Wrong},
 	}
 
 	randomQuestions := []Question{}
@@ -43,8 +43,8 @@ func Test_getQuestionsFromLevel(t *testing.T) {
 			lvl:   AssociateOrProgrammer,
 			topic: "linux",
 			questions: []Question{
-				Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-				Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
+				Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+				Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
 			},
 			config: config,
 		},
@@ -53,7 +53,7 @@ func Test_getQuestionsFromLevel(t *testing.T) {
 			lvl:   SrProgrammer,
 			topic: "java",
 			questions: []Question{
-				Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
+				Question{ID: 2, Q: "j2", Level: SrProgrammer, Result: Wrong},
 			},
 			config: config,
 		},
@@ -181,15 +181,15 @@ func Test_findLevel(t *testing.T) {
 func Test_gotoNextQuestion(t *testing.T) {
 	topics := make(map[string][]Question)
 	linuxQuestions := []Question{
-		Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 3, Q: "lx3", Level: AssociateOrProgrammer, Answer: OK},
-		Question{ID: 4, Q: "lx4", Level: SrProgrammer, Answer: OK},
+		Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+		Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+		Question{ID: 3, Q: "lx3", Level: AssociateOrProgrammer, Result: OK},
+		Question{ID: 4, Q: "lx4", Level: SrProgrammer, Result: OK},
 	}
 
 	javaQuestions := []Question{
-		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
+		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+		Question{ID: 2, Q: "j2", Level: SrProgrammer, Result: Wrong},
 	}
 
 	randomQuestions := []Question{}
@@ -226,15 +226,15 @@ func Test_gotoNextQuestion(t *testing.T) {
 func Test_gotoPreviousQuestion(t *testing.T) {
 	topics := make(map[string][]Question)
 	linuxQuestions := []Question{
-		Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 3, Q: "lx3", Level: SrProgrammer, Answer: OK},
-		Question{ID: 4, Q: "lx4", Level: SrProgrammer, Answer: OK},
+		Question{ID: 1, Q: "lx1", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+		Question{ID: 2, Q: "lx2", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+		Question{ID: 3, Q: "lx3", Level: SrProgrammer, Result: OK},
+		Question{ID: 4, Q: "lx4", Level: SrProgrammer, Result: OK},
 	}
 
 	javaQuestions := []Question{
-		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
+		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+		Question{ID: 2, Q: "j2", Level: SrProgrammer, Result: Wrong},
 	}
 
 	randomQuestions := []Question{}

@@ -55,8 +55,8 @@ func Test_userInputToCmd(t *testing.T) {
 		{input: "=", want: ignoreLevelCmd},
 		{input: "lvl", want: showLevelCmd},
 		{input: "stats", want: showStatsCmd},
-		{input: "cmt", want: createComment},
-		{input: "cq", want: createQuestion},
+		{input: "cmt", want: createCommentCmd},
+		{input: "cq", want: createQuestionCmd},
 		{input: "ap", want: setAssociateProgrammerLevelCmd},
 		{input: "pa", want: setProgrammerAnalystLevelCmd},
 		{input: "sr", want: setSRProgrammerLevelCmd},
@@ -111,9 +111,9 @@ func TestQuestion_String(t *testing.T) {
 	}
 
 	tests := []test{
-		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet, Level: ProgrammerAnalyst}, want: "Q1: hola [NotAnsweredYet] [ProgrammerAnalyst]"},
-		{q: Question{ID: 1, Q: "hola", Answer: NotAnsweredYet, Level: SrProgrammer}, want: "Q1: hola [NotAnsweredYet] [SrProgrammer]"},
-		{q: Question{ID: 1, Q: "hola", Answer: Neutral, Level: AssociateOrProgrammer}, want: "Q1: hola [Neutral] [AssociateOrProgrammer]"},
+		{q: Question{ID: 1, Q: "hola", Result: NotAnsweredYet, Level: ProgrammerAnalyst}, want: "Q1: hola [NotAnsweredYet] [ProgrammerAnalyst]"},
+		{q: Question{ID: 1, Q: "hola", Result: NotAnsweredYet, Level: SrProgrammer}, want: "Q1: hola [NotAnsweredYet] [SrProgrammer]"},
+		{q: Question{ID: 1, Q: "hola", Result: Neutral, Level: AssociateOrProgrammer}, want: "Q1: hola [Neutral] [AssociateOrProgrammer]"},
 	}
 
 	for _, tt := range tests {
@@ -227,19 +227,19 @@ func Test_perc(t *testing.T) {
 func Test_countGeneral(t *testing.T) {
 	type test struct {
 		topics map[string][]Question
-		want   map[Answer]int
+		want   map[Result]int
 	}
 
 	tests := []test{
 		{
 			topics: map[string][]Question{
 				"java": []Question{
-					Question{ID: 1, Q: "A", Answer: NotAnsweredYet, Level: SrProgrammer},
-					Question{ID: 2, Q: "A", Answer: NotAnsweredYet, Level: SrProgrammer},
-					Question{ID: 3, Q: "A", Answer: Wrong, Level: SrProgrammer},
+					Question{ID: 1, Q: "A", Result: NotAnsweredYet, Level: SrProgrammer},
+					Question{ID: 2, Q: "A", Result: NotAnsweredYet, Level: SrProgrammer},
+					Question{ID: 3, Q: "A", Result: Wrong, Level: SrProgrammer},
 				},
 			},
-			want: map[Answer]int{
+			want: map[Result]int{
 				NotAnsweredYet: 2,
 				Wrong:          1,
 				Neutral:        0,
@@ -286,8 +286,8 @@ func Test_resetStatus(t *testing.T) {
 	config := Config{}
 	topics := make(map[string][]Question)
 	javaQuestions := []Question{
-		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Answer: NotAnsweredYet},
-		Question{ID: 2, Q: "j2", Level: SrProgrammer, Answer: Wrong},
+		Question{ID: 1, Q: "j1", Level: AssociateOrProgrammer, Result: NotAnsweredYet},
+		Question{ID: 2, Q: "j2", Level: SrProgrammer, Result: Wrong},
 	}
 	topics["java"] = javaQuestions
 
@@ -368,23 +368,23 @@ func Test_levelQuestionCounts(t *testing.T) {
 func Test_markQuestionAs(t *testing.T) {
 	type test struct {
 		id  int
-		ans Answer
+		ans Result
 		qs  []Question
 	}
 
 	tests := []test{
 		{id: 1, ans: Wrong, qs: []Question{
-			Question{ID: 0, Answer: NotAnsweredYet},
-			Question{ID: 1, Answer: NotAnsweredYet},
-			Question{ID: 2, Answer: NotAnsweredYet},
-			Question{ID: 3, Answer: NotAnsweredYet},
-			Question{ID: 4, Answer: NotAnsweredYet},
+			Question{ID: 0, Result: NotAnsweredYet},
+			Question{ID: 1, Result: NotAnsweredYet},
+			Question{ID: 2, Result: NotAnsweredYet},
+			Question{ID: 3, Result: NotAnsweredYet},
+			Question{ID: 4, Result: NotAnsweredYet},
 		}},
 	}
 
 	for _, tt := range tests {
 		markQuestionAs(tt.id, tt.ans, &tt.qs)
-		if tt.qs[tt.id-1].Answer != tt.ans {
+		if tt.qs[tt.id-1].Result != tt.ans {
 			t.Errorf("want=[%s], got=[%s]", tt.ans, tt.qs[tt.id].Answer)
 		}
 	}

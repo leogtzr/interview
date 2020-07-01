@@ -14,18 +14,18 @@ func TestEqual(t *testing.T) {
 	tests := []test{
 		{
 			a: []Question{
-				Question{ID: 1, Answer: NotAnsweredYet, Q: "A", Level: SrProgrammer},
+				Question{ID: 1, Result: NotAnsweredYet, Q: "A", Level: SrProgrammer},
 			},
 			b: []Question{
-				Question{ID: 1, Answer: NotAnsweredYet, Q: "A", Level: SrProgrammer},
+				Question{ID: 1, Result: NotAnsweredYet, Q: "A", Level: SrProgrammer},
 			}, result: true,
 		},
 		{
 			a: []Question{
-				Question{ID: 1, Answer: NotAnsweredYet, Q: "A", Level: SrProgrammer},
+				Question{ID: 1, Result: NotAnsweredYet, Q: "A", Level: SrProgrammer},
 			},
 			b: []Question{
-				Question{ID: 2, Answer: NotAnsweredYet, Q: "A", Level: SrProgrammer},
+				Question{ID: 2, Result: NotAnsweredYet, Q: "A", Level: SrProgrammer},
 			}, result: false,
 		},
 		{

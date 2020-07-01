@@ -180,19 +180,22 @@ func main() {
 			setLevel(SrProgrammer, &config)
 		case countCmd:
 			showCounts(&config)
-		case createComment:
+		case createCommentCmd:
 			fmt.Printf("Comment: ")
 			comment, err := readComment()
 			if err != nil {
 				panic(err)
 			}
 			config.comment = comment
-		case createQuestion:
+		case createQuestionCmd:
 			err := makeQuestion(&config, db)
 			if err != nil {
 				panic(err)
 			}
 			printWithColorln("Question created", magenta, &config)
+		case viewAnwswerCmd:
+			// printQuestion(config.questionIndex, &config)
+			viewAnswer(config.questionIndex, &config)
 		}
 	}
 
