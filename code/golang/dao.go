@@ -24,7 +24,7 @@ func getTopics(db *sql.DB) ([]Topic, error) {
 	return topics, nil
 }
 
-func saveAnswer(question *Question, result Answer, config *Config, db *sql.DB) error {
+func saveAnswer(question *Question, result Result, config *Config, db *sql.DB) error {
 
 	intervieweeID := config.intervieweeID
 	exists, err := existsAnswer(intervieweeID, question.ID, db)
@@ -47,7 +47,7 @@ func saveAnswer(question *Question, result Answer, config *Config, db *sql.DB) e
 	return nil
 }
 
-func updateAnswer(q *Question, result Answer, config *Config, db *sql.DB) error {
+func updateAnswer(q *Question, result Result, config *Config, db *sql.DB) error {
 	intervieweeID := config.intervieweeID
 	comment := config.comment
 	if _, err :=
@@ -63,7 +63,7 @@ func getQuestionsByTopic(topic string, db *sql.DB) ([]Question, error) {
 
 	results, err :=
 		db.Query(
-			`select q.id, question, q.level_id from question q, topic t where t.topic = ? and t.id = q.topic_id`,
+			`select q.id, question, answer, q.level_id from question q, topic t where t.topic = ? and t.id = q.topic_id`,
 			topic)
 	if err != nil {
 		return []Question{}, err
@@ -72,7 +72,7 @@ func getQuestionsByTopic(topic string, db *sql.DB) ([]Question, error) {
 
 	for results.Next() {
 		var question Question
-		err = results.Scan(&question.ID, &question.Q, &question.Level)
+		err = results.Scan(&question.ID, &question.Q, &question.Answer, &question.Level)
 		if err != nil {
 			return []Question{}, err
 		}

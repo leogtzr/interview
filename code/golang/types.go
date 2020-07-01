@@ -30,20 +30,13 @@ type Command int
 type Question struct {
 	ID     int
 	Q      string
-	Answer Answer
+	Answer string
+	Result Result
 	Level  Level
 }
 
-// UserAnswer ...
-type UserAnswer struct {
-	ID         int    `json:"id"`
-	Result     int    `json:"result"`
-	Comment    string `json:"comment"`
-	QuestionID int    `json:"question_id"`
-}
-
-// Answer ...
-type Answer int
+// Result ...
+type Result int
 
 // Level ...
 type Level int

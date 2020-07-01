@@ -17,13 +17,13 @@ const (
 
 const (
 	// NotAnsweredYet ...
-	NotAnsweredYet Answer = 1
+	NotAnsweredYet Result = 1
 	// OK ...
-	OK Answer = 2
+	OK Result = 2
 	// Wrong ...
-	Wrong Answer = 3
+	Wrong Result = 3
 	// Neutral ...
-	Neutral Answer = 4
+	Neutral Result = 4
 )
 
 const (

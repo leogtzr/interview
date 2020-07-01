@@ -119,6 +119,7 @@ commands:
 	ok|yes|si|right|y			marks a question as right / OK.
 	hmm|meh|?				marks a question as neutral.
 	finish|done|bye				finishes an interview.
+	cq					create a question and save it to the database.
 	+					increases the level of the interview, it could be from Programmer Analyst to a Sr Programmer Analyst as an example.
 	- 					decreases the level of the interview.
 	= 					ignore levels.
@@ -234,7 +235,7 @@ func ps1String(ps1, selectedTopic, intervieweeName string) string {
 }
 
 func (q Question) String() string {
-	return fmt.Sprintf("Q%d: %s [%s] [%s]", q.ID, q.Q, q.Answer, q.Level)
+	return fmt.Sprintf("Q%d: %s [%s] [%s]", q.ID, q.Q, q.Result, q.Level)
 }
 
 func printQuestion(questionIndex int, config *Config) {
@@ -243,7 +244,7 @@ func printQuestion(questionIndex int, config *Config) {
 	}
 
 	if config.ignoreLevelChecking && (len(config.interview.Topics[config.selectedTopic]) > 0) {
-		fmt.Println(config.interview.Topics[config.selectedTopic][config.questionIndex])
+		printWithColorln(config.interview.Topics[config.selectedTopic][config.questionIndex].String(), gray, config)
 		fmt.Println()
 		return
 	}
@@ -317,7 +318,7 @@ func showLevel(config *Config) {
 func setAnswerAsNeutral(config *Config, db *sql.DB) error {
 	questions := config.interview.Topics[config.selectedTopic]
 	q := questions[config.questionIndex]
-	q.Answer = Neutral
+	q.Result = Neutral
 
 	err := saveAnswer(&q, Neutral, config, db)
 	if err != nil {
@@ -331,7 +332,7 @@ func setAnswerAsNeutral(config *Config, db *sql.DB) error {
 func setAnswerAsOK(config *Config, db *sql.DB) error {
 	questions := config.interview.Topics[config.selectedTopic]
 	q := questions[config.questionIndex]
-	q.Answer = OK
+	q.Result = OK
 
 	err := saveAnswer(&q, OK, config, db)
 	if err != nil {
@@ -345,7 +346,7 @@ func setAnswerAsOK(config *Config, db *sql.DB) error {
 func setAnswerAsWrong(config *Config, db *sql.DB) error {
 	questions := config.interview.Topics[config.selectedTopic]
 	q := questions[config.questionIndex]
-	q.Answer = Wrong
+	q.Result = Wrong
 
 	err := saveAnswer(&q, Wrong, config, db)
 	if err != nil {
@@ -356,7 +357,7 @@ func setAnswerAsWrong(config *Config, db *sql.DB) error {
 	return nil
 }
 
-func answerAs(config *Config, ans Answer, messageColorCode string, db *sql.DB) error {
+func answerAs(config *Config, ans Result, messageColorCode string, db *sql.DB) error {
 	currentLevel := config.levels[config.levelIndex]
 	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 	index := config.individualLevelIndexes[int(currentLevel)-1]
@@ -372,10 +373,10 @@ func answerAs(config *Config, ans Answer, messageColorCode string, db *sql.DB) e
 	return nil
 }
 
-func markQuestionAs(id int, ans Answer, qs *[]Question) {
+func markQuestionAs(id int, ans Result, qs *[]Question) {
 	for _, q := range *qs {
 		if q.ID == id {
-			(*qs)[id-1].Answer = ans
+			(*qs)[id-1].Result = ans
 			break
 		}
 	}
@@ -424,10 +425,10 @@ func showStats(config *Config) {
 	}
 }
 
-func count(questions *[]Question, ans Answer) int {
+func count(questions *[]Question, ans Result) int {
 	c := 0
 	for _, q := range *questions {
-		if q.Answer == ans {
+		if q.Result == ans {
 			c++
 		}
 	}
@@ -435,11 +436,14 @@ func count(questions *[]Question, ans Answer) int {
 }
 
 func perc(count, total int) float64 {
+	if count == 0 {
+		return 0.0
+	}
 	return (float64(count) * 100.0) / float64(total)
 }
 
-func countGeneral(topics *map[string][]Question) map[Answer]int {
-	counts := make(map[Answer]int, 0)
+func countGeneral(topics *map[string][]Question) map[Result]int {
+	counts := make(map[Result]int, 0)
 
 	// flat the questions ...
 	questions := make([]Question, 0)
@@ -579,7 +583,7 @@ func makeQuestion(config *Config, db *sql.DB) error {
 	}
 	answer := strings.TrimSpace(userInput)
 
-	q := Question{Q: question, Level: Level(levelIndex), Answer: NotAnsweredYet}
+	q := Question{Q: question, Level: Level(levelIndex), Result: NotAnsweredYet}
 
 	err = saveQuestion(&q, topicIndex, answer, db)
 	if err != nil {

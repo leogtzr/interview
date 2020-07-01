@@ -4,7 +4,7 @@ BIN_FILE=interview
 
 install:
 	stringer -type=Command
-	stringer -type=Answer
+	stringer -type=Result
 	stringer -type=Level
 	go build -o "${BIN_FILE}"
 

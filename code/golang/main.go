@@ -70,6 +70,12 @@ func main() {
 				printWithColorln("Interview has already started.", yellow, &config)
 				break
 			}
+
+			if len(config.selectedTopic) == 0 {
+				printWithColorln("You need to select a topic first.", red, &config)
+				break
+			}
+
 			fmt.Printf("Interviewee name: ")
 			if name, ok := readIntervieweeName(os.Stdin); !ok {
 				break
