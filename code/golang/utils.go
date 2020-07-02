@@ -384,7 +384,7 @@ func markQuestionAs(id int, ans Result, qs *[]Question) {
 	}
 }
 
-func showStats(config *Config) {
+func showStats(config *Config, db *sql.DB) error {
 	currentLevel := config.levels[config.levelIndex]
 
 	if len(config.selectedTopic) == 0 {
@@ -397,18 +397,21 @@ func showStats(config *Config) {
 		fmt.Printf("Questions in bucket: ")
 		printWithColorf(config, "%t\n", green, len(config.selectedTopic) != 0)
 	} else {
-		counts := countGeneral(&config.interview.Topics)
-		notAnsweredCount := counts[NotAnsweredYet]
-		okCount := counts[OK]
-		wrongCount := counts[Wrong]
-		neutralCount := counts[Neutral]
+		counts, err := getResultCounts(config.intervieweeID, db)
+		if err != nil {
+			return err
+		}
+		resultCounts := resultCount(&counts)
+		notAnsweredCount := resultCounts[NotAnsweredYet]
+		okCount := resultCounts[OK]
+		wrongCount := resultCounts[Wrong]
+		neutralCount := resultCounts[Neutral]
 		total := notAnsweredCount + okCount + wrongCount + neutralCount
 
-		fmt.Printf("Level: ")
-		printWithColorf(config, "%s\n", green, currentLevel)
-
-		fmt.Printf("Ignoring level: ")
-		printWithColorf(config, "%t\n", green, config.ignoreLevelChecking)
+		if !config.ignoreLevelChecking {
+			fmt.Printf("Level: ")
+			printWithColorf(config, "%s\n", green, currentLevel)
+		}
 
 		fmt.Printf("Questions in bucket: ")
 		printWithColorf(config, "%t\n", green, len(config.selectedTopic) != 0)
@@ -425,16 +428,23 @@ func showStats(config *Config) {
 		fmt.Printf("Neutral: ")
 		printWithColorf(config, "%d (%.2f%%)\n", green, neutralCount, perc(neutralCount, total))
 	}
+	return nil
 }
 
-func count(questions *[]Question, ans Result) int {
-	c := 0
-	for _, q := range *questions {
-		if q.Result == ans {
-			c++
+func resultCount(counts *[]ResultCount) map[Result]int {
+	rCounts := make(map[Result]int, 0)
+
+	for _, v := range *counts {
+		rCounts[Result(v.Result)] = v.Count
+	}
+
+	for _, v := range [4]Result{NotAnsweredYet, OK, Wrong, Neutral} {
+		if _, ok := rCounts[v]; !ok {
+			rCounts[v] = 0
 		}
 	}
-	return c
+
+	return rCounts
 }
 
 func perc(count, total int) float64 {
@@ -442,25 +452,6 @@ func perc(count, total int) float64 {
 		return 0.0
 	}
 	return (float64(count) * 100.0) / float64(total)
-}
-
-func countGeneral(topics *map[string][]Question) map[Result]int {
-	counts := make(map[Result]int, 0)
-
-	// flat the questions ...
-	questions := make([]Question, 0)
-	for _, qs := range *topics {
-		for _, q := range qs {
-			questions = append(questions, q)
-		}
-	}
-
-	counts[NotAnsweredYet] = count(&questions, NotAnsweredYet)
-	counts[OK] = count(&questions, OK)
-	counts[Wrong] = count(&questions, Wrong)
-	counts[Neutral] = count(&questions, Neutral)
-
-	return counts
 }
 
 func setLevel(lvl Level, config *Config) {

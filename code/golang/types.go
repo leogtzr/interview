@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/muesli/termenv"
@@ -33,6 +34,15 @@ type Question struct {
 	Answer string
 	Result Result
 	Level  Level
+}
+
+// ResultCount ...
+type ResultCount struct {
+	Result, Count int
+}
+
+func (rc ResultCount) String() string {
+	return fmt.Sprintf("{Result: %s, count: %d}", Result(rc.Result), rc.Count)
 }
 
 // Result ...

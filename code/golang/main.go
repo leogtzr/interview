@@ -1,4 +1,3 @@
-// TODO: stats doesn't work ...
 package main
 
 import (
@@ -172,7 +171,9 @@ func main() {
 		case showLevelCmd:
 			showLevel(&config)
 		case showStatsCmd:
-			showStats(&config)
+			if err := showStats(&config, db); err != nil {
+				panic(err)
+			}
 		case setAssociateProgrammerLevelCmd:
 			setLevel(AssociateOrProgrammer, &config)
 		case setProgrammerAnalystLevelCmd:

@@ -167,3 +167,28 @@ func saveQuestion(q *Question, topicID int, answer string, db *sql.DB) error {
 	}
 	return nil
 }
+
+func getResultCounts(candidateID int, db *sql.DB) ([]ResultCount, error) {
+	results, err :=
+		db.Query(`select result, count(result) count 
+		from answer 
+		where candidate_id = ? 
+		group by result order by result`, candidateID)
+	if err != nil {
+		return []ResultCount{}, err
+	}
+	defer results.Close()
+
+	counts := make([]ResultCount, 0)
+
+	for results.Next() {
+		var rc ResultCount
+		err = results.Scan(&rc.Result, &rc.Count)
+		if err != nil {
+			return []ResultCount{}, err
+		}
+		counts = append(counts, rc)
+	}
+
+	return counts, nil
+}
