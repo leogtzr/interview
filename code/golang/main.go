@@ -196,7 +196,6 @@ func main() {
 			}
 			printWithColorln("Question created", magenta, &config)
 		case viewAnwswerCmd:
-			// printQuestion(config.questionIndex, &config)
 			viewAnswer(config.questionIndex, &config)
 		}
 	}
