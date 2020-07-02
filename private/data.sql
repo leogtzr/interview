@@ -9,4 +9,5 @@ insert into topic (topic) values("spring-boot");		-- 4
 insert into topic (topic) values("linux");				-- 5
 insert into topic (topic) values("design-patterns");	-- 6
 insert into topic (topic) values("bash");				-- 7
+insert into topic (topic) values("rest");				-- 8
 

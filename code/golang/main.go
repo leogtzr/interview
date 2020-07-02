@@ -1,3 +1,4 @@
+// TODO: stats doesn't work ...
 package main
 
 import (

@@ -382,3 +382,36 @@ insert into question (question, answer, topic_id, level_id) values(
 7, 
 2
 );
+
+-- REST
+insert into question (question, answer, topic_id, level_id) values(
+"What is the preferred output format?",
+"JSON, REST allows different output formats (plain text, CSV, XML, RSS or even HTML) but JSON is the preferred.",
+8, 
+1
+);
+
+insert into question (question, answer, topic_id, level_id) values(
+"What is wrong with these URIs? GET /addBook123, GET /DeleteBooks/123, POST /DeleteAllBooks, POST /books/123/delete",
+"Not using nouns, using verbs instead of leverage the HTTP methods ... 
+GET /book/123
+DELETE /book/123
+POST /book
+",
+8, 
+2
+);
+
+
+insert into question (question, answer, topic_id, level_id) values(
+"What do you know about API versioning?",
+"Helps to introduce changes without breaking/non-backward compatibility | we could use either a request header or a change in the endpoint URI
+The latter facilitates readability and discoverability
+https://us6.api.mailchimp.com/3.0/ (major + minor version indication)
+https://api.stripe.com/v1/ (major version indication only)
+https://developer.github.com/v3/  (major version indication only)
+https://api.twilio.com/2010-04-01/ (date based indication)
+",
+8, 
+2
+);
