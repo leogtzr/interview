@@ -50,8 +50,7 @@ func main() {
 			printWithColorln("Bye", magenta, &config)
 			os.Exit(0)
 		case topicsCmd:
-			err = listTopics(db)
-			if err != nil {
+			if err = listTopics(db); err != nil {
 				panic(err)
 			}
 		case helpCmd:
@@ -61,8 +60,7 @@ func main() {
 		case pwdCmd:
 			fmt.Println(termenv.String(config.selectedTopic).Bold())
 		case useCmd:
-			err = setTopic(options, &config, db)
-			if err != nil {
+			if err = setTopic(options, &config, db); err != nil {
 				panic(err)
 			}
 		case startCmd:
@@ -80,15 +78,16 @@ func main() {
 			if name, ok := readIntervieweeName(os.Stdin); !ok {
 				break
 			} else {
-				id, err := saveIntervieweeName(name, db)
-				if err != nil {
+				if id, err := saveIntervieweeName(name, db); err != nil {
 					panic(err)
+				} else {
+					config.intervieweeID = id
+					config.interview.Interviewee = name
+					config.interview.Date = time.Now()
 				}
-				config.intervieweeID = id
-				config.interview.Interviewee = name
-				config.interview.Date = time.Now()
 			}
 			config.hasStarted = true
+			// Message to the user that the interview has started.
 			printQuestion(config.questionIndex, &config)
 		case printCmd:
 			printQuestion(config.questionIndex, &config)
@@ -112,13 +111,11 @@ func main() {
 				break
 			}
 			if config.ignoreLevelChecking {
-				err := setAnswerAsOK(&config, db)
-				if err != nil {
+				if err := setAnswerAsOK(&config, db); err != nil {
 					panic(err)
 				}
 			} else {
-				err := answerAs(&config, OK, green, db)
-				if err != nil {
+				if err := answerAs(&config, OK, green, db); err != nil {
 					panic(err)
 				}
 			}
@@ -130,13 +127,11 @@ func main() {
 			}
 
 			if config.ignoreLevelChecking {
-				err := setAnswerAsWrong(&config, db)
-				if err != nil {
+				if err := setAnswerAsWrong(&config, db); err != nil {
 					panic(err)
 				}
 			} else {
-				err := answerAs(&config, Wrong, red, db)
-				if err != nil {
+				if err := answerAs(&config, Wrong, red, db); err != nil {
 					panic(err)
 				}
 			}
@@ -148,13 +143,11 @@ func main() {
 			}
 
 			if config.ignoreLevelChecking {
-				err := setAnswerAsNeutral(&config, db)
-				if err != nil {
+				if err := setAnswerAsNeutral(&config, db); err != nil {
 					panic(err)
 				}
 			} else {
-				err := answerAs(&config, Neutral, yellow, db)
-				if err != nil {
+				if err := answerAs(&config, Neutral, yellow, db); err != nil {
 					panic(err)
 				}
 			}
@@ -190,8 +183,7 @@ func main() {
 			}
 			config.comment = comment
 		case createQuestionCmd:
-			err := makeQuestion(&config, db)
-			if err != nil {
+			if err := makeQuestion(&config, db); err != nil {
 				panic(err)
 			}
 			printWithColorln("Question created", magenta, &config)

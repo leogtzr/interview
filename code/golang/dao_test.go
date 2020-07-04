@@ -38,9 +38,7 @@ func setup() {
 }
 
 func teardown() {
-	// Do something here.
-	err := db.Close()
-	if err != nil {
+	if err := db.Close(); err != nil {
 		panic(err)
 	}
 	fmt.Printf("\033[1;36m%s\033[0m", "> Teardown completed")

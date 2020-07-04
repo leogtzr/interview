@@ -72,8 +72,7 @@ func getQuestionsByTopic(topic string, db *sql.DB) ([]Question, error) {
 
 	for results.Next() {
 		var question Question
-		err = results.Scan(&question.ID, &question.Q, &question.Answer, &question.Level)
-		if err != nil {
+		if err = results.Scan(&question.ID, &question.Q, &question.Answer, &question.Level); err != nil {
 			return []Question{}, err
 		}
 		questionsPerTopic = append(questionsPerTopic, question)
@@ -116,8 +115,7 @@ func getTopicsWithQuestions(db *sql.DB) ([]string, error) {
 
 	for results.Next() {
 		var topic string
-		err = results.Scan(&topic)
-		if err != nil {
+		if err = results.Scan(&topic); err != nil {
 			return []string{}, err
 		}
 		topics = append(topics, topic)
@@ -148,8 +146,7 @@ func existsAnswer(candidateID, questionID int, db *sql.DB) (bool, error) {
 
 	var count int
 	if results.Next() {
-		err = results.Scan(&count)
-		if err != nil {
+		if err = results.Scan(&count); err != nil {
 			return false, err
 		}
 	}
@@ -183,8 +180,7 @@ func getResultCounts(candidateID int, db *sql.DB) ([]ResultCount, error) {
 
 	for results.Next() {
 		var rc ResultCount
-		err = results.Scan(&rc.Result, &rc.Count)
-		if err != nil {
+		if err = results.Scan(&rc.Result, &rc.Count); err != nil {
 			return []ResultCount{}, err
 		}
 		counts = append(counts, rc)

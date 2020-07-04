@@ -322,8 +322,7 @@ func setAnswerAsNeutral(config *Config, db *sql.DB) error {
 	q := questions[config.questionIndex]
 	q.Result = Neutral
 
-	err := saveAnswer(&q, Neutral, config, db)
-	if err != nil {
+	if err := saveAnswer(&q, Neutral, config, db); err != nil {
 		return err
 	}
 
@@ -336,8 +335,7 @@ func setAnswerAsOK(config *Config, db *sql.DB) error {
 	q := questions[config.questionIndex]
 	q.Result = OK
 
-	err := saveAnswer(&q, OK, config, db)
-	if err != nil {
+	if err := saveAnswer(&q, OK, config, db); err != nil {
 		return err
 	}
 
@@ -350,8 +348,7 @@ func setAnswerAsWrong(config *Config, db *sql.DB) error {
 	q := questions[config.questionIndex]
 	q.Result = Wrong
 
-	err := saveAnswer(&q, Wrong, config, db)
-	if err != nil {
+	if err := saveAnswer(&q, Wrong, config, db); err != nil {
 		return err
 	}
 
@@ -578,8 +575,7 @@ func makeQuestion(config *Config, db *sql.DB) error {
 
 	q := Question{Q: question, Level: Level(levelIndex), Result: NotAnsweredYet}
 
-	err = saveQuestion(&q, topicIndex, answer, db)
-	if err != nil {
+	if err = saveQuestion(&q, topicIndex, answer, db); err != nil {
 		return err
 	}
 
