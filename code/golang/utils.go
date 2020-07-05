@@ -364,8 +364,7 @@ func answerAs(config *Config, ans Result, messageColorCode string, db *sql.DB) e
 	q := currentLevelQuestions[index]
 	qs := config.interview.Topics[config.selectedTopic]
 	markQuestionAs(id, ans, &qs)
-	err := saveAnswer(&q, ans, config, db)
-	if err != nil {
+	if err := saveAnswer(&q, ans, config, db); err != nil {
 		return err
 	}
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", ans), messageColorCode, config)

@@ -75,17 +75,18 @@ func main() {
 			}
 
 			fmt.Printf("Interviewee name: ")
-			if name, ok := readIntervieweeName(os.Stdin); !ok {
+
+			name, ok := readIntervieweeName(os.Stdin)
+			if !ok {
 				break
-			} else {
-				if id, err := saveIntervieweeName(name, db); err != nil {
-					panic(err)
-				} else {
-					config.intervieweeID = id
-					config.interview.Interviewee = name
-					config.interview.Date = time.Now()
-				}
 			}
+			id, err := saveIntervieweeName(name, db)
+			if err != nil {
+				panic(err)
+			}
+			config.intervieweeID = id
+			config.interview.Interviewee = name
+			config.interview.Date = time.Now()
 			config.hasStarted = true
 			// Message to the user that the interview has started.
 			printQuestion(config.questionIndex, &config)
