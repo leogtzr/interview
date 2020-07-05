@@ -119,13 +119,15 @@ commands:
 	next|nxt|> 				moves to the next question.
 	previous|prev|< 			moves to the previous question.
 	view|v					prints the current available questions by level.
-	va				view answer from current question
+	va					view answer from current question
+	vas 					view answers from candidate
 	no|n|mal|wrong|nop|bad|nel 		marks a question as wrong.
 	ok|yes|si|right|y			marks a question as right / OK.
 	hmm|meh|?				marks a question as neutral.
 	finish|done|bye				finishes an interview.
 	cq					create a question and save it to the database.
-	+					increases the level of the interview, it could be from Programmer Analyst to a Sr Programmer Analyst as an example.
+	+					increases the level of the interview, it could be from Programmer Analyst to a 
+					Sr Programmer Analyst as an example.
 	- 					decreases the level of the interview.
 	= 					ignore levels.
 	lvl					prints the current interview level.
