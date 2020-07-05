@@ -71,5 +71,6 @@ const (
 	countCmd                       Command = iota
 	createCommentCmd               Command = iota
 	createQuestionCmd              Command = iota
-	viewAnwswerCmd                 Command = iota
+	viewCurrentQuestionAnwswerCmd  Command = iota
+	viewAnswers                    Command = iota
 )

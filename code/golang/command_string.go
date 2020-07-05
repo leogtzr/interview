@@ -36,12 +36,13 @@ func _() {
 	_ = x[countCmd-25]
 	_ = x[createCommentCmd-26]
 	_ = x[createQuestionCmd-27]
-	_ = x[viewAnwswerCmd-28]
+	_ = x[viewCurrentQuestionAnwswerCmd-28]
+	_ = x[viewAnswers-29]
 }
 
-const _Command_name = "exitCmdtopicsCmdhelpCmduseCmdclearScreenCmdpwdCmdnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmdshowStatsCmdsetAssociateProgrammerLevelCmdsetProgrammerAnalystLevelCmdsetSRProgrammerLevelCmdvalidateQuestionsCmdcountCmdcreateCommentCmdcreateQuestionCmdviewAnwswerCmd"
+const _Command_name = "exitCmdtopicsCmdhelpCmduseCmdclearScreenCmdpwdCmdnoCmdstartCmdprintCmdnextQuestionCmdpreviousQuestionCmdviewCmdrightAnswerCmdwrongAnswerCmdmehAnswerCmdfinishCmdincreaseLevelCmddecreaseLevelCmdignoreLevelCmdshowLevelCmdshowStatsCmdsetAssociateProgrammerLevelCmdsetProgrammerAnalystLevelCmdsetSRProgrammerLevelCmdvalidateQuestionsCmdcountCmdcreateCommentCmdcreateQuestionCmdviewCurrentQuestionAnwswerCmdviewAnswers"
 
-var _Command_index = [...]uint16{0, 7, 16, 23, 29, 43, 49, 54, 62, 70, 85, 104, 111, 125, 139, 151, 160, 176, 192, 206, 218, 230, 260, 288, 311, 331, 339, 355, 372, 386}
+var _Command_index = [...]uint16{0, 7, 16, 23, 29, 43, 49, 54, 62, 70, 85, 104, 111, 125, 139, 151, 160, 176, 192, 206, 218, 230, 260, 288, 311, 331, 339, 355, 372, 401, 412}
 
 func (i Command) String() string {
 	if i < 0 || i >= Command(len(_Command_index)-1) {

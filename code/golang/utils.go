@@ -85,7 +85,9 @@ func userInputToCmd(input string) (Command, []string) {
 	case "cq":
 		return createQuestionCmd, []string{}
 	case "va":
-		return viewAnwswerCmd, []string{}
+		return viewCurrentQuestionAnwswerCmd, []string{}
+	case "vas":
+		return viewAnswers, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -117,6 +119,7 @@ commands:
 	next|nxt|> 				moves to the next question.
 	previous|prev|< 			moves to the previous question.
 	view|v					prints the current available questions by level.
+	va				view answer from current question
 	no|n|mal|wrong|nop|bad|nel 		marks a question as wrong.
 	ok|yes|si|right|y			marks a question as right / OK.
 	hmm|meh|?				marks a question as neutral.
@@ -243,6 +246,11 @@ func (q Question) String() string {
 	return fmt.Sprintf("Q%d: %s [%s] [%s]", q.ID, q.Q, q.Result, q.Level)
 }
 
+// StringNoResult ...
+func (q Question) StringNoResult() string {
+	return fmt.Sprintf("Q%d: %s [%s]", q.ID, q.Q, q.Level)
+}
+
 func printQuestion(questionIndex int, config *Config) {
 	if !config.hasStarted {
 		return
@@ -272,7 +280,7 @@ func viewQuestions(config *Config) {
 		return
 	}
 	for _, q := range config.interview.Topics[config.selectedTopic] {
-		fmt.Println(q.String())
+		fmt.Println(q.StringNoResult())
 	}
 }
 
@@ -284,7 +292,7 @@ func viewQuestionsByLevel(config *Config) {
 	currentLevel := config.levels[config.levelIndex]
 	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 	for _, q := range currentLevelQuestions {
-		fmt.Println(q.String())
+		fmt.Println(q.StringNoResult())
 	}
 }
 
@@ -624,4 +632,16 @@ func viewAnswer(questionIndex int, config *Config) {
 	index := config.individualLevelIndexes[int(currentLevel)-1]
 	fmt.Println(currentLevelQuestions[index].Answer)
 	fmt.Println()
+}
+
+func listAnswers(config *Config, db *sql.DB) error {
+	id := config.intervieweeID
+	answers, err := getAnswersFromCandidate(id, db)
+	if err != nil {
+		return err
+	}
+	for _, ans := range answers {
+		fmt.Println(ans)
+	}
+	return nil
 }

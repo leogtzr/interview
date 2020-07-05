@@ -36,8 +36,14 @@ func saveAnswer(question *Question, result Result, config *Config, db *sql.DB) e
 			return err
 		}
 	} else {
-		stmt, err := db.Query(`insert into answer (result, question_id, candidate_id) values(?, ?, ?)`,
-			result, question.ID, intervieweeID)
+		var stmt *sql.Rows
+		if len(config.comment) == 0 {
+			stmt, err = db.Query(`insert into answer (result, question_id, candidate_id) values(?, ?, ?)`,
+				result, question.ID, intervieweeID)
+		} else {
+			stmt, err = db.Query(`insert into answer (result, comment, question_id, candidate_id) values(?, ?, ?, ?)`,
+				result, config.comment, question.ID, intervieweeID)
+		}
 		if err != nil {
 			return err
 		}
@@ -187,4 +193,40 @@ func getResultCounts(candidateID int, db *sql.DB) ([]ResultCount, error) {
 	}
 
 	return counts, nil
+}
+
+func getAnswersFromCandidate(candidateID int, db *sql.DB) ([]AnswerView, error) {
+	query := `
+	select a.id
+	, q.question
+	, a.result
+	, a.comment
+	, t.topic
+	, lvl.title 
+from answer a 
+inner join question q 
+	on a.question_id = q.id 
+inner join topic t 
+	on t.id = q.topic_id 
+inner join level lvl 
+	on q.level_id = lvl.id 
+where a.candidate_id = ?
+	`
+	results, err := db.Query(query, candidateID)
+	if err != nil {
+		return []AnswerView{}, err
+	}
+	defer results.Close()
+
+	ans := make([]AnswerView, 0)
+
+	for results.Next() {
+		var av AnswerView
+		if err = results.Scan(&av.ID, &av.Question, &av.Result, &av.Comment, &av.Topic, &av.Title); err != nil {
+			return []AnswerView{}, err
+		}
+		ans = append(ans, av)
+	}
+
+	return ans, nil
 }

@@ -188,8 +188,13 @@ func main() {
 				panic(err)
 			}
 			printWithColorln("Question created", magenta, &config)
-		case viewAnwswerCmd:
+		case viewCurrentQuestionAnwswerCmd:
 			viewAnswer(config.questionIndex, &config)
+		case viewAnswers:
+			err := listAnswers(&config, db)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 

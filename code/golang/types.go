@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -62,4 +63,24 @@ type Interview struct {
 type Topic struct {
 	ID    int    `json:"id"`
 	Topic string `json:"topic"`
+}
+
+// AnswerView ...
+type AnswerView struct {
+	ID       int
+	Question string
+	Result   int
+	Comment  sql.NullString
+	Topic    string
+	Title    string
+}
+
+func (av AnswerView) String() string {
+	hasComment := av.Comment.Valid
+	if hasComment {
+		return fmt.Sprintf("%s [%s] [%s] [%s] [%s]",
+			av.Question, Result(av.Result), av.Comment.String, av.Topic, av.Title)
+	}
+	return fmt.Sprintf("%s [%s] [%s] [%s]",
+		av.Question, Result(av.Result), av.Topic, av.Title)
 }
