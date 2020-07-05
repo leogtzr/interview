@@ -237,6 +237,9 @@ func ps1String(ps1, selectedTopic, intervieweeName string) string {
 }
 
 func (q Question) String() string {
+	if int(q.Result) == 1 || int(q.Result) == 0 {
+		return fmt.Sprintf("Q%d: %s [%s]", q.ID, q.Q, q.Level)
+	}
 	return fmt.Sprintf("Q%d: %s [%s] [%s]", q.ID, q.Q, q.Result, q.Level)
 }
 
@@ -269,7 +272,7 @@ func viewQuestions(config *Config) {
 		return
 	}
 	for _, q := range config.interview.Topics[config.selectedTopic] {
-		fmt.Println(q)
+		fmt.Println(q.String())
 	}
 }
 
@@ -281,7 +284,7 @@ func viewQuestionsByLevel(config *Config) {
 	currentLevel := config.levels[config.levelIndex]
 	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
 	for _, q := range currentLevelQuestions {
-		fmt.Println(q)
+		fmt.Println(q.String())
 	}
 }
 
@@ -326,6 +329,13 @@ func setAnswerAsNeutral(config *Config, db *sql.DB) error {
 		return err
 	}
 
+	currentLevel := config.levels[config.levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
+	index := config.individualLevelIndexes[int(currentLevel)-1]
+	id := currentLevelQuestions[index].ID
+	qs := config.interview.Topics[config.selectedTopic]
+	markQuestionAs(id, Neutral, &qs)
+
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Neutral), magenta, config)
 	return nil
 }
@@ -339,6 +349,13 @@ func setAnswerAsOK(config *Config, db *sql.DB) error {
 		return err
 	}
 
+	currentLevel := config.levels[config.levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
+	index := config.individualLevelIndexes[int(currentLevel)-1]
+	id := currentLevelQuestions[index].ID
+	qs := config.interview.Topics[config.selectedTopic]
+	markQuestionAs(id, OK, &qs)
+
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", OK), green, config)
 	return nil
 }
@@ -351,6 +368,13 @@ func setAnswerAsWrong(config *Config, db *sql.DB) error {
 	if err := saveAnswer(&q, Wrong, config, db); err != nil {
 		return err
 	}
+
+	currentLevel := config.levels[config.levelIndex]
+	currentLevelQuestions := getQuestionsFromLevel(currentLevel, config)
+	index := config.individualLevelIndexes[int(currentLevel)-1]
+	id := currentLevelQuestions[index].ID
+	qs := config.interview.Topics[config.selectedTopic]
+	markQuestionAs(id, Wrong, &qs)
 
 	printWithColorln(fmt.Sprintf("Answer has saved as '%s'", Wrong), red, config)
 	return nil

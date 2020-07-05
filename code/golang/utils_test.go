@@ -111,14 +111,14 @@ func TestQuestion_String(t *testing.T) {
 	}
 
 	tests := []test{
-		{q: Question{ID: 1, Q: "hola", Result: NotAnsweredYet, Level: ProgrammerAnalyst}, want: "Q1: hola [NotAnsweredYet] [ProgrammerAnalyst]"},
-		{q: Question{ID: 1, Q: "hola", Result: NotAnsweredYet, Level: SrProgrammer}, want: "Q1: hola [NotAnsweredYet] [SrProgrammer]"},
+		{q: Question{ID: 1, Q: "hola", Result: NotAnsweredYet, Level: ProgrammerAnalyst}, want: "Q1: hola [ProgrammerAnalyst]"},
+		{q: Question{ID: 1, Q: "hola", Result: NotAnsweredYet, Level: SrProgrammer}, want: "Q1: hola [SrProgrammer]"},
 		{q: Question{ID: 1, Q: "hola", Result: Neutral, Level: AssociateOrProgrammer}, want: "Q1: hola [Neutral] [AssociateOrProgrammer]"},
 	}
 
 	for _, tt := range tests {
-		if tt.q.String() != tt.want {
-			t.Errorf("got=[%s], want=[%s]", tt.q.String(), tt.want)
+		if got := tt.q.String(); got != tt.want {
+			t.Errorf("got=[%s], want=[%s]", got, tt.want)
 		}
 	}
 }
