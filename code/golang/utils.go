@@ -87,7 +87,11 @@ func userInputToCmd(input string) (Command, []string) {
 	case "va":
 		return viewCurrentQuestionAnwswerCmd, []string{}
 	case "vas":
-		return viewAnswers, []string{}
+		return viewAnswersCmd, []string{}
+	case "li":
+		return listCandidatesCmd, []string{}
+	case "ei":
+		return exploreInterviewCmd, []string{}
 	}
 	return noCmd, []string{}
 }
@@ -636,9 +640,8 @@ func viewAnswer(questionIndex int, config *Config) {
 	fmt.Println()
 }
 
-func listAnswers(config *Config, db *sql.DB) error {
-	id := config.intervieweeID
-	answers, err := getAnswersFromCandidate(id, db)
+func listAnswers(candidateID int, config *Config, db *sql.DB) error {
+	answers, err := getAnswersFromCandidate(candidateID, db)
 	if err != nil {
 		return err
 	}
@@ -646,4 +649,60 @@ func listAnswers(config *Config, db *sql.DB) error {
 		fmt.Println(ans)
 	}
 	return nil
+}
+
+func exploreInterview(config *Config, db *sql.DB) error {
+	candidates, err := getCandidates(db)
+	if err != nil {
+		return err
+	}
+	if len(candidates) == 0 {
+		printWithColorln("There are no interviews available to explore", yellow, config)
+		return nil
+	}
+	for _, candidate := range candidates {
+		printWithColorf(config, fmt.Sprintf(` %d) "%s"  (%s)`, candidate.ID, candidate.Name, candidate.Date), green)
+		fmt.Println()
+	}
+
+	fmt.Println()
+	fmt.Printf("Candidate # to explore? ")
+
+	reader := bufio.NewReader(os.Stdin)
+	userInput, err := reader.ReadString('\n')
+	if err != nil {
+		return err
+	}
+
+	userInput = strings.TrimSpace(userInput)
+	candidateID, err := strconv.Atoi(userInput)
+	if err != nil {
+		return err
+	}
+	if valid := validateCandidateID(candidateID, &candidates); !valid {
+		return fmt.Errorf("%d not valid", candidateID)
+	}
+
+	answers, err := getAnswersFromCandidate(candidateID, db)
+	if err != nil {
+		return err
+	}
+	for _, ans := range answers {
+		fmt.Println(ans)
+	}
+
+	return nil
+}
+
+func validateCandidateID(id int, candidates *[]CandidateView) bool {
+	exists := false
+
+	for _, c := range *candidates {
+		if id == c.ID {
+			exists = true
+			break
+		}
+	}
+
+	return exists
 }

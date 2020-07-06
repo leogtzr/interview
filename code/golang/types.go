@@ -84,3 +84,14 @@ func (av AnswerView) String() string {
 	return fmt.Sprintf("%s [%s] [%s] [%s]",
 		av.Question, Result(av.Result), av.Topic, av.Title)
 }
+
+// CandidateView ...
+type CandidateView struct {
+	ID   int
+	Name string
+	Date string
+}
+
+func (can CandidateView) String() string {
+	return fmt.Sprintf("%d - \"%s\" (%s)", can.ID, can.Name, can.Date)
+}

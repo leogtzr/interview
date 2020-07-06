@@ -230,3 +230,23 @@ where a.candidate_id = ?
 
 	return ans, nil
 }
+
+func getCandidates(db *sql.DB) ([]CandidateView, error) {
+	var candidates []CandidateView
+	results, err := db.Query("SELECT * FROM candidate")
+	if err != nil {
+		return []CandidateView{}, err
+	}
+	defer results.Close()
+
+	for results.Next() {
+		var candidate CandidateView
+		err = results.Scan(&candidate.ID, &candidate.Name, &candidate.Date)
+		if err != nil {
+			return []CandidateView{}, err
+		}
+		candidates = append(candidates, candidate)
+	}
+
+	return candidates, nil
+}

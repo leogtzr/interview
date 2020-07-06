@@ -3,9 +3,9 @@
 BIN_FILE=interview
 
 install:
-	stringer -type=Command
-	stringer -type=Result
-	stringer -type=Level
+	# stringer -type=Command
+	# stringer -type=Result
+	# stringer -type=Level
 	go build -o "${BIN_FILE}"
 
 clean:

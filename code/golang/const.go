@@ -72,5 +72,7 @@ const (
 	createCommentCmd               Command = iota
 	createQuestionCmd              Command = iota
 	viewCurrentQuestionAnwswerCmd  Command = iota
-	viewAnswers                    Command = iota
+	viewAnswersCmd                 Command = iota
+	listCandidatesCmd              Command = iota
+	exploreInterviewCmd            Command = iota
 )

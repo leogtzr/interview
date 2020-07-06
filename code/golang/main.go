@@ -190,10 +190,24 @@ func main() {
 			printWithColorln("Question created", magenta, &config)
 		case viewCurrentQuestionAnwswerCmd:
 			viewAnswer(config.questionIndex, &config)
-		case viewAnswers:
-			err := listAnswers(&config, db)
+		case viewAnswersCmd:
+			candidateID := config.intervieweeID
+			err := listAnswers(candidateID, &config, db)
 			if err != nil {
 				panic(err)
+			}
+		case listCandidatesCmd:
+			candidates, err := getCandidates(db)
+			if err != nil {
+				panic(err)
+			}
+			for _, candidate := range candidates {
+				fmt.Println(candidate)
+			}
+		case exploreInterviewCmd:
+			err := exploreInterview(&config, db)
+			if err != nil {
+				printWithColorln(err.Error(), red, &config)
 			}
 		}
 	}
