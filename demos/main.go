@@ -16,7 +16,7 @@ func main() {
 
 	config := NewConfig()
 
-	dbConfig, err := readConfig("interviews.env", os.Getenv("HOME"), map[string]interface{}{
+	dbConfig, err := interview.readConfig("interviews.env", os.Getenv("HOME"), map[string]interface{}{
 		"db_user":     os.Getenv("DB_INTERVIEW_USER"),
 		"db_password": os.Getenv("DB_INTERVIEW_PASSWORD"),
 		"db_name":     os.Getenv("DB_INTERVIEW_NAME"),
