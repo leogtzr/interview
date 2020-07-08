@@ -1,4 +1,4 @@
-package interview
+package main
 
 const (
 	red     = "#E88388"
